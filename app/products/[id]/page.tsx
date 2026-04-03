@@ -4,30 +4,27 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, collection, query, where, limit, getDocs } from "firebase/firestore";
-import { ShoppingCart, CreditCard, MapPin, Check, Heart, ChevronLeft } from "lucide-react";
+import { ShoppingCart, CreditCard, MapPin, Eye, ArrowRight, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types";
-import RecentlyViewed from "../../../components/RecentlyViewed"; 
-import { useCart } from "@/context/CartContext"; // Сагсны hook-ийг нэмэв
-import { useWishlist } from "@/context/WishlistContext";
-import { useAuth } from "@/context/AuthContext"; // Auth нэмэх
+import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { addToCart } = useCart(); 
-  const { isWishlisted, toggleWishlist } = useWishlist();
-  const { user } = useAuth(); 
+  const { addToCart } = useCart();
+  const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [recommended, setRecommended] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState(0);
-
-  const isWished = product?.id ? isWishlisted(product.id) : false;
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     const fetchProductData = async () => {
       if (!id) return;
+      setLoading(true);
       try {
         const docRef = doc(db, "products", id as string);
         const docSnap = await getDoc(docRef);
@@ -36,22 +33,36 @@ export default function ProductDetailPage() {
           const productData = { id: docSnap.id, ...docSnap.data() } as Product;
           setProduct(productData);
 
-          const recent = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
-          const updatedRecent = [id, ...recent.filter((item: string) => item !== id)].slice(0, 10);
-          localStorage.setItem("recentlyViewed", JSON.stringify(updatedRecent));  
-
-          // Санал болгох бараа татах (Алдаанаас сэргийлж category шалгав)
-          if (productData.category && productData.category.length > 0) {
+          // categories эсвэл category аль нь байгааг шалгаж query хийх
+          const cats = (productData as any).categories as string[] | undefined;
+          const catsSingle = (productData as any).category as string[] | undefined;
+          const allCats = cats || catsSingle || [];
+          if (allCats.length > 0) {
             const q = query(
               collection(db, "products"),
-              where("category", "array-contains-any", productData.category),
-              limit(6)
+              where("categories", "array-contains-any", allCats),
+              limit(9)
             );
             const recSnap = await getDocs(q);
-            const recList = recSnap.docs
+            // categories field байхгүй бол category field-ээр дахин татна
+            let recList = recSnap.docs
               .map(d => ({ id: d.id, ...d.data() } as Product))
               .filter(p => p.id !== id)
-              .slice(0, 5);
+              .slice(0, 8);
+
+            // Хэрэв categories query-ээр олдоогүй бол category field-ээр оролдох
+            if (recList.length === 0 && allCats.length > 0) {
+              const q2 = query(
+                collection(db, "products"),
+                where("category", "array-contains-any", allCats),
+                limit(9)
+              );
+              const recSnap2 = await getDocs(q2);
+              recList = recSnap2.docs
+                .map(d => ({ id: d.id, ...d.data() } as Product))
+                .filter(p => p.id !== id)
+                .slice(0, 8);
+            }
             setRecommended(recList);
           }
         }
@@ -65,182 +76,355 @@ export default function ProductDetailPage() {
     fetchProductData();
   }, [id]);
 
+  const handleAddToCart = () => {
+    if (!product) return;
+    addToCart(product, 1);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
+  };
+
   const handleCheckoutAction = () => {
     if (!product) return;
-
-    // 1. Хэрэв нэвтрээгүй бол Login руу явуулна
     if (!user) {
       router.push("/auth/login");
       return;
     }
-
-    // 2. Хэрэв нэвтэрсэн бол сагсанд нэмээд Checkout руу явуулна
     addToCart(product, 1);
     router.push("/checkout");
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center animate-pulse text-gray-400 font-bold uppercase tracking-widest">Уншиж байна...</div>;
-  if (!product) return <div className="h-screen flex items-center justify-center font-bold">Бүтээгдэхүүн олдсонгүй.</div>;
+  if (loading)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-gray-400">Уншиж байна...</span>
+        </div>
+      </div>
+    );
+
+  if (!product)
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-4">
+        <p className="font-bold text-gray-500">Бүтээгдэхүүн олдсонгүй.</p>
+        <Link href="/products" className="text-sm text-green-600 hover:underline">
+          Бүх бараа руу буцах
+        </Link>
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-20 font-sans">
+    <div className="min-h-screen bg-gray-50/50 pb-28 font-sans">
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6">
-        
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-8">
-           <Link href="/" className="hover:text-black">Нүүр</Link> / 
-           <Link href="/products" className="hover:text-black">Бүх бараа</Link> / 
-           <span className="text-black font-medium">{product.name}</span>
+
+        {/* Буцах товч + Breadcrumbs */}
+        <div className="flex flex-col gap-3 mb-8">
+          {/* Mobile буцах товч */}
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition w-fit group"
+          >
+            <span className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center group-hover:border-gray-400 group-hover:bg-gray-50 transition shadow-sm">
+              <ChevronLeft size={16} />
+            </span>
+            Буцах
+          </button>
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <Link href="/" className="hover:text-black transition">Нүүр</Link>
+            <span>/</span>
+            <Link href="/products" className="hover:text-black transition">Бүх бараа</Link>
+            <span>/</span>
+            <span className="text-black font-medium truncate max-w-[160px]">{product.name}</span>
+          </div>
         </div>
 
+        {/* Product Main Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white p-4 md:p-10 rounded-2xl shadow-sm border border-gray-100">
-          
+
+          {/* Images */}
           <div className="lg:col-span-7 flex flex-col md:flex-row gap-4">
-            <div className="order-2 md:order-1 flex md:flex-col gap-3 shrink-0">
+            {/* Thumbnails */}
+            <div className="order-2 md:order-1 flex md:flex-col gap-2 shrink-0">
               {product.imageUrls.map((url, index) => (
-                <div 
+                <div
                   key={index}
                   onClick={() => setSelectedImg(index)}
-                  className={`w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${selectedImg === index ? 'border-green-600 shadow-md' : 'border-transparent opacity-60'}`}
+                  className={`w-14 h-14 md:w-18 md:h-18 rounded-xl overflow-hidden border-2 cursor-pointer transition-all flex-shrink-0 ${selectedImg === index
+                      ? "border-green-600 shadow-md opacity-100"
+                      : "border-transparent opacity-50 hover:opacity-75"
+                    }`}
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>
+            {/* Main Image */}
             <div className="order-1 md:order-2 flex-1 aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
-               <img src={product.imageUrls[selectedImg]} alt={product.name} className="w-full h-full object-cover" />
+              <img
+                src={product.imageUrls[selectedImg]}
+                alt={product.name}
+                className="w-full h-full object-cover transition-all duration-300"
+              />
             </div>
           </div>
 
-          <div className="lg:col-span-5 space-y-6">
+          {/* Details */}
+          <div className="lg:col-span-5 space-y-5">
+            {/* Категори badge */}
+            {(product as any).categories?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {(product as any).categories.map((cat: string) => (
+                  <span key={cat} className="text-[10px] font-bold uppercase tracking-widest bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100">
+                    {cat}
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              <p className="text-gray-500 text-sm font-medium">
-                {(product as any).flowerType || "Бүтээгдэхүүн"} #{(product.id?.slice(-5))}
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{product.name}</h1>
+              <p className="text-gray-400 text-xs font-medium">
+                #{product.id?.slice(-6).toUpperCase()}
               </p>
             </div>
 
+            {/* Price */}
             <div className="space-y-1">
-              <p className="text-sm text-gray-400 font-medium">Үнэ</p>
+              <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Үнэ</p>
               <div className="flex items-baseline gap-3">
-                 <p className="text-3xl font-black text-gray-900">{product.price.toLocaleString()} ₮</p>
-                 {product.discountedPrice && (
-                    <p className="text-lg text-gray-300 line-through">{product.discountedPrice.toLocaleString()} ₮</p>
-                 )}
+                {product.discountedPrice ? (
+                  <>
+                    <p className="text-3xl font-black text-gray-900">
+                      {product.discountedPrice.toLocaleString()} ₮
+                    </p>
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-sm text-gray-300 line-through">
+                        {product.price.toLocaleString()} ₮
+                      </p>
+                      <span className="text-[11px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full w-fit">
+                        -{Math.round(((product.price - product.discountedPrice) / product.price) * 100)}% хямдрал
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-3xl font-black text-gray-900">
+                    {product.price.toLocaleString()} ₮
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Buttons - Энд логикийг холбосон */}
-            <div className="grid grid-cols-2 gap-3 pt-4">
-               <button 
-                className="flex items-center justify-center gap-2 border-2 border-gray-900 text-gray-900 font-bold py-4 rounded-lg hover:bg-gray-50 transition active:scale-95 uppercase text-xs tracking-widest"
-                    onClick={() => addToCart(product)}
-               >
-                  <ShoppingCart size={18} /> Сагсанд хийх
-               </button>
-               <button 
-                onClick={handleCheckoutAction} // Шилжүүлэх логик нэмэв
-                className="flex items-center justify-center gap-2 bg-[#69A501] text-white font-bold py-4 rounded-lg hover:bg-[#5a8c01] transition active:scale-95 uppercase text-xs tracking-widest shadow-lg shadow-green-100"
-               >
-                  <CreditCard size={18} /> Худалдан авах
-               </button>
-            </div>
+            {/* Purposes */}
+            {(product as any).purposes?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {(product as any).purposes.map((p: string) => (
+                  <span key={p} className="text-[11px] font-semibold bg-pink-50 text-pink-600 px-3 py-1 rounded-full border border-pink-100">
+                    {p}
+                  </span>
+                ))}
+              </div>
+            )}
 
-            <div className="mt-4">
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
               <button
-                onClick={() => product?.id && toggleWishlist(product.id)}
-                className={`w-full py-3 text-sm font-black rounded-xl transition ${
-                  isWished
-                    ? "bg-red-500 text-white"
-                    : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-100"
-                }`}
+                onClick={handleAddToCart}
+                className={`flex items-center justify-center gap-2 border-2 font-bold py-4 rounded-xl transition active:scale-95 uppercase text-xs tracking-widest ${addedToCart
+                    ? "border-green-600 bg-green-600 text-white"
+                    : "border-gray-900 text-gray-900 hover:bg-gray-50"
+                  }`}
               >
-                <Heart size={14} /> {isWished ? "Хүсэлтээс хас" : "Хүсэлд нэм"}
+                <ShoppingCart size={16} />
+                {addedToCart ? "Нэмэгдлээ ✓" : "Сагсанд хийх"}
+              </button>
+              <button
+                onClick={handleCheckoutAction}
+                className="flex items-center justify-center gap-2 bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 transition active:scale-95 uppercase text-xs tracking-widest shadow-lg shadow-green-100"
+              >
+                <CreditCard size={16} /> Худалдан авах
               </button>
             </div>
 
-            <div className="pt-6 space-y-4 border-t border-gray-50">
-               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Худалдаалж буй салбарууд</p>
-               <StoreItem name="Төв салбар" address="Бага тойрог, Улаанбаатар" phone="7733-7733" />
-               <StoreItem name="Наадмаар салбар" address="ХУД, 15-р хороо, Наадам Центр" phone="7733-7733" />
+            {/* Stores */}
+            <div className="pt-5 space-y-3 border-t border-gray-50">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                Худалдаалж буй салбарууд
+              </p>
+              <StoreItem name="Төв салбар" address="Бага тойрог, Улаанбаатар" />
+              <StoreItem name="Наадмаар салбар" address="ХУД, 15-р хороо, Наадам Центр" />
             </div>
           </div>
         </div>
 
-        <div className="mt-12">
-           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-             Үзүүлэлтүүд
-           </h2>
-           <div className="bg-[#fcfcfc] border border-gray-100 p-8 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-20">
-              <SpecRow label="Ерөнхий өнгө:" value={product.colors?.join(", ") || "Алаг"} />
-              <SpecRow label="Тоо ширхэг:" value={`${product.stemCount || '--'} Ширхэг`} />
-              <SpecRow label="Савалгаа:" value={product.packaging} />
-              <SpecRow label="Хэмжээ:" value={product.size} />
-              <div className="md:col-span-2 pt-4 border-t border-gray-100 mt-2">
-                 <p className="text-[13px] text-gray-500 leading-relaxed font-light">{product.description}</p>
+        {/* Specifications */}
+        <div className="mt-10">
+          <h2 className="text-lg font-bold text-gray-900 mb-5 uppercase tracking-tight">
+            Үзүүлэлтүүд
+          </h2>
+          <div className="bg-white border border-gray-100 p-6 md:p-8 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0">
+            <SpecRow label="Өнгө" value={product.colors?.join(", ") || "—"} />
+            <SpecRow label="Тоо ширхэг" value={product.stemCount ? `${product.stemCount} ширхэг` : "—"} />
+            <SpecRow label="Савалгаа" value={product.packaging || "—"} />
+            <SpecRow label="Хэмжээ" value={product.size || "—"} />
+            {product.description && (
+              <div className="md:col-span-2 pt-5 mt-2 border-t border-gray-50">
+                <p className="text-[13px] text-gray-500 leading-relaxed">{product.description}</p>
               </div>
-           </div>
+            )}
+          </div>
         </div>
 
+        {/* ✅ Санал болгох бараа — 8 хүртэл, "Бүх бараа харах" товчтой */}
         {recommended.length > 0 && (
           <div className="mt-20">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl font-bold text-gray-900 uppercase tracking-tight">Танд санал болгох</h2>
-              <Link href="/products" className="text-xs font-bold text-green-600 hover:underline">Бүгдийг харах</Link>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+              <div>
+                <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+                  Танд санал болгох
+                </h2>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Ижил төстэй {recommended.length} бүтээгдэхүүн
+                </p>
+              </div>
+              {/* ✅ Бүх бараа харах — /products руу буцаана */}
+              <Link
+                href="/products"
+                className="flex items-center gap-1.5 text-xs font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-full transition"
+              >
+                Бүгдийг харах
+                <ArrowRight size={13} />
+              </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-               {recommended.map(item => (
-                 <RecommendedCard key={item.id} item={item} />
-               ))}
+
+            {/* Grid — 2 col mobile, 4 col desktop, max 8 items */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {recommended.map(item => (
+                <RecommendedCard
+                  key={item.id}
+                  item={item}
+                  onAddToCart={() => addToCart(item, 1)}
+                />
+              ))}
+            </div>
+
+            {/* Bottom CTA — мөн /products руу */}
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 border-2 border-gray-900 text-gray-900 font-bold px-8 py-3.5 rounded-full hover:bg-gray-900 hover:text-white transition-all duration-200 text-sm uppercase tracking-widest"
+              >
+                <ChevronLeft size={16} />
+                Бүх бараа руу буцах
+              </Link>
             </div>
           </div>
         )}
-        <RecentlyViewed currentProductId={id as string} />
 
       </div>
     </div>
   );
 }
 
-// Доорх SpecRow, StoreItem, RecommendedCard компонентууд таны өмнөх кодоор хэвээрээ байна...
+// ─── Туслах Компонентууд ───────────────────────────────────────────────────
 
-// Туслах Компонентууд
-function SpecRow({ label, value }: { label: string, value: any }) {
+function SpecRow({ label, value }: { label: string; value: any }) {
   return (
-    <div className="flex items-center justify-between md:justify-start gap-10 border-b border-gray-50/50 py-3">
-       <span className="text-[13px] font-bold text-gray-800 w-32 shrink-0">{label}</span>
-       <span className="text-[13px] text-gray-500">{value}</span>
+    <div className="flex items-center justify-between py-3.5 px-2 border-b border-gray-50 last:border-0">
+      <span className="text-[12px] font-bold text-gray-400 uppercase tracking-wide w-28 shrink-0">
+        {label}
+      </span>
+      <span className="text-[13px] text-gray-700 font-medium text-right">{value}</span>
     </div>
   );
 }
 
-function StoreItem({ name, address, phone }: any) {
+function StoreItem({ name, address }: { name: string; address: string }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl border border-gray-50 bg-gray-50/30">
-       <div className="flex items-start gap-3">
-          <div className="p-2 bg-white rounded-lg border border-gray-100 text-gray-400"><MapPin size={16}/></div>
-          <div>
-            <p className="text-xs font-bold text-gray-800">{name}</p>
-            <p className="text-[10px] text-gray-400">{address}</p>
+    <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-50 bg-gray-50/50 hover:border-green-100 transition">
+      <div className="p-2 bg-white rounded-lg border border-gray-100 text-green-600 flex-shrink-0">
+        <MapPin size={15} />
+      </div>
+      <div>
+        <p className="text-xs font-bold text-gray-800">{name}</p>
+        <p className="text-[10px] text-gray-400 mt-0.5">{address}</p>
+      </div>
+    </div>
+  );
+}
+
+function RecommendedCard({
+  item,
+  onAddToCart,
+}: {
+  item: Product;
+  onAddToCart: () => void;
+}) {
+  const [added, setAdded] = useState(false);
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onAddToCart();
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
+
+  const hasDiscount = item.discountedPrice && item.discountedPrice < item.price;
+
+  return (
+    <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col">
+      {/* Image */}
+      <Link href={`/products/${item.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-50">
+        <img
+          src={item.imageUrls?.[0] || "/placeholder.jpg"}
+          alt={item.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <div className="bg-white/90 backdrop-blur-sm p-2.5 rounded-full transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300">
+            <Eye size={18} className="text-gray-700" />
           </div>
-       </div>
-       <div className="text-right">
-          <p className="text-[10px] font-bold text-gray-300">Үлдэгдэл</p>
-          <p className="text-xs font-black text-gray-400">--</p>
-       </div>
-    </div>
-  );
-}
+        </div>
+        {/* Discount badge */}
+        {hasDiscount && (
+          <div className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
+            -{Math.round(((item.price - item.discountedPrice!) / item.price) * 100)}%
+          </div>
+        )}
+      </Link>
 
-function RecommendedCard({ item }: { item: Product }) {
-  return (
-    <Link href={`/products/${item.id}`} className="group space-y-3 block">
-       <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 relative">
-          <img src={item.imageUrls[0]} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-       </div>
-       <div className="text-center">
-          <h3 className="text-xs font-bold text-gray-800 uppercase line-clamp-1">{item.name}</h3>
-          <p className="text-xs font-black text-gray-900 mt-1">{item.price.toLocaleString()} ₮</p>
-       </div>
-    </Link>
+      {/* Info */}
+      <div className="p-3 sm:p-4 flex flex-col flex-grow gap-2">
+        <Link href={`/products/${item.id}`}>
+          <h3 className="text-[12px] sm:text-sm font-bold text-gray-800 line-clamp-2 leading-snug hover:text-green-600 transition-colors uppercase">
+            {item.name}
+          </h3>
+        </Link>
+
+        <div className="flex items-baseline gap-2 mt-auto">
+          <p className={`font-black text-[14px] ${hasDiscount ? "text-red-500" : "text-gray-900"}`}>
+            {(hasDiscount ? item.discountedPrice! : item.price).toLocaleString()} ₮
+          </p>
+          {hasDiscount && (
+            <p className="text-[11px] text-gray-300 line-through">
+              {item.price.toLocaleString()} ₮
+            </p>
+          )}
+        </div>
+
+        <button
+          onClick={handleAdd}
+          className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 ${added
+              ? "bg-green-600 text-white"
+              : "bg-gray-900 hover:bg-green-600 text-white"
+            }`}
+        >
+          <ShoppingCart size={13} />
+          {added ? "Нэмэгдлээ ✓" : "Сагсанд нэмэх"}
+        </button>
+      </div>
+    </div>
   );
 }

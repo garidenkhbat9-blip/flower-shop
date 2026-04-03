@@ -111,7 +111,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] pb-24 pt-10 font-sans">
+    <div className="min-h-screen bg-[#FFFDF9] text-[#333333] pb-24 pt-10 font-sans">
       <div className="max-w-6xl mx-auto px-6">
         
         <div className="flex items-center gap-4 mb-10">
@@ -144,7 +144,7 @@ export default function CheckoutPage() {
 
             <div className="bg-white p-8 rounded-[40px] shadow-sm border border-gray-100">
                <h2 className="font-black uppercase text-sm tracking-widest mb-4 flex items-center gap-2"><MessageSquare size={18}/> Мэндчилгээ</h2>
-               <textarea name="cardMessage" value={formData.cardMessage} onChange={handleChange} placeholder="Картан дээр бичих үг..." className="w-full bg-gray-50 border-none rounded-3xl p-5 min-h-[120px] focus:ring-2 focus:ring-black outline-none" />
+               <textarea name="cardMessage" value={formData.cardMessage} onChange={handleChange} placeholder="Картан дээр бичих үг..." className="w-full bg-white border border-gray-100 rounded-3xl p-5 min-h-[120px] focus:ring-2 focus:ring-[#87A96B] outline-none text-[#333333]" />
             </div>
           </div>
 
@@ -182,11 +182,11 @@ export default function CheckoutPage() {
                    </div>
                    <div className="flex justify-between text-gray-400 text-xs font-bold uppercase font-black">
                       <span>Нийт</span>
-                      <span className="text-black text-xl">{(cartTotal + 5000).toLocaleString()} ₮</span>
+                      <span className="text-[#333333] text-xl">{(cartTotal + 5000).toLocaleString()} ₮</span>
                    </div>
                 </div>
 
-                <button type="submit" disabled={loading || cart.length === 0} className="w-full bg-black text-white font-black py-5 rounded-[24px] uppercase text-xs tracking-widest hover:bg-gray-800 transition active:scale-95 disabled:bg-gray-200 flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
+                <button type="submit" disabled={loading || cart.length === 0} className="w-full bg-[#E2A9BE] text-[#FFFDF9] font-black py-5 rounded-[24px] uppercase text-xs tracking-widest hover:bg-[#d89bb1] transition active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 flex items-center justify-center gap-2 shadow-xl shadow-[#E2A9BE]/20">
                   {loading ? "Түр хүлээнэ үү..." : <>ЗАХИАЛГА БАТАЛГААЖУУЛАХ <CreditCard size={18}/></>}
                 </button>
              </div>
@@ -201,8 +201,8 @@ export default function CheckoutPage() {
 function InputField({ label, ...props }: any) {
   return (
     <div className="space-y-1 w-full">
-      <label className="text-[10px] font-black text-gray-400 uppercase ml-2 tracking-widest">{label}</label>
-      <input className="w-full bg-gray-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-black transition-all outline-none text-sm font-bold" {...props} />
+      <label className="text-[10px] font-black text-[#87A96B] uppercase ml-2 tracking-widest">{label}</label>
+      <input className="w-full bg-white border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-[#87A96B] transition-all outline-none text-sm font-bold text-[#333333] placeholder-gray-400" {...props} />
     </div>
   );
 }

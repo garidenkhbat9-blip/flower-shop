@@ -141,7 +141,7 @@ export default function PersonalSection() {
               type="text" 
               value={formData.firstName}
               onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-              className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl focus:ring-1 focus:ring-pink-500 outline-none" 
+              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none" 
             />
           </div>
           <div className="space-y-2">
@@ -150,7 +150,7 @@ export default function PersonalSection() {
               type="text" 
               value={formData.lastName}
               onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-              className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl focus:ring-1 focus:ring-pink-500 outline-none" 
+              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none" 
             />
           </div>
 
@@ -173,7 +173,7 @@ export default function PersonalSection() {
               type="email" 
               disabled 
               value={formData.email}
-              className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-gray-400 cursor-not-allowed" 
+              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl text-gray-400 cursor-not-allowed outline-none" 
             />
           </div>
           <div className="space-y-2">
@@ -182,7 +182,7 @@ export default function PersonalSection() {
               type="text" 
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl focus:ring-1 focus:ring-pink-500 outline-none" 
+              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none" 
             />
           </div>
         </div>
@@ -190,7 +190,7 @@ export default function PersonalSection() {
           <button 
             onClick={handleInfoSave}
             disabled={savingInfo}
-            className="bg-[#D81B60] text-white px-8 py-3 rounded-xl font-bold hover:bg-pink-700 transition disabled:opacity-50"
+            className="bg-[#E2A9BE] text-[#FFFDF9] px-8 py-3 rounded-xl font-bold hover:bg-[#d89bb1] transition disabled:opacity-50"
           >
             {savingInfo ? "Түр хүлээнэ үү..." : "Хадгалах"}
           </button>
@@ -211,7 +211,7 @@ export default function PersonalSection() {
               type="password" 
               value={passwords.newPassword}
               onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
-              className="w-full bg-[#EBF2FF] border-none p-3 rounded-xl focus:ring-1 focus:ring-blue-400 outline-none" 
+              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none placeholder-gray-400" 
               placeholder="••••••••"
             />
           </div>
@@ -221,7 +221,7 @@ export default function PersonalSection() {
               type="password" 
               value={passwords.confirmPassword}
               onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
-              className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl focus:ring-1 focus:ring-pink-500 outline-none" 
+              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none placeholder-gray-400" 
               placeholder="Шинэ нууц үг давтах"
             />
           </div>
@@ -239,7 +239,7 @@ export default function PersonalSection() {
           <button 
             onClick={handlePasswordSave}
             disabled={savingPass || !Object.values(validations).every(v => v)}
-            className="bg-[#D81B60] text-white px-8 py-3 rounded-xl font-bold hover:bg-pink-700 transition disabled:opacity-50"
+            className="bg-[#E2A9BE] text-[#FFFDF9] px-8 py-3 rounded-xl font-bold hover:bg-[#d89bb1] transition disabled:opacity-50"
           >
             {savingPass ? "Түр хүлээнэ үү..." : "Хадгалах"}
           </button>

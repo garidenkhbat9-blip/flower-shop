@@ -94,15 +94,11 @@ function SaleProductCard({ product }: { product: any }) {
 
   return (
     <div className="group bg-white rounded-[32px] p-2 border border-transparent hover:shadow-2xl transition-all duration-500 relative">
-      {/* Хямдралын хувь */}
-      {discountPercent > 0 && (
-        <span className="absolute left-3 top-3 bg-[var(--primary)] text-[var(--background)] text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg z-10">
-          -{discountPercent}%
-        </span>
-      )}
-
+      {/* Хямдралын хувь нь устгагдсан (хэрэглэгчийн хүсэлтээр) */}
       <div className="relative aspect-[4/5] bg-gray-50 rounded-[28px] overflow-hidden mb-4 shadow-inner">
-        <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+        <Link href={`/products/${product.id}`} className="block w-full h-full">
+          <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+        </Link>
         <button
           onClick={() => product.id && toggleWishlist(product.id)}
           className={`absolute top-4 right-4 p-2 rounded-full transition-all shadow-sm ${
@@ -115,7 +111,9 @@ function SaleProductCard({ product }: { product: any }) {
       </div>
 
       <div className="px-3 pb-4 text-center">
-        <h3 className="text-xs md:text-sm font-black text-gray-800 line-clamp-1 mb-2 uppercase italic">{product.name}</h3>
+        <Link href={`/products/${product.id}`}>
+          <h3 className="text-xs md:text-sm font-black text-gray-800 line-clamp-1 mb-2 uppercase italic hover:text-[var(--primary)] transition-colors">{product.name}</h3>
+        </Link>
         <div className="flex flex-col items-center gap-1">
            <span className="text-[var(--primary)] font-black text-base leading-none">
              {product.discountedPrice?.toLocaleString()}₮

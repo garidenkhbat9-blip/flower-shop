@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, doc, updateDoc, query, orderBy } from "firebase/firestore";
-import { Package, Truck, XCircle, Clock, ChevronDown, User, Phone, MapPin, MessageSquare, ExternalLink } from "lucide-react";
+import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "firebase/firestore";
+import { Package, Truck, XCircle, Clock, ChevronDown, User, Phone, MapPin, MessageSquare, ExternalLink, Trash2 } from "lucide-react";
 
 interface Order {
   id: string;
@@ -60,6 +60,34 @@ export default function OrdersPage() {
     }
   };
 
+  const handleDeleteOrder = async (orderId: string) => {
+    if (confirm("Энэ захиалгыг бүр мөсөн устгах уу?")) {
+      try {
+        await deleteDoc(doc(db, "orders", orderId));
+        setOrders(orders.filter(o => o.id !== orderId));
+      } catch (error) {
+        alert("Устгах үед алдаа гарлаа");
+      }
+    }
+  };
+
+  const handleRemoveItemFromOrder = async (orderId: string, itemIdx: number) => {
+    if (confirm("Энэ барааг захиалгаас хасах уу?")) {
+      try {
+        const order = orders.find(o => o.id === orderId);
+        if (!order) return;
+        const newItems = [...order.items];
+        newItems.splice(itemIdx, 1);
+        const newTotalAmount = newItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+        const orderRef = doc(db, "orders", orderId);
+        await updateDoc(orderRef, { items: newItems, totalAmount: newTotalAmount });
+        setOrders(orders.map(o => o.id === orderId ? { ...o, items: newItems, totalAmount: newTotalAmount } : o));
+      } catch (error) {
+        alert("Устгах үед алдаа гарлаа");
+      }
+    }
+  };
+
   const filteredOrders = orders.filter(o => filterStatus === "Бүгд" || o.status === filterStatus);
 
   if (loading) return <div className="p-10 text-center animate-pulse font-bold text-gray-400">Уншиж байна...</div>;
@@ -75,7 +103,7 @@ export default function OrdersPage() {
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`px-4 py-2 rounded-full text-xs font-black uppercase whitespace-nowrap transition-all ${filterStatus === status ? "bg-black text-white" : "bg-white border text-gray-400"}`}
+              className={`px-4 py-2 rounded-full text-xs font-black uppercase whitespace-nowrap transition-all ${filterStatus === status ? "bg-[#333333] text-[#FFFDF9]" : "bg-white border text-gray-400 hover:text-[#E2A9BE]"}`}
             >
               {status}
             </button>
@@ -96,7 +124,7 @@ export default function OrdersPage() {
                 <div className="flex items-center gap-4">
                    <div className={`p-3 rounded-2xl ${
                      order.status === 'Хүлээгдэж буй' ? 'bg-orange-50 text-orange-500' :
-                     order.status === 'Хүргэгдсэн' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'
+                     order.status === 'Хүргэгдсэн' ? 'bg-[#87A96B]/10 text-[#87A96B]' : 'bg-red-50 text-red-500'
                    }`}>
                       {order.status === 'Хүлээгдэж буй' ? <Clock size={24}/> : order.status === 'Хүргэгдсэн' ? <Truck size={24}/> : <XCircle size={24}/>}
                    </div>
@@ -119,13 +147,21 @@ export default function OrdersPage() {
                         onChange={(e) => handleStatusChange(order.id, e.target.value)}
                         className={`text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border-none outline-none cursor-pointer shadow-sm ${
                           order.status === 'Хүлээгдэж буй' ? 'bg-orange-500 text-white' :
-                          order.status === 'Хүргэгдсэн' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-500'
+                          order.status === 'Хүргэгдсэн' ? 'bg-[#87A96B] text-white' : 'bg-gray-100 text-gray-500'
                         }`}
                       >
                         <option value="Хүлээгдэж буй">Хүлээгдэж буй</option>
                         <option value="Хүргэгдсэн">Хүргэгдсэн</option>
                         <option value="Цуцлагдсан">Цуцлагдсан</option>
                       </select>
+
+                      <button 
+                        onClick={() => handleDeleteOrder(order.id)}
+                        className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors"
+                        title="Захиалга бүрмөсөн устгах"
+                      >
+                        <Trash2 size={20} />
+                      </button>
                       
                       <button 
                         onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
@@ -171,16 +207,25 @@ export default function OrdersPage() {
                     <div className="space-y-4">
                        <h4 className="text-[11px] font-black uppercase text-gray-400 tracking-widest">Захиалсан бараа</h4>
                        <div className="space-y-3">
-                          {order.items.map((item, idx) => (
-                            <div key={idx} className="flex items-center gap-3 border-b border-gray-50 pb-3 last:border-0">
-                               <img src={item.imageUrl} className="w-12 h-14 object-cover rounded-xl shadow-sm" alt="" />
-                               <div className="flex-1">
-                                  <p className="text-xs font-black uppercase line-clamp-1">{item.name}</p>
-                                  <p className="text-[10px] text-gray-400 font-bold">{item.quantity}ш x {item.price.toLocaleString()}₮</p>
-                               </div>
-                               <p className="text-xs font-black">{(item.price * item.quantity).toLocaleString()}₮</p>
-                            </div>
-                          ))}
+                           {order.items.map((item, idx) => (
+                             <div key={idx} className="flex items-center gap-3 border-b border-gray-50 pb-3 last:border-0 relative">
+                                <img src={item.imageUrl} className="w-12 h-14 object-cover rounded-xl shadow-sm" alt="" />
+                                <div className="flex-1">
+                                   <p className="text-xs font-black uppercase line-clamp-1">{item.name}</p>
+                                   <p className="text-[10px] text-gray-400 font-bold">{item.quantity}ш x {item.price.toLocaleString()}₮</p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <p className="text-xs font-black">{(item.price * item.quantity).toLocaleString()}₮</p>
+                                  <button
+                                    onClick={() => handleRemoveItemFromOrder(order.id, idx)}
+                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Барааг хасах"
+                                  >
+                                    <Trash2 size={14}/>
+                                  </button>
+                                </div>
+                             </div>
+                           ))}
                        </div>
                     </div>
 

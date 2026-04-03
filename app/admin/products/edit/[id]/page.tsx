@@ -5,7 +5,18 @@ import { db, storage } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
-import { Check, Tag } from "lucide-react"; // Icon нэмэв
+import { Check, Tag, Flower2, Gift } from "lucide-react";
+
+const PACKAGING_OPTIONS = ["Баглаа", "Хайрцагтай", "Сагстай", "Хөрстэй"];
+const SIZE_OPTIONS = ["Жижиг", "Дунд", "Том"];
+const COLOR_OPTIONS = [
+  { name: "Улаан", hex: "#E11D48" }, { name: "Ягаан", hex: "#FB7185" },
+  { name: "Цагаан", hex: "#FFFFFF" }, { name: "Шар", hex: "#FACC15" },
+  { name: "Улбар шар", hex: "#FB923C" }, { name: "Хөх", hex: "#2563EB" },
+  { name: "Солонго", hex: "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)" }
+];
+const PURPOSE_OPTIONS = ["Хайрт ээждээ", "Хайраа илчлэх", "Уучлалт гуйх", "Баяр хүргэх", "Ойн баяр", "Төрсөн өдөр"];
+const FLOWER_NAME_SUGGESTIONS = ["Сарнай", "Сараана", "Ромашка", "Башир", "Алтанзул", "Барын чих", "Наранцэцэг"];
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -22,11 +33,22 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     name: "",
     price: "",
     discountedPrice: "",
-    // description: "",  <-- ХАСАГДЛАА
-    categories: [] as string[], // Олон категори сонгох боломжтой болгов
+    categories: [] as string[],
     inStock: true,
-    imageUrls: [] as string[], 
+    imageUrls: [] as string[],
+    flowerType: "",
+    packaging: "Баглаа",
+    size: "Дунд",
+    stemCount: ""
   });
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]);
+  
+  const isGiftProduct = formData.categories.includes("Бэлэг дурсгал") || formData.categories.includes("Бялуу");
+
+  const toggleItem = (list: string[], setList: any, item: string) => {
+    setList(list.includes(item) ? list.filter(i => i !== item) : [...list, item]);
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -57,7 +79,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             categories: categoriesArray,
             inStock: data.inStock !== undefined ? data.inStock : true,
             imageUrls: data.imageUrls || [],
+            flowerType: data.flowerType || "",
+            packaging: data.packaging || "Баглаа",
+            size: data.size || "Дунд",
+            stemCount: data.stemCount?.toString() || "",
           });
+          setSelectedColors(data.colors || []);
+          setSelectedPurposes(data.purposes || []);
         } else {
           router.push("/admin/products");
         }
@@ -128,9 +156,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         name: formData.name,
         price: Number(formData.price),
         discountedPrice: formData.discountedPrice ? Number(formData.discountedPrice) : null,
-        categories: formData.categories, // Array хэлбэрээр хадгална
+        categories: formData.categories,
         imageUrls: finalImageUrls, 
         inStock: formData.inStock,
+        flowerType: isGiftProduct ? null : formData.flowerType,
+        packaging: isGiftProduct ? "Хайрцагтай" : formData.packaging,
+        size: formData.size,
+        stemCount: isGiftProduct ? null : (Number(formData.stemCount) || null),
+        colors: selectedColors,
+        purposes: selectedPurposes,
         updatedAt: serverTimestamp(),
       };
 
@@ -187,32 +221,121 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
           <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-4">
             <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Мэдээлэл</h2>
-            <input required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Цэцгийн нэр" className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold" />
+            <input required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Жишээ: 101 Сарнайтай сагс" className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold" />
             
-            <div className="grid grid-cols-2 gap-4">
-              <input required type="number" name="price" value={formData.price} onChange={handleChange} placeholder="Үнэ (₮)" className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold" />
-              <input type="number" name="discountedPrice" value={formData.discountedPrice} onChange={handleChange} placeholder="Хямдарсан (₮)" className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold text-rose-500" />
+            {!isGiftProduct && (
+              <div className="mt-4">
+                <label className="text-[10px] font-bold text-[#87A96B] uppercase ml-2">Цэцэгний төрөл</label>
+                <input 
+                  list="flower-names" type="text" name="flowerType"
+                  placeholder="Сарнай, Алтанзул гэх мэт..." 
+                  value={formData.flowerType} 
+                  onChange={handleChange} 
+                  className="w-full bg-[#87A96B]/10 border border-[#87A96B]/20 rounded-xl p-4 mt-1 font-bold outline-none focus:ring-2 focus:ring-[#87A96B]" 
+                />
+                <datalist id="flower-names">
+                  {FLOWER_NAME_SUGGESTIONS.map(name => <option key={name} value={name} />)}
+                </datalist>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Үнэ (₮)</label>
+                <input required type="number" name="price" value={formData.price} onChange={handleChange} placeholder="Үнэ (₮)" className="w-full bg-gray-50 border-none rounded-xl p-4 font-black mt-1" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Хямдарсан (₮)</label>
+                <input type="number" name="discountedPrice" value={formData.discountedPrice} onChange={handleChange} placeholder="Хямдарсан (₮)" className="w-full bg-gray-50 border-none rounded-xl p-4 font-black text-rose-500 mt-1" />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* БАРУУН ТАЛ: КАТЕГОРИ БОЛОН ХАДГАЛАХ */}
+        {/* БАРУУН ТАЛ: КАТЕГОРИ, СОНГОЛТУУД БОЛОН ХАДГАЛАХ */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Ангилал</h2>
-            <div className="flex flex-wrap gap-2">
-                {dbCategories.map(cat => {
-                    const isSelected = formData.categories.includes(cat.name);
-                    return (
-                        <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${isSelected ? "bg-black border-black text-white shadow-lg" : "bg-gray-50 text-gray-400 border-transparent"}`}>
-                            {cat.name}
-                        </button>
-                    );
-                })}
+          
+          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-6">
+            <div>
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                Ангилал
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                  {dbCategories.map(cat => {
+                      const isSelected = formData.categories.includes(cat.name);
+                      return (
+                          <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name)} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${isSelected ? "bg-[#333333] border-[#333333] text-white shadow-md" : "bg-gray-50 text-gray-500 border-transparent hover:bg-gray-100"}`}>
+                              {cat.name === "Бэлэг дурсгал" ? <Gift size={12}/> : <Flower2 size={12}/>}
+                              {cat.name}
+                          </button>
+                      );
+                  })}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-[#87A96B] uppercase mb-3 block ml-1">Зориулалт (Occasions)</label>
+              <div className="flex flex-wrap gap-2">
+                {PURPOSE_OPTIONS.map(purp => (
+                  <button 
+                    key={purp} type="button" 
+                    onClick={() => toggleItem(selectedPurposes, setSelectedPurposes, purp)}
+                    className={`px-3 py-2 rounded-xl text-[11px] font-bold transition border ${selectedPurposes.includes(purp) ? "bg-[#87A96B] border-[#87A96B] text-white shadow-sm" : "bg-white border-gray-100 text-gray-400 hover:border-gray-300"}`}
+                  >
+                    {purp}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          <button type="submit" disabled={saving} className="w-full bg-green-600 text-white font-black py-5 rounded-[24px] shadow-xl shadow-green-100 hover:bg-green-700 transition active:scale-95 disabled:bg-gray-200 uppercase tracking-widest text-xs">
+          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-6">
+            {!isGiftProduct && (
+              <>
+                <div>
+                  <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Савалгаа</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {PACKAGING_OPTIONS.map(opt => (
+                      <button key={opt} type="button" onClick={() => setFormData({...formData, packaging: opt})} className={`py-3 rounded-xl text-[11px] font-bold transition shadow-sm ${formData.packaging === opt ? "bg-[#333333] text-white" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}>{opt}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Тоо ширхэг (Иш)</h3>
+                  <input type="number" name="stemCount" placeholder="Жишээ: 51" value={formData.stemCount} onChange={handleChange} className="w-full bg-gray-50 border-none rounded-xl p-4 text-sm font-black" />
+                </div>
+              </>
+            )}
+
+            <div>
+              <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Өнгө сонгох</h3>
+              <div className="flex flex-wrap gap-3 p-2 bg-gray-50 rounded-2xl">
+                {COLOR_OPTIONS.map(color => (
+                  <button 
+                    key={color.name} type="button" 
+                    onClick={() => toggleItem(selectedColors, setSelectedColors, color.name)}
+                    className={`w-8 h-8 rounded-full border-2 shadow-sm transition-transform active:scale-90 flex items-center justify-center ${selectedColors.includes(color.name) ? "border-[#333333] scale-110" : "border-transparent hover:scale-105"}`}
+                    style={{ background: color.hex }}
+                    title={color.name}
+                  >
+                     {selectedColors.includes(color.name) && <Check size={14} className={color.name === 'Цагаан' ? 'text-black' : 'text-white'} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Хэмжээ</h3>
+              <div className="flex gap-2">
+                {SIZE_OPTIONS.map(s => (
+                  <button key={s} type="button" onClick={() => setFormData({...formData, size: s})} className={`flex-1 py-3 rounded-xl text-[11px] font-bold transition ${formData.size === s ? "bg-[#333333] text-white" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}>{s}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" disabled={saving} className="w-full bg-[#E2A9BE] text-white font-black py-5 rounded-[24px] shadow-xl shadow-[#E2A9BE]/20 hover:bg-[#d89bb1] transition active:scale-95 disabled:bg-gray-200 uppercase tracking-widest text-xs">
             {saving ? "Хадгалж байна..." : "Өөрчлөлтийг хадгалах"}
           </button>
         </div>

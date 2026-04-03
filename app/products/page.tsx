@@ -48,6 +48,7 @@ export default function AllProductsPage() {
 function AllProductsContent() {
   const searchParams = useSearchParams();
   const urlCategory = searchParams.get("category") || "";
+  const searchQuery = searchParams.get("search") || "";
 
   const [products, setProducts] = useState<Product[]>([]);
   const [dbCategories, setDbCategories] = useState<Category[]>([]);
@@ -62,13 +63,16 @@ function AllProductsContent() {
     sizes: [] as string[],
     purposes: [] as string[],
     stems: [] as string[],
+    flowerTypes: [] as string[],
   });
 
   useEffect(() => {
-    if (urlCategory) {
+    if (searchParams.get("clear") === "true") {
+      setFilters({ categories: [], packaging: [], colors: [], sizes: [], purposes: [], stems: [], flowerTypes: [] });
+    } else if (urlCategory) {
       setFilters(prev => ({ ...prev, categories: [urlCategory] }));
     }
-  }, [urlCategory]);
+  }, [searchParams, urlCategory]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +93,7 @@ function AllProductsContent() {
   }, []);
 
   const counts = useMemo(() => {
-    const c: any = { packaging: {}, stems: {}, purposes: {}, categories: {}, sizes: {} };
+    const c: any = { packaging: {}, stems: {}, purposes: {}, categories: {}, sizes: {}, flowerTypes: {} };
     products.forEach(p => {
       (p as any).categories?.forEach((cat: string) => {
         c.categories[cat] = (c.categories[cat] || 0) + 1;
@@ -97,6 +101,7 @@ function AllProductsContent() {
       if (p.packaging) c.packaging[p.packaging] = (c.packaging[p.packaging] || 0) + 1;
       if (p.size) c.sizes[p.size] = (c.sizes[p.size] || 0) + 1;
       if (p.stemCount) c.stems[p.stemCount] = (c.stems[p.stemCount] || 0) + 1;
+      if ((p as any).flowerType) c.flowerTypes[(p as any).flowerType] = (c.flowerTypes[(p as any).flowerType] || 0) + 1;
       (p as any).purposes?.forEach((purp: string) => {
         c.purposes[purp] = (c.purposes[purp] || 0) + 1;
       });
@@ -113,14 +118,16 @@ function AllProductsContent() {
         const matchSize = filters.sizes.length === 0 || filters.sizes.includes(p.size);
         const matchPurpose = filters.purposes.length === 0 || (p as any).purposes?.some((t: string) => filters.purposes.includes(t));
         const matchStems = filters.stems.length === 0 || (p.stemCount && filters.stems.includes(p.stemCount.toString()));
-        return matchCat && matchPack && matchColor && matchSize && matchPurpose && matchStems;
+        const matchFlowerType = filters.flowerTypes.length === 0 || ((p as any).flowerType && filters.flowerTypes.includes((p as any).flowerType));
+        const matchSearch = searchQuery === "" || p.name.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchCat && matchPack && matchColor && matchSize && matchPurpose && matchStems && matchFlowerType && matchSearch;
       })
       .sort((a, b) => {
         if (sortBy === "price-asc") return (a.discountedPrice || a.price) - (b.discountedPrice || b.price);
         if (sortBy === "price-desc") return (b.discountedPrice || b.price) - (a.discountedPrice || a.price);
         return 0;
       });
-  }, [products, filters, sortBy]);
+  }, [products, filters, sortBy, searchQuery]);
 
   const toggleFilter = (type: keyof typeof filters, value: string) => {
     setFilters(prev => ({
@@ -130,7 +137,7 @@ function AllProductsContent() {
   };
 
   const activeFilterCount = Object.values(filters).flat().length;
-  const clearFilters = () => setFilters({ categories: [], packaging: [], colors: [], sizes: [], purposes: [], stems: [] });
+  const clearFilters = () => setFilters({ categories: [], packaging: [], colors: [], sizes: [], purposes: [], stems: [], flowerTypes: [] });
 
   const PurposeTags = () => {
     const hasActivePurpose = filters.purposes.length > 0;
@@ -243,6 +250,48 @@ function AllProductsContent() {
                 </div>
               </FilterSection>
 
+              <FilterSection title="ЦЭЦЭГНИЙ ТӨРӨЛ">
+                <div className="flex flex-col gap-1 mt-3">
+                  {Object.keys(counts.flowerTypes).filter(Boolean).sort().map(type => (
+                    <CheckboxItem
+                      key={type}
+                      label={type}
+                      count={counts.flowerTypes[type]}
+                      checked={filters.flowerTypes.includes(type)}
+                      onChange={() => toggleFilter("flowerTypes", type)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="ТОО ШИРХЭГ (ИШ)">
+                <div className="flex flex-col gap-1 mt-3">
+                  {Object.keys(counts.stems).filter(Boolean).sort((a, b) => Number(a) - Number(b)).map(stem => (
+                    <CheckboxItem
+                      key={stem}
+                      label={`${stem} ширхэг`}
+                      count={counts.stems[stem]}
+                      checked={filters.stems.includes(stem)}
+                      onChange={() => toggleFilter("stems", stem)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="ХЭМЖЭЭ">
+                <div className="flex flex-col gap-1 mt-3">
+                  {SIZE_OPTIONS.map(opt => (
+                    <CheckboxItem
+                      key={opt}
+                      label={opt}
+                      count={counts.sizes[opt] || 0}
+                      checked={filters.sizes.includes(opt)}
+                      onChange={() => toggleFilter("sizes", opt)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+
               <FilterSection title="ӨНГӨ">
                 <div className="flex flex-wrap gap-2.5 mt-4">
                   {COLOR_OPTIONS.map(color => {
@@ -299,14 +348,102 @@ function AllProductsContent() {
               <button onClick={() => setIsFilterOpen(false)} className="p-2 bg-white rounded-full shadow-sm"><X size={20} /></button>
             </div>
             {/* Sidebar content here */}
-            <div className="space-y-8">
+            <div className="space-y-8 pb-24">
                <FilterSection title="АНГИЛАЛ">
-                  <div className="grid grid-cols-1 gap-2 mt-3">
+                  <div className="flex flex-col gap-1 mt-3">
                     {dbCategories.map(cat => (
-                      <CheckboxItem key={cat.id} label={cat.name} checked={filters.categories.includes(cat.name)} onChange={() => toggleFilter("categories", cat.name)} />
+                      <CheckboxItem
+                        key={cat.id}
+                        label={cat.name}
+                        count={counts.categories[cat.name] || 0}
+                        checked={filters.categories.includes(cat.name)}
+                        onChange={() => toggleFilter("categories", cat.name)}
+                      />
                     ))}
                   </div>
                </FilterSection>
+
+              <FilterSection title="САВАЛГАА">
+                <div className="flex flex-col gap-1 mt-3">
+                  {PACKAGING_OPTIONS.map(opt => (
+                    <CheckboxItem
+                      key={opt}
+                      label={opt}
+                      count={counts.packaging[opt] || 0}
+                      checked={filters.packaging.includes(opt)}
+                      onChange={() => toggleFilter("packaging", opt)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="ЦЭЦЭГНИЙ ТӨРӨЛ">
+                <div className="flex flex-col gap-1 mt-3">
+                  {Object.keys(counts.flowerTypes).filter(Boolean).sort().map(type => (
+                    <CheckboxItem
+                      key={type}
+                      label={type}
+                      count={counts.flowerTypes[type]}
+                      checked={filters.flowerTypes.includes(type)}
+                      onChange={() => toggleFilter("flowerTypes", type)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="ТОО ШИРХЭГ (ИШ)">
+                <div className="flex flex-col gap-1 mt-3">
+                  {Object.keys(counts.stems).filter(Boolean).sort((a, b) => Number(a) - Number(b)).map(stem => (
+                    <CheckboxItem
+                      key={stem}
+                      label={`${stem} ширхэг`}
+                      count={counts.stems[stem]}
+                      checked={filters.stems.includes(stem)}
+                      onChange={() => toggleFilter("stems", stem)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="ХЭМЖЭЭ">
+                <div className="flex flex-col gap-1 mt-3">
+                  {SIZE_OPTIONS.map(opt => (
+                    <CheckboxItem
+                      key={opt}
+                      label={opt}
+                      count={counts.sizes[opt] || 0}
+                      checked={filters.sizes.includes(opt)}
+                      onChange={() => toggleFilter("sizes", opt)}
+                    />
+                  ))}
+                </div>
+              </FilterSection>
+
+              <FilterSection title="ӨНГӨ">
+                <div className="flex flex-wrap gap-2.5 mt-4">
+                  {COLOR_OPTIONS.map(color => {
+                    const isSelected = filters.colors.includes(color.name);
+                    return (
+                      <button
+                        key={color.name}
+                        onClick={() => toggleFilter("colors", color.name)}
+                        className={`w-7 h-7 rounded-full border transition-all ${isSelected ? "ring-2 ring-offset-2 ring-[#E2A9BE]" : "border-gray-200"}`}
+                        style={{ background: color.hex }}
+                      />
+                    );
+                  })}
+                </div>
+              </FilterSection>
+
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="w-full mt-4 py-3 text-[11px] font-black text-red-400 uppercase tracking-widest border border-red-50 hover:bg-red-50 rounded-xl transition"
+                >
+                  Цэвэрлэх ({activeFilterCount})
+                </button>
+              )}
+
                <button onClick={() => setIsFilterOpen(false)} className="w-full bg-[#E2A9BE] text-white font-black py-4 rounded-2xl shadow-lg shadow-[#E2A9BE]/20 mt-10">
                   {filteredProducts.length} Цэцэг харах
                </button>
@@ -356,7 +493,9 @@ function ProductCard({ product }: { product: any }) {
   return (
     <div className="group bg-white rounded-[32px] overflow-hidden border border-[#f0ece8] hover:shadow-2xl hover:shadow-[#E2A9BE]/10 transition-all duration-500 flex flex-col h-full">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#f7f3f0]">
-        <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+        <Link href={`/products/${product.id}`} className="block w-full h-full">
+          <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+        </Link>
         <div className="absolute top-4 left-4">
            {product.discountedPrice && (
              <span className="bg-[#E2A9BE] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Хямдрал</span>
@@ -377,7 +516,9 @@ function ProductCard({ product }: { product: any }) {
       </div>
 
       <div className="p-5 flex flex-col flex-grow">
-        <h3 className="text-[14px] font-bold text-[#333333] line-clamp-1 mb-2 group-hover:text-[#E2A9BE] transition-colors">{product.name}</h3>
+        <Link href={`/products/${product.id}`}>
+          <h3 className="text-[14px] font-bold text-[#333333] line-clamp-1 mb-2 group-hover:text-[#E2A9BE] transition-colors">{product.name}</h3>
+        </Link>
         <div className="flex items-center gap-3 mb-4">
           <span className="font-black text-[16px] text-[#333333]">{(product.discountedPrice ?? product.price).toLocaleString()}₮</span>
           {product.discountedPrice && <span className="text-xs text-[#ccc] line-through">{product.price.toLocaleString()}₮</span>}

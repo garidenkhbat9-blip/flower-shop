@@ -52,8 +52,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600"></div>
+      <div className="h-screen w-full flex items-center justify-center bg-[#FFFDF9]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#E2A9BE]"></div>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex flex-col h-full justify-between">
           <div>
             <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100">
-              <h1 className="text-xl font-bold text-green-600">Admin Panel</h1>
+              <h1 className="text-xl font-bold text-[#333333]">Admin Panel</h1>
               {/* Хаах товч (Mobile-д) */}
               <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-2xl">✕</button>
             </div>
@@ -94,8 +94,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={item.path}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                       isActive
-                        ? "bg-green-600 text-white shadow-md font-semibold"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-[#E2A9BE] text-white shadow-md font-semibold"
+                        : "text-gray-600 hover:bg-[#FFFDF9] hover:text-[#E2A9BE]"
                     }`}
                   >
                     <span className="text-lg">{item.icon}</span>

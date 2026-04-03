@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Search, ShoppingCart, Tag, LogOut, LayoutDashboard, User } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -15,19 +16,38 @@ export default function Header() {
   const { user, loading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const router = useRouter();
 
-  // 1. Категори татах
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchQuery.trim()) {
+      setShowDropdown(false);
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   useEffect(() => {
-    const q = query(collection(db, "categories"), orderBy("createdAt", "asc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const catList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setCategories(catList);
+    const qCat = query(collection(db, "categories"), orderBy("createdAt", "asc"));
+    const unCat = onSnapshot(qCat, (snapshot) => {
+      setCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
-    return () => unsubscribe();
+
+    const qProd = query(collection(db, "products"));
+    const unProd = onSnapshot(qProd, (snapshot) => {
+      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    return () => {
+      unCat();
+      unProd();
+    };
   }, []);
+
+  const searchResults = searchQuery.trim()
+    ? products.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+    : [];
 
   // 2. Админ эрх шалгах
   useEffect(() => {
@@ -68,12 +88,56 @@ export default function Header() {
 
           {/* ХАЙЛТ */}
           <div className="hidden md:block flex-1 max-w-2xl mx-8 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 cursor-pointer" onClick={() => {
+              if (searchQuery.trim()) {
+                setShowDropdown(false);
+                router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+              }
+            }} />
             <input
               type="text"
-              placeholder="Хайх"
-              className="w-full border border-gray-100 bg-gray-50 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-black text-sm"
+              placeholder="Шууд хайх..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              onKeyDown={handleSearch}
+              className="w-full border border-gray-100 bg-[#FFFDF9] rounded-lg py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#87A96B] text-sm text-[#333333] placeholder-gray-400 transition-all shadow-inner"
             />
+            {/* АВТОМАТААР САГИСАХ DROPDOWN */}
+            {showDropdown && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                 {searchResults.map(prod => (
+                   <div
+                     key={prod.id}
+                     onClick={() => {
+                       setSearchQuery("");
+                       setShowDropdown(false);
+                       router.push(`/products/${prod.id}`);
+                     }}
+                     className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0 transition"
+                   >
+                     <img src={prod.imageUrls?.[0] || "/placeholder.jpg"} alt={prod.name} className="w-10 h-10 object-cover rounded-md" />
+                     <div>
+                       <p className="text-sm font-bold text-[#333333]">{prod.name}</p>
+                       <p className="text-xs font-black text-[#87A96B]">{(prod.discountedPrice ?? prod.price)?.toLocaleString()}₮</p>
+                     </div>
+                   </div>
+                 ))}
+                 <div 
+                   onClick={() => {
+                     setShowDropdown(false);
+                     router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                   }}
+                   className="p-3 text-center text-xs font-bold text-[#E2A9BE] hover:bg-gray-50 cursor-pointer uppercase"
+                 >
+                   Бүх ({products.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).length}) үр дүнг харах
+                 </div>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-4">

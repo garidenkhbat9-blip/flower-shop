@@ -172,11 +172,13 @@ export default function HomePage() {
                   className="group bg-white rounded-[24px] overflow-hidden border border-[#f0ece8] hover:shadow-xl transition-all duration-300"
                 >
                   <div className="relative aspect-[3/4] bg-[#f7f3f0] overflow-hidden">
-                    <img
-                      src={product.imageUrls?.[0]}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+                    <Link href={`/products/${product.id}`} className="block w-full h-full">
+                      <img
+                        src={product.imageUrls?.[0]}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    </Link>
                     <div className="absolute top-3 right-3 z-10">
                       <button
                         onClick={() => product.id && toggleWishlist(product.id)}
@@ -199,7 +201,9 @@ export default function HomePage() {
                   </div>
 
                   <div className="p-3.5">
-                    <h3 className="text-[13px] font-bold text-[#333333] line-clamp-1 mb-2">{product.name}</h3>
+                    <Link href={`/products/${product.id}`}>
+                      <h3 className="text-[13px] font-bold text-[#333333] line-clamp-1 mb-2 hover:text-[#E2A9BE] transition-colors">{product.name}</h3>
+                    </Link>
                     <div className="flex items-center justify-between">
                       <span className="font-black text-[#333333] text-sm">
                         {(product.discountedPrice ?? product.price).toLocaleString()}₮
