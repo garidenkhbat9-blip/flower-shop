@@ -12,6 +12,14 @@ import Link from "next/link";
 const ADMIN_SECRET_CODE = process.env.NEXT_PUBLIC_ADMIN_SECRET_CODE || "admin123";
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">Уншиж байна...</div>}>
+      <RegisterContent />
+    </Suspense>
+  );
+}
+
+function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next") || "";
