@@ -90,13 +90,13 @@ export default function HomePage() {
               Захиалах
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
-            
+
           </div>
         </div>
       </section>
 
       {/* 2. TRUST STRIP — Using Sage Green highlights */}
-     
+
 
       <div className="max-w-7xl mx-auto px-5 md:px-8">
 
@@ -107,7 +107,7 @@ export default function HomePage() {
               <p className="text-[10px] font-bold tracking-[0.25em] text-[#87A96B] uppercase mb-1">Explore</p>
               <h2 className="text-2xl md:text-3xl font-black text-[#333333] tracking-tight leading-none">Ангилалууд</h2>
             </div>
-            <Link href="/categories" className="group text-xs font-bold text-[#999] hover:text-[#E2A9BE] flex items-center gap-1 transition-colors">
+            <Link href="/products" className="group text-xs font-bold text-[#999] hover:text-[#E2A9BE] flex items-center gap-1 transition-colors">
               Бүгд <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
@@ -182,11 +182,10 @@ export default function HomePage() {
                     <div className="absolute top-3 right-3 z-10">
                       <button
                         onClick={() => product.id && toggleWishlist(product.id)}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${
-                          isWished
+                        className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${isWished
                             ? "bg-[#E2A9BE] border-[#E2A9BE] text-white shadow-lg shadow-[#E2A9BE]/20"
                             : "bg-white/80 border-white/60 text-[#777] hover:text-[#E2A9BE]"
-                        }`}
+                          }`}
                       >
                         <Heart size={15} fill={isWished ? "currentColor" : "none"} />
                       </button>
