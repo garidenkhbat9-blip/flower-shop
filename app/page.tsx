@@ -62,7 +62,7 @@ export default function HomePage() {
         <div className="absolute top-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-8 md:top-8 z-20">
           <span className="inline-flex items-center gap-2 bg-[#FFFDF9]/10 backdrop-blur-xl border border-white/20 text-white px-4 py-2 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase shadow-lg">
             <Sparkles size={11} className="text-[#E2A9BE]" />
-            Natural Beauty · 2025
+            Natural Beauty · {new Date().getFullYear()}
           </span>
         </div>
 

@@ -79,7 +79,7 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 border-t border-gray-100">
         <p className="text-xs text-center md:text-left text-gray-400">
-          2024 © Онлайн худалдааг хөгжүүлэгч Unur Flowers. Бүх эрх хамгаалагдсан.
+          {new Date().getFullYear()} © Онлайн худалдааг хөгжүүлэгч Unur Flowers. Бүх эрх хамгаалагдсан.
         </p>
       </div>
     </footer>

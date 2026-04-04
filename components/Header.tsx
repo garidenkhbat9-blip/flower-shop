@@ -79,9 +79,9 @@ export default function Header() {
             <Image 
               src="/logo.png" 
               alt="Logo" 
-              width={200} 
-              height={60} 
-              className="h-12 md:h-16 w-auto object-contain"
+              width={300} 
+              height={90} 
+              className="h-16 md:h-24 w-auto object-contain"
               priority
             />
           </Link>
