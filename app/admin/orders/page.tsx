@@ -93,9 +93,9 @@ export default function OrdersPage() {
   if (loading) return <div className="p-10 text-center animate-pulse font-bold text-gray-400">Уншиж байна...</div>;
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto font-sans pb-24">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <h1 className="text-2xl font-black uppercase tracking-tighter italic">Захиалгын удирдлага</h1>
+    <div className="max-w-7xl mx-auto font-sans">
+      <div className="flex flex-col gap-4 mb-6">
+        <h1 className="text-xl lg:text-2xl font-black uppercase tracking-tighter italic">Захиалгын удирдлага</h1>
         
         {/* Статус шүүлтүүр */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
@@ -118,34 +118,34 @@ export default function OrdersPage() {
           </div>
         ) : (
           filteredOrders.map((order) => (
-            <div key={order.id} className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
+            <div key={order.id} className="bg-white rounded-2xl lg:rounded-[32px] border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md">
               {/* ХУРААНГУЙ ХЭСЭГ (Үргэлж харагдана) */}
-              <div className="p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                   <div className={`p-3 rounded-2xl ${
+              <div className="p-4 lg:p-6 flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                   <div className={`p-2 lg:p-3 rounded-xl lg:rounded-2xl ${
                      order.status === 'Хүлээгдэж буй' ? 'bg-orange-50 text-orange-500' :
                      order.status === 'Хүргэгдсэн' ? 'bg-[#87A96B]/10 text-[#87A96B]' : 'bg-red-50 text-red-500'
                    }`}>
-                      {order.status === 'Хүлээгдэж буй' ? <Clock size={24}/> : order.status === 'Хүргэгдсэн' ? <Truck size={24}/> : <XCircle size={24}/>}
+                      {order.status === 'Хүлээгдэж буй' ? <Clock size={20}/> : order.status === 'Хүргэгдсэн' ? <Truck size={20}/> : <XCircle size={20}/>}
                    </div>
-                   <div>
-                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1">ID: {order.id.slice(-6).toUpperCase()}</p>
-                      <h3 className="font-black text-gray-900 uppercase tracking-tight">{order.shippingInfo?.recipientName}</h3>
-                      <p className="text-xs text-gray-400 font-medium">{order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString() : "Саяхан"}</p>
+                   <div className="min-w-0">
+                      <p className="text-[9px] lg:text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1">ID: {order.id.slice(-6).toUpperCase()}</p>
+                      <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm lg:text-base truncate">{order.shippingInfo?.recipientName}</h3>
+                      <p className="text-[10px] lg:text-xs text-gray-400 font-medium">{order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString() : "Саяхан"}</p>
                    </div>
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-none pt-4 md:pt-0">
-                   <div className="text-left md:text-right">
-                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">Нийт дүн</p>
-                      <p className="text-lg font-black text-black">{(order.totalAmount + 5000).toLocaleString()}₮</p>
+                <div className="flex items-center justify-between border-t border-gray-50 pt-3">
+                   <div>
+                      <p className="text-[9px] lg:text-[10px] font-black text-gray-300 uppercase tracking-widest mb-0.5">Нийт дүн</p>
+                      <p className="text-base lg:text-lg font-black text-black">{(order.totalAmount + 5000).toLocaleString()}₮</p>
                    </div>
                    
-                   <div className="flex items-center gap-3">
+                   <div className="flex items-center gap-2">
                       <select 
                         value={order.status} 
                         onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                        className={`text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border-none outline-none cursor-pointer shadow-sm ${
+                        className={`text-[9px] lg:text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl border-none outline-none cursor-pointer shadow-sm ${
                           order.status === 'Хүлээгдэж буй' ? 'bg-orange-500 text-white' :
                           order.status === 'Хүргэгдсэн' ? 'bg-[#87A96B] text-white' : 'bg-gray-100 text-gray-500'
                         }`}
@@ -157,17 +157,17 @@ export default function OrdersPage() {
 
                       <button 
                         onClick={() => handleDeleteOrder(order.id)}
-                        className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors"
+                        className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors"
                         title="Захиалга бүрмөсөн устгах"
                       >
-                        <Trash2 size={20} />
+                        <Trash2 size={16} />
                       </button>
                       
                       <button 
                         onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                        className="p-2.5 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                        className="p-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                       >
-                        <ChevronDown size={20} className={`transition-transform duration-300 ${expandedOrder === order.id ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={18} className={`transition-transform duration-300 ${expandedOrder === order.id ? 'rotate-180' : ''}`} />
                       </button>
                    </div>
                 </div>

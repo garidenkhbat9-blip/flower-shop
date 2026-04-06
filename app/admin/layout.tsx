@@ -61,7 +61,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAuthorized) return null;
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden text-gray-800 relative">
+    <div className="flex min-h-screen bg-gray-50 text-gray-800 relative">
       
       {/* Overlay: Sidebar нээлттэй үед арын хэсгийг бүрхэх (Mobile-д) */}
       {isSidebarOpen && (
@@ -119,10 +119,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Үндсэн хэсэг */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-16 bg-white shadow-sm flex items-center justify-between px-4 lg:px-8 shrink-0">
-          <div className="flex items-center gap-4">
+        <header className="h-14 lg:h-16 bg-white shadow-sm flex items-center justify-between px-4 lg:px-8 shrink-0 sticky top-0 z-30">
+          <div className="flex items-center gap-3">
             {/* Hamburger Menu Button */}
             <button 
               onClick={() => setIsSidebarOpen(true)}
@@ -130,14 +130,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <span className="text-2xl">☰</span>
             </button>
-            <h2 className="text-lg font-medium text-gray-700 truncate">
+            <h2 className="text-base lg:text-lg font-medium text-gray-700 truncate">
               {menuItems.find(item => item.path === pathname)?.name || "Удирдлагын хэсэг"}
             </h2>
           </div>
         </header>
 
         {/* Content area */}
-        <div className="flex-1 overflow-y-auto p-4 lg:p-8">
+        <div className="flex-1 p-3 sm:p-4 lg:p-8 pb-24 lg:pb-8">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
