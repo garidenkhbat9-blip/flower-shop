@@ -184,9 +184,6 @@ export default function ProductDetailPage() {
 
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{product.name}</h1>
-              <p className="text-gray-400 text-xs font-medium">
-                #{product.id?.slice(-6).toUpperCase()}
-              </p>
             </div>
 
             {/* Price */}
@@ -198,14 +195,9 @@ export default function ProductDetailPage() {
                     <p className="text-3xl font-black text-gray-900">
                       {product.discountedPrice.toLocaleString()} ₮
                     </p>
-                    <div className="flex flex-col gap-0.5">
-                      <p className="text-sm text-gray-300 line-through">
-                        {product.price.toLocaleString()} ₮
-                      </p>
-                      <span className="text-[11px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full w-fit">
-                        -{Math.round(((product.price - product.discountedPrice) / product.price) * 100)}% хямдрал
-                      </span>
-                    </div>
+                    <p className="text-sm text-gray-300 line-through">
+                      {product.price.toLocaleString()} ₮
+                    </p>
                   </>
                 ) : (
                   <p className="text-3xl font-black text-gray-900">

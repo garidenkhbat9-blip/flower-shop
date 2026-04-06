@@ -190,11 +190,11 @@ function AllProductsContent() {
 
       {/* Toolbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
-        <div className="bg-white border border-[#f0ece8] rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-4">
+        <div className="bg-white border border-[#f0ece8] rounded-2xl px-4 sm:px-5 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 text-[13px] font-bold text-[#333333] bg-[#FFFDF9] border border-[#f0ece8] px-4 py-2.5 rounded-xl hover:border-[#E2A9BE]"
+              className="lg:hidden flex items-center gap-2 text-[13px] font-bold text-[#333333] bg-[#FFFDF9] border border-[#f0ece8] px-3 py-2 rounded-xl hover:border-[#E2A9BE]"
             >
               <SlidersHorizontal size={15} />
               Шүүлтүүр
@@ -207,7 +207,7 @@ function AllProductsContent() {
           <select
             value={sortBy}
             onChange={e => setSortBy(e.target.value)}
-            className="text-[13px] font-bold border border-[#f0ece8] rounded-xl text-[#333333] px-4 py-2.5 outline-none bg-white focus:border-[#E2A9BE] transition"
+            className="text-[13px] font-bold border border-[#f0ece8] rounded-xl text-[#333333] px-3 py-2 outline-none bg-white focus:border-[#E2A9BE] transition"
           >
             <option value="newest">Шинэ нь эхэндээ</option>
             <option value="price-asc">Үнэ: Багаас их</option>
@@ -328,7 +328,7 @@ function AllProductsContent() {
                 <button onClick={clearFilters} className="mt-4 text-[#E2A9BE] font-black hover:underline">Шүүлтүүр цэвэрлэх</button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                 {filteredProducts.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -491,21 +491,21 @@ function ProductCard({ product }: { product: any }) {
   const isWished = product.id ? isWishlisted(product.id) : false;
 
   return (
-    <div className="group bg-white rounded-[32px] overflow-hidden border border-[#f0ece8] hover:shadow-2xl hover:shadow-[#E2A9BE]/10 transition-all duration-500 flex flex-col h-full">
+    <div className="group bg-white rounded-2xl sm:rounded-[32px] overflow-hidden border border-[#f0ece8] hover:shadow-2xl hover:shadow-[#E2A9BE]/10 transition-all duration-500 flex flex-col h-full">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#f7f3f0]">
         <Link href={`/products/${product.id}`} className="block w-full h-full">
           <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         </Link>
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
            {product.discountedPrice && (
-             <span className="bg-[#E2A9BE] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Хямдрал</span>
+             <span className="bg-[#E2A9BE] text-white text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full uppercase tracking-wider">Хямдрал</span>
            )}
         </div>
         <button
           onClick={() => product.id && toggleWishlist(product.id)}
-          className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-md ${isWished ? "bg-[#E2A9BE] text-white" : "bg-white/70 text-[#999] hover:text-[#E2A9BE]"}`}
+          className={`absolute top-2 sm:top-4 right-2 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-md ${isWished ? "bg-[#E2A9BE] text-white" : "bg-white/70 text-[#999] hover:text-[#E2A9BE]"}`}
         >
-          <Heart size={18} fill={isWished ? "currentColor" : "none"} />
+          <Heart size={16} fill={isWished ? "currentColor" : "none"} />
         </button>
         {/* Desktop Quick Buy */}
         <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden md:block">
@@ -515,19 +515,19 @@ function ProductCard({ product }: { product: any }) {
         </div>
       </div>
 
-      <div className="p-5 flex flex-col flex-grow">
+      <div className="p-3 sm:p-5 flex flex-col flex-grow">
         <Link href={`/products/${product.id}`}>
-          <h3 className="text-[14px] font-bold text-[#333333] line-clamp-1 mb-2 group-hover:text-[#E2A9BE] transition-colors">{product.name}</h3>
+          <h3 className="text-[12px] sm:text-[14px] font-bold text-[#333333] line-clamp-1 mb-1 sm:mb-2 group-hover:text-[#E2A9BE] transition-colors">{product.name}</h3>
         </Link>
-        <div className="flex items-center gap-3 mb-4">
-          <span className="font-black text-[16px] text-[#333333]">{(product.discountedPrice ?? product.price).toLocaleString()}₮</span>
-          {product.discountedPrice && <span className="text-xs text-[#ccc] line-through">{product.price.toLocaleString()}₮</span>}
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <span className="font-black text-[14px] sm:text-[16px] text-[#333333]">{(product.discountedPrice ?? product.price).toLocaleString()}₮</span>
+          {product.discountedPrice && <span className="text-[10px] sm:text-xs text-[#ccc] line-through">{product.price.toLocaleString()}₮</span>}
         </div>
         
         {/* Mobile Buy Button */}
         <div className="mt-auto flex gap-2">
-          <button onClick={() => addToCart(product)} className="md:hidden flex-1 bg-[#87A96B] text-white p-3 rounded-xl flex items-center justify-center"><ShoppingBag size={18} /></button>
-          <Link href={`/products/${product.id}`} className="flex-1 border border-[#f0ece8] text-[#999] text-[11px] font-black uppercase tracking-wider py-3 rounded-xl text-center hover:border-[#E2A9BE] hover:text-[#E2A9BE] transition-all">Үзэх</Link>
+          <button onClick={() => addToCart(product)} className="md:hidden flex-1 bg-[#87A96B] text-white p-2.5 sm:p-3 rounded-xl flex items-center justify-center"><ShoppingBag size={16} /></button>
+          <Link href={`/products/${product.id}`} className="flex-1 border border-[#f0ece8] text-[#999] text-[10px] sm:text-[11px] font-black uppercase tracking-wider py-2.5 sm:py-3 rounded-xl text-center hover:border-[#E2A9BE] hover:text-[#E2A9BE] transition-all">Үзэх</Link>
         </div>
       </div>
     </div>
