@@ -146,7 +146,7 @@ function RegisterContent() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Таны нэр"
-              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition"
+              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition text-gray-900"
             />
           </div>
           <div>
@@ -157,7 +157,7 @@ function RegisterContent() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition"
+              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition text-gray-900"
             />
           </div>
           <div>
@@ -168,7 +168,7 @@ function RegisterContent() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition"
+              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition text-gray-900"
             />
           </div>
           <div>
@@ -179,7 +179,7 @@ function RegisterContent() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition"
+              className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition text-gray-900"
             />
           </div>
           
