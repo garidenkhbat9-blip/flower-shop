@@ -114,6 +114,7 @@ function RegisterContent() {
   const handleGoogleSignIn = async () => {
     setError("");
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
     try {
       await signInWithRedirect(auth, provider);
       // Redirect хийсний дараа хуудас дахин ачаалагдана, getRedirectResult useEffect-д боловсруулагдана
