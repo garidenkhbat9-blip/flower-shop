@@ -203,20 +203,103 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         
         {/* ЗҮҮН ТАЛ: ЗУРАГ БОЛОН ҮНДСЭН МЭДЭЭЛЭЛ */}
         <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-6">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Зургийн сан</h2>
-            <div className="flex flex-wrap gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-4">
+            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Зураг</h2>
+            
+            {/* Uploaded Images Grid */}
+            {(formData.imageUrls.length > 0 || newImageFiles.length > 0) && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                {/* Existing Images */}
                 {formData.imageUrls.map((url, index) => (
-                    <div key={index} className="relative group">
-                        <img src={url} className="w-20 h-24 object-cover rounded-xl border" />
-                        <button type="button" onClick={() => removeExistingImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">✕</button>
-                    </div>
+                  <div key={`exist-${index}`} className="relative group aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                    <img src={url} className="w-full h-full object-cover" alt="" />
+                    {index === 0 && (
+                      <span className="absolute top-1.5 left-1.5 bg-black/70 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Нүүр</span>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                    <button 
+                      type="button" 
+                      onClick={() => removeExistingImage(index)} 
+                      className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ))}
-                <label className="w-20 h-24 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-white transition">
-                    <input type="file" multiple accept="image/*" onChange={handleImageSelect} className="hidden" />
-                    <span className="text-gray-300 text-2xl">+</span>
-                </label>
+                
+                {/* New Images */}
+                {newImageFiles.map((file, index) => (
+                  <div key={`new-${index}`} className="relative group aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                    <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="" />
+                    {formData.imageUrls.length === 0 && index === 0 && (
+                      <span className="absolute top-1.5 left-1.5 bg-black/70 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Нүүр</span>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                    <button 
+                      type="button" 
+                      onClick={() => removeNewImage(index)} 
+                      className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Drop Zone */}
+            <div 
+              onClick={() => document.getElementById('edit-image-upload')?.click()}
+              onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[#E2A9BE]', 'bg-[#E2A9BE]/10'); }}
+              onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-[#E2A9BE]', 'bg-[#E2A9BE]/10'); }}
+              onDrop={(e) => { 
+                e.preventDefault(); 
+                e.currentTarget.classList.remove('border-[#E2A9BE]', 'bg-[#E2A9BE]/10');
+                if (e.dataTransfer.files) {
+                  const filesArray = Array.from(e.dataTransfer.files);
+                  setNewImageFiles(prev => [...prev, ...filesArray]);
+                }
+              }}
+              className={`relative cursor-pointer border-2 border-dashed rounded-2xl transition-all hover:border-[#E2A9BE] hover:bg-[#E2A9BE]/5 ${
+                (formData.imageUrls.length === 0 && newImageFiles.length === 0) 
+                  ? 'border-gray-200 py-16' 
+                  : 'border-gray-100 py-6 mt-4'
+              }`}
+            >
+              <div className="flex flex-col items-center justify-center gap-3 text-center px-4">
+                <div className={`rounded-full flex items-center justify-center transition-all ${
+                  (formData.imageUrls.length === 0 && newImageFiles.length === 0) 
+                    ? 'w-16 h-16 bg-[#E2A9BE]/20 text-[#E2A9BE]' 
+                    : 'w-10 h-10 bg-gray-100 text-gray-400'
+                }`}>
+                  <span className="text-2xl text-current">+</span>
+                </div>
+                {(formData.imageUrls.length === 0 && newImageFiles.length === 0) ? (
+                  <>
+                    <div>
+                      <p className="text-sm font-bold text-gray-700">Зураг чирж оруулах эсвэл дарна уу</p>
+                      <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP — олон зураг нэг дор сонгож болно</p>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 bg-[#333333] text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-black transition mt-1">
+                      + Зураг сонгох
+                    </span>
+                  </>
+                ) : (
+                  <p className="text-xs text-gray-400 font-medium">
+                    + Нэмэлт зураг оруулах <span className="text-gray-300">({formData.imageUrls.length + newImageFiles.length} зураг байна)</span>
+                  </p>
+                )}
+              </div>
             </div>
+            
+            <input 
+              id="edit-image-upload"
+              type="file" 
+              multiple 
+              accept="image/*"
+              className="hidden" 
+              onChange={handleImageSelect} 
+            />
           </div>
 
           <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-4">

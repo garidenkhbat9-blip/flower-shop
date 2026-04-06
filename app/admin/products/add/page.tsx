@@ -146,16 +146,78 @@ export default function AddProductPage() {
 
           <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Зураг</h2>
-             <div className="grid grid-cols-4 md:grid-cols-5 gap-4">
-                {imageFiles.map((file, i) => (
-                  <div key={i} className="relative aspect-square rounded-2xl overflow-hidden border shadow-sm">
-                    <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => setImageFiles(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-lg"><X size={12}/></button>
-                  </div>
-                ))}
-                <button type="button" onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center text-gray-300 hover:bg-gray-50 hover:text-green-500 hover:border-green-200 transition-all"><ImagePlus size={24} /></button>
+             
+             {/* Uploaded Images Grid */}
+             {imageFiles.length > 0 && (
+               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-4">
+                 {imageFiles.map((file, i) => (
+                   <div key={i} className="relative group aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                     <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="" />
+                     {i === 0 && (
+                       <span className="absolute top-1.5 left-1.5 bg-black/70 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Нүүр</span>
+                     )}
+                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                     <button 
+                       type="button" 
+                       onClick={() => setImageFiles(prev => prev.filter((_, idx) => idx !== i))} 
+                       className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                     >
+                       <X size={12}/>
+                     </button>
+                   </div>
+                 ))}
+               </div>
+             )}
+
+             {/* Drop Zone */}
+             <div 
+               onClick={() => fileInputRef.current?.click()}
+               onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-green-400', 'bg-green-50/50'); }}
+               onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-green-400', 'bg-green-50/50'); }}
+               onDrop={(e) => { 
+                 e.preventDefault(); 
+                 e.currentTarget.classList.remove('border-green-400', 'bg-green-50/50');
+                 if (e.dataTransfer.files) setImageFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
+               }}
+               className={`relative cursor-pointer border-2 border-dashed rounded-2xl transition-all hover:border-green-300 hover:bg-green-50/30 ${
+                 imageFiles.length === 0 
+                   ? 'border-gray-200 py-16' 
+                   : 'border-gray-100 py-6'
+               }`}
+             >
+               <div className="flex flex-col items-center justify-center gap-3 text-center px-4">
+                 <div className={`rounded-full flex items-center justify-center transition-all ${
+                   imageFiles.length === 0 
+                     ? 'w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-50 text-green-500' 
+                     : 'w-10 h-10 bg-gray-100 text-gray-400'
+                 }`}>
+                   <ImagePlus size={imageFiles.length === 0 ? 28 : 20} />
+                 </div>
+                 {imageFiles.length === 0 ? (
+                   <>
+                     <div>
+                       <p className="text-sm font-bold text-gray-700">Зураг чирж оруулах эсвэл дарна уу</p>
+                       <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP — олон зураг нэг дор сонгож болно</p>
+                     </div>
+                     <span className="inline-flex items-center gap-1.5 bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-gray-800 transition mt-1">
+                       <ImagePlus size={14} /> Зураг сонгох
+                     </span>
+                   </>
+                 ) : (
+                   <p className="text-xs text-gray-400 font-medium">
+                     + Нэмэлт зураг оруулах <span className="text-gray-300">({imageFiles.length} зураг байна)</span>
+                   </p>
+                 )}
+               </div>
              </div>
-             <input type="file" multiple ref={fileInputRef} className="hidden" onChange={(e) => e.target.files && setImageFiles([...imageFiles, ...Array.from(e.target.files)])} />
+             <input 
+               type="file" 
+               multiple 
+               accept="image/*"
+               ref={fileInputRef} 
+               className="hidden" 
+               onChange={(e) => e.target.files && setImageFiles([...imageFiles, ...Array.from(e.target.files)])} 
+             />
           </div>
 
           <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-4">
