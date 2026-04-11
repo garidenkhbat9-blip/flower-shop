@@ -8,6 +8,7 @@ import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import CartDrawer from "@/components/CartDrawer";
 import "./globals.css";
+import { Analytics } from '@vercel/analytics/react';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
               <CartDrawer />
               <main className="min-h-screen bg-gray-50 pb-20 md:pb-0"> 
                 {children} 
+                <Analytics />
               </main>        
               <Footer />
               <MobileBottomNav />
