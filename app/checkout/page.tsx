@@ -105,8 +105,8 @@ export default function CheckoutPage() {
   const deliveryFee = formData.deliveryType === 'delivery' ? 8000 : 0;
 
   // Minimalist label & input classes
-  const labelClass = "block text-[11px] font-medium text-gray-500 mb-1.5 uppercase tracking-wide";
-  const inputClass = "w-full border-b border-gray-200 bg-transparent px-0 py-2 outline-none focus:border-black transition-colors text-[13px] text-[#111] placeholder-gray-300 rounded-none";
+  const labelClass = "block text-[11px] font-bold text-gray-800 mb-1.5 uppercase tracking-wide";
+  const inputClass = "w-full border-b border-gray-300 bg-transparent px-0 py-2 outline-none focus:border-black transition-colors text-[13px] text-[#111] placeholder-gray-300 rounded-none";
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#111] pb-24 pt-8 font-sans">
@@ -135,7 +135,7 @@ export default function CheckoutPage() {
                 <div>
                   <label className={labelClass}>Имэйл хаяг</label>
                   <input name="senderEmail" type="email" value={formData.senderEmail} onChange={handleChange} placeholder="example@shop.mn" className={inputClass} />
-                  <p className="text-[10px] text-gray-400 mt-1.5">Имэйл хаягийг заавал бөглөх шаардлагагүй.</p>
+                  <p className="text-[10px] text-gray-600 mt-1.5 font-medium">Имэйл хаягийг заавал бөглөх шаардлагагүй.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -187,7 +187,7 @@ export default function CheckoutPage() {
                       <Truck size={14} className={formData.deliveryType === 'delivery' ? 'text-black' : 'text-gray-400'} />
                       <span className={`text-[13px] ${formData.deliveryType === 'delivery' ? 'font-medium text-black' : 'text-gray-500'}`}>Хүргэлтээр авах</span>
                     </div>
-                    <p className="text-[11px] text-gray-400">Улаанбаатар хот дотор</p>
+                    <p className="text-[11px] text-gray-600 font-medium">Улаанбаатар хот дотор</p>
                     <p className="text-[11px] text-black font-medium mt-1">8,000₮</p>
                   </div>
                   {formData.deliveryType === 'delivery' && <CheckCircle2 size={16} strokeWidth={1.5} className="text-black" />}
@@ -202,7 +202,7 @@ export default function CheckoutPage() {
                       <Store size={14} className={formData.deliveryType === 'pickup' ? 'text-black' : 'text-gray-400'} />
                       <span className={`text-[13px] ${formData.deliveryType === 'pickup' ? 'font-medium text-black' : 'text-gray-500'}`}>Очиж авах</span>
                     </div>
-                    <p className="text-[11px] text-gray-400">Салбар дээрээс авах</p>
+                    <p className="text-[11px] text-gray-600 font-medium">Салбар дээрээс авах</p>
                     <p className="text-[11px] text-black font-medium mt-1">0₮</p>
                   </div>
                   {formData.deliveryType === 'pickup' && <CheckCircle2 size={16} strokeWidth={1.5} className="text-black" />}
@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading || cart.length === 0 || !agreedTerms}
-                  className="w-full bg-[#111] text-white py-3.5 text-[11px] uppercase tracking-widest transition-all active:scale-95 disabled:bg-gray-100 disabled:text-gray-300 hover:bg-black"
+                  className="w-full bg-[#87A96B] text-white py-4 text-[11px] font-bold uppercase tracking-widest transition-all active:scale-95 disabled:bg-gray-100 disabled:text-gray-300 hover:bg-[#76945d] shadow-2xl shadow-[#87A96B]/20 rounded-[2px]"
                 >
                   {loading ? "Түр хүлээнэ үү..." : "ТӨЛӨХ"}
                 </button>
