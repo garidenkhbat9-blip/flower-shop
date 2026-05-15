@@ -83,7 +83,7 @@ export default function ProductDetailPage() {
 
   const handleCheckoutAction = () => {
     if (!product) return;
-    addToCart(product, 1);
+    addToCart(product, 1, true);
     router.push("/checkout");
   };
 

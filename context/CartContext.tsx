@@ -18,7 +18,7 @@ interface CartItem {
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: any, quantity?: number) => void;
+  addToCart: (product: any, quantity?: number, silent?: boolean) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, delta: number) => void;
   clearCart: () => void;
@@ -79,7 +79,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const [showToast, setShowToast] = useState(false);
 
-  const addToCart = (product: any, quantity: number = 1) => {
+  const addToCart = (product: any, quantity: number = 1, silent: boolean = false) => {
     const existingItem = cart.find((item) => item.id === product.id);
     let newCart;
 
@@ -104,9 +104,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart(newCart);
     syncCart(newCart);
     
-    // Show luxury toast
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+    // Show luxury toast if not silent
+    if (!silent) {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
   };
 
   const removeFromCart = (productId: string) => {
