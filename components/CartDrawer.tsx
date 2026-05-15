@@ -51,21 +51,6 @@ export default function CartDrawer() {
             <div className="h-full flex items-center justify-center">
               <div className="w-8 h-8 border-[2px] border-gray-100 border-t-[#111] rounded-full animate-spin" />
             </div>
-          ) : !user ? (
-            <div className="h-full flex flex-col items-center justify-center text-center py-12">
-               <div className="w-20 h-20 bg-[#FAFAFA] rounded-full flex items-center justify-center mb-8 border border-black/[0.03]">
-                 <LogIn size={24} className="text-[#111]/30" />
-               </div>
-               <h3 className="text-xl font-playfair font-medium mb-4 text-[#111]">Sign in to continue</h3>
-               <p className="text-[#999] text-sm mb-10 font-montserrat font-light leading-relaxed">Access your saved items and complete your purchase securely.</p>
-               <Link 
-                 href="/auth/login" 
-                 onClick={() => setIsCartOpen(false)} 
-                 className="w-full bg-[#E2A9BE] text-white py-5 rounded-[2px] font-medium uppercase text-[11px] tracking-[0.3em] flex items-center justify-center gap-4 hover:opacity-90 transition-all active:scale-[0.98] shadow-2xl"
-               >
-                 Login to account <ChevronRight size={14}/>
-               </Link>
-            </div>
           ) : cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center py-12">
                <div className="w-24 h-24 bg-[#FAFAFA] rounded-full flex items-center justify-center mb-8 border border-black/[0.03]">
@@ -126,7 +111,7 @@ export default function CartDrawer() {
         </div>
 
         {/* Footer */}
-        {user && cart.length > 0 && (
+        {cart.length > 0 && (
           <div className="p-8 md:p-12 bg-white border-t border-black/[0.05] space-y-8 shrink-0">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
