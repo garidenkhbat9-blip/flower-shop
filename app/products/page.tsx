@@ -5,9 +5,10 @@ import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { SlidersHorizontal, X, ChevronDown, Check, Heart, Flower2, ShoppingBag, Sparkles } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, Check, Heart, Flower2, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { Product, Category } from "@/types";
+import { motion, AnimatePresence } from "framer-motion";
 
 const PACKAGING_OPTIONS = ["Баглаа", "Хайрцагтай", "Сагстай", "Хөрстэй"];
 const SIZE_OPTIONS = ["Жижиг", "Дунд", "Том"];
@@ -22,22 +23,35 @@ const COLOR_OPTIONS = [
 ];
 
 const PURPOSE_OPTIONS = [
-  { label: "Хайрт ээждээ"},
-  { label: "Хайраа илчлэх"},
+  { label: "Хайрт ээждээ" },
+  { label: "Хайраа илчлэх" },
   { label: "Уучлалт гуйх" },
-  { label: "Баяр хүргэх"},
-  { label: "Ойн баяр"},
-  { label: "Төрсөн өдөр"},
+  { label: "Баяр хүргэх" },
+  { label: "Ойн баяр" },
+  { label: "Төрсөн өдөр" },
 ];
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const fadeUpVariant = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 15 } }
+};
 
 export default function AllProductsPage() {
   return (
     <Suspense fallback={
-      <div className="h-screen flex items-center justify-center bg-[#FFFDF9]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#E2A9BE] border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-[#87A96B] font-medium">Уншиж байна...</span>
-        </div>
+      <div className="h-screen flex items-center justify-center bg-[#FAFAFA]">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-[3px] border-gray-100 border-t-[#111] rounded-full animate-spin" />
+          <span className="text-[10px] font-bold tracking-[0.3em] text-[#111] uppercase">Уншиж байна...</span>
+        </motion.div>
       </div>
     }>
       <AllProductsContent />
@@ -142,13 +156,13 @@ function AllProductsContent() {
   const PurposeTags = () => {
     const hasActivePurpose = filters.purposes.length > 0;
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6">
-        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+      <div className="max-w-7xl mx-auto px-6 mb-16">
+        <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar scroll-smooth">
           <button
             onClick={() => setFilters(prev => ({ ...prev, purposes: [] }))}
-            className={`flex-shrink-0 px-5 py-2.5 rounded-full text-[13px] font-bold border transition-all ${
-              !hasActivePurpose ? "bg-[#333333] text-white border-[#333333]" : "bg-white text-[#333333] border-[#f0ece8]"
-            }`}
+            className={`flex-shrink-0 px-8 py-3.5 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.2em] border transition-all duration-500 ${!hasActivePurpose 
+              ? "bg-[#F1F5F0] text-[#1A1A1A] border-[#87A96B]/30 shadow-sm" 
+              : "bg-white text-[#666] border-black/[0.08] hover:border-[#87A96B] hover:text-[#1A1A1A]"}`}
           >
             Бүгд
           </button>
@@ -158,9 +172,9 @@ function AllProductsContent() {
               <button
                 key={label}
                 onClick={() => toggleFilter("purposes", label)}
-                className={`flex-shrink-0 px-5 py-2.5 rounded-full text-[13px] font-bold border transition-all ${
-                  isActive ? "bg-[#E2A9BE] text-white border-[#E2A9BE] shadow-md shadow-[#E2A9BE]/20" : "bg-white text-[#333333] border-[#f0ece8] hover:border-[#87A96B] hover:text-[#87A96B]"
-                }`}
+                className={`flex-shrink-0 px-8 py-3.5 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.2em] border transition-all duration-500 ${isActive 
+                  ? "bg-[#F1F5F0] text-[#1A1A1A] border-[#87A96B]/30 shadow-sm" 
+                  : "bg-white text-[#666] border-black/[0.08] hover:border-[#87A96B] hover:text-[#1A1A1A]"}`}
               >
                 {label}
               </button>
@@ -172,58 +186,61 @@ function AllProductsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] pb-24 font-sans text-[#333333]">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FCFBF9] pb-32 font-montserrat text-[#1A1A1A]">
       {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 mb-4">
-        <div className="flex items-center gap-1.5 text-[12px] text-[#999]">
-          <Link href="/" className="hover:text-[#E2A9BE] transition">Нүүр</Link>
-          <span>/</span>
-          <span className="text-[#333333] font-medium">Бүх бүтээгдэхүүн</span>
+      <div className="max-w-7xl mx-auto px-6 pt-10 mb-8">
+        <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.4em] font-medium text-[#1A1A1A]/30">
+          <Link href="/" className="hover:text-[#1A1A1A] transition-colors">Нүүр</Link>
+          <span className="opacity-50">/</span>
+          <span className="text-[#1A1A1A]">Бүх бүтээгдэхүүн</span>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-5">
-        <h1 className="text-2xl sm:text-3xl font-black text-[#333333] tracking-tight">Бүх бүтээгдэхүүн</h1>
+      <div className="max-w-7xl mx-auto px-6 mb-16">
+        <h1 className="text-4xl md:text-6xl font-playfair font-medium text-[#1A1A1A] tracking-tight">Манай цуглуулга</h1>
       </div>
 
       <PurposeTags />
 
       {/* Toolbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
-        <div className="bg-white border border-[#f0ece8] rounded-2xl px-4 sm:px-5 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
-          <div className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-6 mb-12">
+        <div className="bg-white rounded-[2px] p-4 lg:px-8 lg:py-6 flex flex-col md:flex-row justify-between gap-6 shadow-sm border border-black/[0.03]">
+          <div className="flex items-center justify-between">
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 text-[13px] font-bold text-[#333333] bg-[#FFFDF9] border border-[#f0ece8] px-3 py-2 rounded-xl hover:border-[#E2A9BE]"
+              className="lg:hidden flex items-center gap-3 text-[10px] font-medium text-[#1A1A1A] bg-[#FCFBF9] border border-black/[0.05] px-6 py-3 rounded-[2px] hover:border-[#1A1A1A] transition-all uppercase tracking-[0.2em]"
             >
-              <SlidersHorizontal size={15} />
+              <SlidersHorizontal size={14} />
               Шүүлтүүр
             </button>
-            <span className="text-[13px] text-[#999] font-medium">
-              <span className="font-black text-[#333333]">{filteredProducts.length}</span> цэцэг олдлоо
+            <span className="text-[10px] text-[#1A1A1A]/30 font-medium uppercase tracking-[0.3em] lg:block">
+              Нийт <span className="text-[#1A1A1A] font-bold">{filteredProducts.length}</span> бүтээгдэхүүн
             </span>
           </div>
 
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-            className="text-[13px] font-bold border border-[#f0ece8] rounded-xl text-[#333333] px-3 py-2 outline-none bg-white focus:border-[#E2A9BE] transition"
-          >
-            <option value="newest">Шинэ нь эхэндээ</option>
-            <option value="price-asc">Үнэ: Багаас их</option>
-            <option value="price-desc">Үнэ: Ихээс бага</option>
-          </select>
+          <div className="relative group">
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+              className="w-full md:w-auto text-[10px] font-medium uppercase tracking-[0.2em] border border-black/[0.05] rounded-[2px] text-[#1A1A1A] px-6 py-3 lg:py-4 outline-none bg-[#FCFBF9] focus:border-[#1A1A1A] transition-all cursor-pointer appearance-none pr-12"
+            >
+              <option value="newest">Шинэ нь эхэндээ</option>
+              <option value="price-asc">Үнэ: Багаас их</option>
+              <option value="price-desc">Үнэ: Ихээс бага</option>
+            </select>
+            <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#1A1A1A]/30 pointer-events-none group-hover:text-[#1A1A1A] transition-colors" />
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex gap-10">
-          
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex gap-16">
+
           {/* Desktop Sidebar Filter */}
-          <aside className="hidden lg:block w-64 shrink-0">
-            <div className="sticky top-24 space-y-6">
-              <FilterSection title="АНГИЛАЛ">
-                <div className="flex flex-col gap-1 mt-3">
+          <aside className="hidden lg:block w-72 shrink-0">
+            <div className="sticky top-28 space-y-12 bg-white p-10 rounded-[2px] shadow-sm border border-black/[0.03]">
+              <FilterSection title="Ангилал">
+                <div className="flex flex-col gap-4 mt-6">
                   {dbCategories.map(cat => (
                     <CheckboxItem
                       key={cat.id}
@@ -236,8 +253,8 @@ function AllProductsContent() {
                 </div>
               </FilterSection>
 
-              <FilterSection title="САВАЛГАА">
-                <div className="flex flex-col gap-1 mt-3">
+              <FilterSection title="Савалгаа">
+                <div className="flex flex-col gap-4 mt-6">
                   {PACKAGING_OPTIONS.map(opt => (
                     <CheckboxItem
                       key={opt}
@@ -250,8 +267,8 @@ function AllProductsContent() {
                 </div>
               </FilterSection>
 
-              <FilterSection title="ЦЭЦЭГНИЙ ТӨРӨЛ">
-                <div className="flex flex-col gap-1 mt-3">
+              <FilterSection title="Цэцэгний төрөл">
+                <div className="flex flex-col gap-4 mt-6">
                   {Object.keys(counts.flowerTypes).filter(Boolean).sort().map(type => (
                     <CheckboxItem
                       key={type}
@@ -264,8 +281,8 @@ function AllProductsContent() {
                 </div>
               </FilterSection>
 
-              <FilterSection title="ТОО ШИРХЭГ (ИШ)">
-                <div className="flex flex-col gap-1 mt-3">
+              <FilterSection title="Ишний тоо">
+                <div className="flex flex-col gap-4 mt-6">
                   {Object.keys(counts.stems).filter(Boolean).sort((a, b) => Number(a) - Number(b)).map(stem => (
                     <CheckboxItem
                       key={stem}
@@ -278,8 +295,8 @@ function AllProductsContent() {
                 </div>
               </FilterSection>
 
-              <FilterSection title="ХЭМЖЭЭ">
-                <div className="flex flex-col gap-1 mt-3">
+              <FilterSection title="Хэмжээ">
+                <div className="flex flex-col gap-4 mt-6">
                   {SIZE_OPTIONS.map(opt => (
                     <CheckboxItem
                       key={opt}
@@ -292,16 +309,17 @@ function AllProductsContent() {
                 </div>
               </FilterSection>
 
-              <FilterSection title="ӨНГӨ">
-                <div className="flex flex-wrap gap-2.5 mt-4">
+              <FilterSection title="Өнгөний сонголт">
+                <div className="flex flex-wrap gap-4 mt-8">
                   {COLOR_OPTIONS.map(color => {
                     const isSelected = filters.colors.includes(color.name);
                     return (
                       <button
                         key={color.name}
                         onClick={() => toggleFilter("colors", color.name)}
-                        className={`w-7 h-7 rounded-full border transition-all ${isSelected ? "ring-2 ring-offset-2 ring-[#E2A9BE]" : "border-gray-200"}`}
+                        className={`w-10 h-10 rounded-full border-2 transition-all ${isSelected ? "border-[#1A1A1A] scale-110 shadow-lg" : "border-transparent hover:scale-110"}`}
                         style={{ background: color.hex }}
+                        title={color.name}
                       />
                     );
                   })}
@@ -311,7 +329,7 @@ function AllProductsContent() {
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="w-full mt-4 py-3 text-[11px] font-black text-red-400 uppercase tracking-widest border border-red-50 hover:bg-red-50 rounded-xl transition"
+                  className="w-full mt-10 py-5 text-[10px] font-medium text-red-500 uppercase tracking-[0.3em] bg-red-50 hover:bg-red-500 hover:text-white rounded-[2px] transition-all"
                 >
                   Цэвэрлэх ({activeFilterCount})
                 </button>
@@ -322,35 +340,64 @@ function AllProductsContent() {
           {/* Product Grid */}
           <div className="flex-1 min-w-0">
             {filteredProducts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-32 text-center bg-white rounded-[32px] border border-[#f0ece8]">
-                <Flower2 size={48} className="text-[#f0ece8] mb-4" />
-                <p className="text-[#999] font-bold">Уучлаарай, цэцэг олдсонгүй.</p>
-                <button onClick={clearFilters} className="mt-4 text-[#E2A9BE] font-black hover:underline">Шүүлтүүр цэвэрлэх</button>
-              </div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-40 text-center bg-white rounded-[2px] shadow-sm border border-black/[0.03]">
+                <Flower2 size={48} strokeWidth={1} className="text-[#1A1A1A]/10 mb-8" />
+                <p className="text-[10px] text-[#1A1A1A]/30 font-medium uppercase tracking-[0.3em]">Бүтээгдэхүүн олдсонгүй</p>
+                <button onClick={clearFilters} className="mt-8 text-[#1A1A1A] font-medium uppercase tracking-[0.2em] text-[10px] border-b border-[#1A1A1A]/20 pb-2 hover:border-[#1A1A1A] transition-all">Шүүлтүүр цэвэрлэх</button>
+              </motion.div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-                {filteredProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
+              >
+                {filteredProducts.map((product, index) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                    layout
+                  >
+                    <ProductCard product={product} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
       </div>
 
       {/* Mobile Filter Drawer */}
-      {isFilterOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-[#333333]/40 backdrop-blur-sm" onClick={() => setIsFilterOpen(false)} />
-          <div className="relative ml-auto w-[85vw] max-w-sm h-full bg-[#FFFDF9] overflow-y-auto shadow-2xl p-6">
-            <div className="flex justify-between items-center mb-8">
-              <span className="font-black text-lg uppercase tracking-tight">Шүүлтүүр</span>
-              <button onClick={() => setIsFilterOpen(false)} className="p-2 bg-white rounded-full shadow-sm"><X size={20} /></button>
-            </div>
-            {/* Sidebar content here */}
-            <div className="space-y-8 pb-24">
-               <FilterSection title="АНГИЛАЛ">
-                  <div className="flex flex-col gap-1 mt-3">
+      <AnimatePresence>
+        {isFilterOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden flex justify-end">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-[#1A1A1A]/40 backdrop-blur-sm"
+              onClick={() => setIsFilterOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative w-[85vw] max-w-sm h-full bg-[#FCFBF9] shadow-2xl flex flex-col"
+            >
+              {/* Fixed Header */}
+              <div className="flex justify-between items-center p-8 pb-6 bg-[#FCFBF9] border-b border-black/[0.03] z-20">
+                <span className="font-playfair font-medium text-2xl text-[#1A1A1A]">Шүүлтүүр</span>
+                <button onClick={() => setIsFilterOpen(false)} className="p-3 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto p-8 pt-6 space-y-12">
+                <FilterSection title="Ангилал">
+                  <div className="flex flex-col gap-4 mt-6">
                     {dbCategories.map(cat => (
                       <CheckboxItem
                         key={cat.id}
@@ -361,97 +408,102 @@ function AllProductsContent() {
                       />
                     ))}
                   </div>
-               </FilterSection>
+                </FilterSection>
 
-              <FilterSection title="САВАЛГАА">
-                <div className="flex flex-col gap-1 mt-3">
-                  {PACKAGING_OPTIONS.map(opt => (
-                    <CheckboxItem
-                      key={opt}
-                      label={opt}
-                      count={counts.packaging[opt] || 0}
-                      checked={filters.packaging.includes(opt)}
-                      onChange={() => toggleFilter("packaging", opt)}
-                    />
-                  ))}
-                </div>
-              </FilterSection>
-
-              <FilterSection title="ЦЭЦЭГНИЙ ТӨРӨЛ">
-                <div className="flex flex-col gap-1 mt-3">
-                  {Object.keys(counts.flowerTypes).filter(Boolean).sort().map(type => (
-                    <CheckboxItem
-                      key={type}
-                      label={type}
-                      count={counts.flowerTypes[type]}
-                      checked={filters.flowerTypes.includes(type)}
-                      onChange={() => toggleFilter("flowerTypes", type)}
-                    />
-                  ))}
-                </div>
-              </FilterSection>
-
-              <FilterSection title="ТОО ШИРХЭГ (ИШ)">
-                <div className="flex flex-col gap-1 mt-3">
-                  {Object.keys(counts.stems).filter(Boolean).sort((a, b) => Number(a) - Number(b)).map(stem => (
-                    <CheckboxItem
-                      key={stem}
-                      label={`${stem} ширхэг`}
-                      count={counts.stems[stem]}
-                      checked={filters.stems.includes(stem)}
-                      onChange={() => toggleFilter("stems", stem)}
-                    />
-                  ))}
-                </div>
-              </FilterSection>
-
-              <FilterSection title="ХЭМЖЭЭ">
-                <div className="flex flex-col gap-1 mt-3">
-                  {SIZE_OPTIONS.map(opt => (
-                    <CheckboxItem
-                      key={opt}
-                      label={opt}
-                      count={counts.sizes[opt] || 0}
-                      checked={filters.sizes.includes(opt)}
-                      onChange={() => toggleFilter("sizes", opt)}
-                    />
-                  ))}
-                </div>
-              </FilterSection>
-
-              <FilterSection title="ӨНГӨ">
-                <div className="flex flex-wrap gap-2.5 mt-4">
-                  {COLOR_OPTIONS.map(color => {
-                    const isSelected = filters.colors.includes(color.name);
-                    return (
-                      <button
-                        key={color.name}
-                        onClick={() => toggleFilter("colors", color.name)}
-                        className={`w-7 h-7 rounded-full border transition-all ${isSelected ? "ring-2 ring-offset-2 ring-[#E2A9BE]" : "border-gray-200"}`}
-                        style={{ background: color.hex }}
+                <FilterSection title="Савалгаа">
+                  <div className="flex flex-col gap-4 mt-6">
+                    {PACKAGING_OPTIONS.map(opt => (
+                      <CheckboxItem
+                        key={opt}
+                        label={opt}
+                        count={counts.packaging[opt] || 0}
+                        checked={filters.packaging.includes(opt)}
+                        onChange={() => toggleFilter("packaging", opt)}
                       />
-                    );
-                  })}
-                </div>
-              </FilterSection>
+                    ))}
+                  </div>
+                </FilterSection>
 
-              {activeFilterCount > 0 && (
-                <button
-                  onClick={clearFilters}
-                  className="w-full mt-4 py-3 text-[11px] font-black text-red-400 uppercase tracking-widest border border-red-50 hover:bg-red-50 rounded-xl transition"
-                >
-                  Цэвэрлэх ({activeFilterCount})
+                <FilterSection title="Цэцэгний төрөл">
+                  <div className="flex flex-col gap-4 mt-6">
+                    {Object.keys(counts.flowerTypes).filter(Boolean).sort().map(type => (
+                      <CheckboxItem
+                        key={type}
+                        label={type}
+                        count={counts.flowerTypes[type]}
+                        checked={filters.flowerTypes.includes(type)}
+                        onChange={() => toggleFilter("flowerTypes", type)}
+                      />
+                    ))}
+                  </div>
+                </FilterSection>
+
+                <FilterSection title="Ишний тоо">
+                  <div className="flex flex-col gap-4 mt-6">
+                    {Object.keys(counts.stems).filter(Boolean).sort((a, b) => Number(a) - Number(b)).map(stem => (
+                      <CheckboxItem
+                        key={stem}
+                        label={`${stem} ширхэг`}
+                        count={counts.stems[stem]}
+                        checked={filters.stems.includes(stem)}
+                        onChange={() => toggleFilter("stems", stem)}
+                      />
+                    ))}
+                  </div>
+                </FilterSection>
+
+                <FilterSection title="Хэмжээ">
+                  <div className="flex flex-col gap-4 mt-6">
+                    {SIZE_OPTIONS.map(opt => (
+                      <CheckboxItem
+                        key={opt}
+                        label={opt}
+                        count={counts.sizes[opt] || 0}
+                        checked={filters.sizes.includes(opt)}
+                        onChange={() => toggleFilter("sizes", opt)}
+                      />
+                    ))}
+                  </div>
+                </FilterSection>
+
+                <FilterSection title="Өнгөний сонголт">
+                  <div className="flex flex-wrap gap-4 mt-8">
+                    {COLOR_OPTIONS.map(color => {
+                      const isSelected = filters.colors.includes(color.name);
+                      return (
+                        <button
+                          key={color.name}
+                          onClick={() => toggleFilter("colors", color.name)}
+                          className={`w-10 h-10 rounded-full border-2 transition-all ${isSelected ? "border-[#1A1A1A] scale-110 shadow-lg" : "border-transparent hover:scale-110"}`}
+                          style={{ background: color.hex }}
+                          title={color.name}
+                        />
+                      );
+                    })}
+                  </div>
+                </FilterSection>
+
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="w-full mt-10 py-5 text-[10px] font-medium text-red-500 uppercase tracking-[0.3em] bg-red-50 hover:bg-red-500 hover:text-white rounded-[2px] transition-all"
+                  >
+                    Цэвэрлэх ({activeFilterCount})
+                  </button>
+                )}
+              </div>
+
+              {/* Fixed Footer */}
+              <div className="p-8 pb-[calc(2rem+72px)] bg-white/80 backdrop-blur-xl border-t border-black/[0.03] z-20">
+                <button onClick={() => setIsFilterOpen(false)} className="w-full bg-[#87A96B] text-white font-medium py-5 rounded-[2px] shadow-2xl uppercase tracking-[0.3em] text-[11px] transition-all active:scale-95">
+                  Нийт {filteredProducts.length} цэцэг харах
                 </button>
-              )}
-
-               <button onClick={() => setIsFilterOpen(false)} className="w-full bg-[#E2A9BE] text-white font-black py-4 rounded-2xl shadow-lg shadow-[#E2A9BE]/20 mt-10">
-                  {filteredProducts.length} Цэцэг харах
-               </button>
-            </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
@@ -459,14 +511,14 @@ function AllProductsContent() {
 
 function CheckboxItem({ label, count, checked, onChange }: any) {
   return (
-    <label className="flex items-center justify-between cursor-pointer group py-2 px-1">
-      <div className="flex items-center gap-3">
-        <div className={`w-5 h-5 rounded-lg border-2 transition-all flex items-center justify-center ${checked ? "bg-[#87A96B] border-[#87A96B]" : "border-[#f0ece8] bg-white group-hover:border-[#87A96B]"}`}>
-          {checked && <Check size={12} className="text-white" strokeWidth={4} />}
+    <label className="flex items-center justify-between cursor-pointer group py-1.5">
+      <div className="flex items-center gap-4">
+        <div className={`w-5 h-5 rounded-[2px] border transition-all flex items-center justify-center ${checked ? "bg-[#1A1A1A] border-[#1A1A1A]" : "border-black/[0.05] bg-white group-hover:border-[#1A1A1A]"}`}>
+          {checked && <Check size={12} className="text-white" strokeWidth={3} />}
         </div>
-        <span className={`text-[13px] font-bold ${checked ? "text-[#333333]" : "text-[#999] group-hover:text-[#333333]"}`}>{label}</span>
+        <span className={`text-[12px] font-medium uppercase tracking-wider transition-colors ${checked ? "text-[#1A1A1A]" : "text-[#1A1A1A]/40 group-hover:text-[#1A1A1A]"}`}>{label}</span>
       </div>
-      {count !== undefined && <span className="text-[11px] text-[#ccc] font-bold">{count}</span>}
+      {count !== undefined && <span className="text-[10px] text-[#1A1A1A]/20 font-medium tabular-nums">{count}</span>}
       <input type="checkbox" checked={checked} onChange={onChange} className="hidden" />
     </label>
   );
@@ -475,12 +527,18 @@ function CheckboxItem({ label, count, checked, onChange }: any) {
 function FilterSection({ title, children }: any) {
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="border-b border-[#f0ece8] pb-5">
-      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full mb-2">
-        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#ccc]">{title}</span>
-        <ChevronDown size={14} className={`transition-transform text-[#ccc] ${isOpen ? "" : "-rotate-90"}`} />
+    <div className="border-b border-black/[0.03] pb-10 mb-10 last:border-0 last:pb-0 last:mb-0">
+      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full mb-6">
+        <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#1A1A1A]">{title}</span>
+        <ChevronDown size={14} className={`transition-transform text-[#1A1A1A]/30 ${isOpen ? "" : "-rotate-90"}`} />
       </button>
-      {isOpen && children}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -491,43 +549,49 @@ function ProductCard({ product }: { product: any }) {
   const isWished = product.id ? isWishlisted(product.id) : false;
 
   return (
-    <div className="group bg-white rounded-2xl sm:rounded-[32px] overflow-hidden border border-[#f0ece8] hover:shadow-2xl hover:shadow-[#E2A9BE]/10 transition-all duration-500 flex flex-col h-full">
-      <div className="relative aspect-[4/5] overflow-hidden bg-[#f7f3f0]">
+    <div className="group bg-white rounded-[2px] overflow-hidden border border-black/[0.03] hover:shadow-2xl hover:shadow-black/5 transition-all duration-700 flex flex-col h-full">
+      <div className="relative aspect-[4/5] overflow-hidden bg-[#FCFBF9]">
         <Link href={`/products/${product.id}`} className="block w-full h-full">
-          <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
         </Link>
-        <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
-           {product.discountedPrice && (
-             <span className="bg-[#E2A9BE] text-white text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 rounded-full uppercase tracking-wider">Хямдрал</span>
-           )}
+        <div className="absolute top-4 left-4">
+          {product.discountedPrice && (
+            <span className="bg-[#87A96B] text-white text-[9px] font-medium px-4 py-2 rounded-[2px] uppercase tracking-widest shadow-sm">SALE</span>
+          )}
         </div>
         <button
           onClick={() => product.id && toggleWishlist(product.id)}
-          className={`absolute top-2 sm:top-4 right-2 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all backdrop-blur-md ${isWished ? "bg-[#E2A9BE] text-white" : "bg-white/70 text-[#999] hover:text-[#E2A9BE]"}`}
+          className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 backdrop-blur-md border active:scale-90 ${isWished ? "bg-white border-white text-[#E2A9BE] shadow-lg shadow-[#E2A9BE]/20" : "bg-white/80 border-white/40 text-[#1A1A1A] hover:bg-white"}`}
         >
-          <Heart size={16} fill={isWished ? "currentColor" : "none"} />
+          <motion.div
+            animate={isWished ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Heart size={18} fill={isWished ? "currentColor" : "none"} strokeWidth={isWished ? 0 : 2} className={isWished ? "scale-110" : ""} />
+          </motion.div>
         </button>
+
         {/* Desktop Quick Buy */}
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden md:block">
-           <button onClick={() => addToCart(product)} className="w-full bg-[#333333] text-white text-xs font-black py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#E2A9BE] transition-all">
-             <ShoppingBag size={14} /> Сагсанд нэмэх
-           </button>
+        <div className="absolute inset-x-4 bottom-4 translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hidden md:block z-20">
+          <button onClick={() => addToCart(product)} className="w-full bg-[#87A96B] text-white text-[10px] font-medium py-5 rounded-[2px] flex items-center justify-center gap-3 hover:bg-[#76945d] transition-all shadow-2xl uppercase tracking-[0.2em]">
+            <ShoppingBag size={14} strokeWidth={1.5} /> Сагсанд нэмэх
+          </button>
         </div>
       </div>
 
-      <div className="p-3 sm:p-5 flex flex-col flex-grow">
+      <div className="p-6 flex flex-col flex-grow">
         <Link href={`/products/${product.id}`}>
-          <h3 className="text-[12px] sm:text-[14px] font-bold text-[#333333] line-clamp-1 mb-1 sm:mb-2 group-hover:text-[#E2A9BE] transition-colors">{product.name}</h3>
+          <h3 className="text-[12px] md:text-[14px] font-medium text-[#1A1A1A] line-clamp-1 mb-2 hover:opacity-60 transition-opacity font-montserrat uppercase tracking-wider">{product.name}</h3>
         </Link>
-        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-          <span className="font-black text-[14px] sm:text-[16px] text-[#333333]">{(product.discountedPrice ?? product.price).toLocaleString()}₮</span>
-          {product.discountedPrice && <span className="text-[10px] sm:text-xs text-[#ccc] line-through">{product.price.toLocaleString()}₮</span>}
+        <div className="flex items-center gap-3 mb-6 mt-auto">
+          <span className="font-playfair font-medium text-[16px] text-[#1A1A1A]">{(product.discountedPrice ?? product.price).toLocaleString()}₮</span>
+          {product.discountedPrice && <span className="text-[11px] text-[#1A1A1A]/30 line-through font-light">{product.price.toLocaleString()}₮</span>}
         </div>
-        
+
         {/* Mobile Buy Button */}
-        <div className="mt-auto flex gap-2">
-          <button onClick={() => addToCart(product)} className="md:hidden flex-1 bg-[#87A96B] text-white p-2.5 sm:p-3 rounded-xl flex items-center justify-center"><ShoppingBag size={16} /></button>
-          <Link href={`/products/${product.id}`} className="flex-1 border border-[#f0ece8] text-[#999] text-[10px] sm:text-[11px] font-black uppercase tracking-wider py-2.5 sm:py-3 rounded-xl text-center hover:border-[#E2A9BE] hover:text-[#E2A9BE] transition-all">Үзэх</Link>
+        <div className="mt-auto flex gap-3 md:hidden">
+          <button onClick={() => addToCart(product)} className="flex-1 bg-[#87A96B] text-white py-4 rounded-[2px] flex items-center justify-center active:scale-95 transition-all shadow-lg"><ShoppingBag size={16} strokeWidth={1.5} /></button>
+          <Link href={`/products/${product.id}`} className="flex-1 border border-black/[0.05] text-[#1A1A1A] text-[9px] font-medium uppercase tracking-[0.2em] py-4 rounded-[2px] flex items-center justify-center hover:border-[#1A1A1A] transition-all">Үзэх</Link>
         </div>
       </div>
     </div>

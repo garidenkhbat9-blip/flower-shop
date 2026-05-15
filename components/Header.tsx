@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, ShoppingCart, Tag, LogOut, LayoutDashboard, User } from "lucide-react";
+import { Search, ShoppingCart, Tag, LogOut, LayoutDashboard, User, Truck } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -10,16 +10,23 @@ import { auth, db } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { doc, getDoc, collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { useCart } from "@/context/CartContext";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 
 export default function Header() {
-  const { cartCount, setIsCartOpen } = useCart(); // setIsCartOpen нэмлээ
-  const { user, loading } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { cartCount, setIsCartOpen } = useCart();
+  const { user, userProfile, loading } = useAuth();
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
+
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setIsScrolled(latest > 20);
+  });
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchQuery.trim()) {
@@ -49,39 +56,26 @@ export default function Header() {
     ? products.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
     : [];
 
-  // 2. Админ эрх шалгах
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (user) {
-        try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setIsAdmin(docSnap.data().isAdmin === true);
-          }
-        } catch (error) {
-          console.error("Admin check error:", error);
-        }
-      } else {
-        setIsAdmin(false);
-      }
-    };
-    checkAdminStatus();
-  }, [user]);
+
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
-        
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      className={`w-full sticky top-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100" : "bg-white border-b border-gray-100"}`}
+    >
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isScrolled ? "py-2 md:py-2.5" : "py-3 md:py-4"}`}>
+
         <div className="flex items-center justify-between">
           {/* ЛОГО */}
           <Link href="/" className="flex items-center">
-            <Image 
-              src="/logo.png" 
-              alt="Logo" 
-              width={300} 
-              height={90} 
-              className="h-16 md:h-24 w-auto object-contain"
+            <Image
+              src="/logo1.png"
+              alt="Logo"
+              width={300}
+              height={90}
+              className={`w-auto object-contain transition-all duration-300 ${isScrolled ? "h-12 md:h-16" : "h-16 md:h-24"}`}
               priority
             />
           </Link>
@@ -96,7 +90,7 @@ export default function Header() {
             }} />
             <input
               type="text"
-              placeholder="Шууд хайх..."
+              placeholder="Search our collection..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -105,37 +99,37 @@ export default function Header() {
               onFocus={() => setShowDropdown(true)}
               onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
               onKeyDown={handleSearch}
-              className="w-full border border-gray-100 bg-[#FFFDF9] rounded-lg py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#87A96B] text-sm text-[#333333] placeholder-gray-400 transition-all shadow-inner"
+              className="w-full border border-black/[0.05] bg-[#FCFBF9] rounded-[2px] py-3.5 pl-12 pr-4 focus:outline-none focus:border-[#87A96B] text-xs text-[#1A1A1A] placeholder-[#1A1A1A]/40 transition-all font-montserrat shadow-sm"
             />
             {/* АВТОМАТААР САГИСАХ DROPDOWN */}
             {showDropdown && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
-                 {searchResults.map(prod => (
-                   <div
-                     key={prod.id}
-                     onClick={() => {
-                       setSearchQuery("");
-                       setShowDropdown(false);
-                       router.push(`/products/${prod.id}`);
-                     }}
-                     className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0 transition"
-                   >
-                     <img src={prod.imageUrls?.[0] || "/placeholder.jpg"} alt={prod.name} className="w-10 h-10 object-cover rounded-md" />
-                     <div>
-                       <p className="text-sm font-bold text-[#333333]">{prod.name}</p>
-                       <p className="text-xs font-black text-[#87A96B]">{(prod.discountedPrice ?? prod.price)?.toLocaleString()}₮</p>
-                     </div>
-                   </div>
-                 ))}
-                 <div 
-                   onClick={() => {
-                     setShowDropdown(false);
-                     router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-                   }}
-                   className="p-3 text-center text-xs font-bold text-[#E2A9BE] hover:bg-gray-50 cursor-pointer uppercase"
-                 >
-                   Бүх ({products.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).length}) үр дүнг харах
-                 </div>
+              <div className="absolute top-full left-0 right-0 mt-4 bg-white rounded-[2px] shadow-2xl border border-black/[0.03] overflow-hidden z-50 py-3">
+                {searchResults.map(prod => (
+                  <div
+                    key={prod.id}
+                    onClick={() => {
+                      setSearchQuery("");
+                      setShowDropdown(false);
+                      router.push(`/products/${prod.id}`);
+                    }}
+                    className="flex items-center gap-5 px-6 py-4 hover:bg-[#FCFBF9] cursor-pointer transition-colors"
+                  >
+                    <img src={prod.imageUrls?.[0] || "/placeholder.jpg"} alt={prod.name} className="w-14 h-14 object-cover rounded-[2px] shadow-sm" />
+                    <div>
+                      <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider font-montserrat">{prod.name}</p>
+                      <p className="text-[11px] text-[#1A1A1A]/40 font-playfair mt-1">{(prod.discountedPrice ?? prod.price)?.toLocaleString()}₮</p>
+                    </div>
+                  </div>
+                ))}
+                <div
+                  onClick={() => {
+                    setShowDropdown(false);
+                    router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                  }}
+                  className="px-6 py-4 text-center text-[10px] font-bold text-[#1A1A1A] hover:bg-[#FCFBF9] cursor-pointer uppercase tracking-[0.3em] border-t border-black/[0.03] mt-2"
+                >
+                  View all results ({products.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).length})
+                </div>
               </div>
             )}
           </div>
@@ -147,14 +141,19 @@ export default function Header() {
                 <div className="w-8 h-8 bg-gray-100 rounded-full animate-pulse"></div>
               ) : user ? (
                 <div className="flex items-center gap-3">
-                  {isAdmin ? (
-                    <Link href="/admin" className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold">
-                      <LayoutDashboard className="w-4 h-4" />
+                  {(userProfile?.isAdmin || userProfile?.role === "admin") ? (
+                    <Link href="/admin" className="flex items-center gap-2 bg-[#87A96B] text-white px-5 py-2.5 rounded-[2px] text-[10px] font-bold hover:bg-[#76945d] transition-all shadow-lg uppercase tracking-wider">
+                      <LayoutDashboard size={14} />
                       Админ
                     </Link>
+                  ) : userProfile?.role === "delivery" ? (
+                    <Link href="/delivery" className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-[2px] text-[10px] font-bold hover:bg-blue-700 transition-all shadow-lg uppercase tracking-wider">
+                      <Truck size={14} />
+                      Хүргэлт
+                    </Link>
                   ) : (
-                    <Link href="/profile" className="flex items-center gap-2 bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-bold">
-                      <User className="w-4 h-4" />
+                    <Link href="/profile" className="flex items-center gap-2 bg-white border border-black/[0.05] text-[#1A1A1A] px-5 py-2.5 rounded-[2px] text-[10px] font-bold hover:border-[#87A96B] transition-all shadow-sm uppercase tracking-wider">
+                      <User size={14} />
                       Профайл
                     </Link>
                   )}
@@ -163,21 +162,21 @@ export default function Header() {
                   </button>
                 </div>
               ) : (
-                <Link href="/auth/login" className="flex items-center gap-2 text-gray-700 hover:text-black font-bold text-sm">
-                  <User className="w-6 h-6" />
-                  <span className="hidden sm:inline">Нэвтрэх</span>
+                <Link href="/auth/login" className="flex items-center gap-3 text-[#1A1A1A] hover:opacity-60 transition-opacity">
+                  <User size={20} strokeWidth={1.5} />
+                  <span className="hidden sm:inline text-[10px] font-medium uppercase tracking-[0.3em]">Login</span>
                 </Link>
               )}
             </div>
 
             {/* САГСНЫ DRAWER-ИЙГ НЭЭХ ТОВЧ */}
-            <button 
+            <button
               onClick={() => setIsCartOpen(true)}
-              className="text-gray-700 hover:text-black relative p-2"
+              className="text-[#1A1A1A] hover:opacity-50 relative p-2 transition-opacity"
             >
-              <ShoppingCart className="w-6 h-6" />
+              <ShoppingCart size={22} strokeWidth={1.5} />
               {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
+                <span className="absolute top-0 right-0 bg-[#87A96B] text-white text-[9px] font-medium w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                   {cartCount}
                 </span>
               )}
@@ -186,30 +185,29 @@ export default function Header() {
         </div>
 
         {/* ДООД КАТЕГОРИ ХЭСЭГ */}
-        <div className="hidden md:flex items-center justify-between mt-5">
-          <div className="flex items-center gap-8 text-sm font-bold text-gray-800">
-            <span>Ангилал</span>
-            <div className="flex items-center gap-6 text-gray-500 font-medium overflow-x-auto no-scrollbar">
-              <Link href="/products" className="hover:text-black whitespace-nowrap">БҮГД</Link>
+        <div className={`hidden md:flex items-center justify-between transition-all duration-300 overflow-hidden ${isScrolled ? "h-0 opacity-0 mt-0" : "h-auto opacity-100 mt-8"}`}>
+          <div className="flex items-center gap-12">
+            <div className="flex items-center gap-10 text-[#1A1A1A]/50 font-bold">
+              <Link href="/products" className="hover:text-[#1A1A1A] whitespace-nowrap text-[10px] tracking-[0.4em] uppercase transition-colors">БҮГД</Link>
               {categories.map((cat) => (
-                <Link 
-                  key={cat.id} 
+                <Link
+                  key={cat.id}
                   href={`/products?category=${cat.name}`}
-                  className="hover:text-black whitespace-nowrap transition-colors uppercase"
+                  className="hover:text-[#1A1A1A] whitespace-nowrap text-[10px] tracking-[0.4em] uppercase transition-colors"
                 >
                   {cat.name}
                 </Link>
               ))}
             </div>
           </div>
-          
-          <Link href="/sale" className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition shadow-sm">
-            <Tag className="w-4 h-4" />
-            ОНЦЛОХ ХЯМДРАЛ
+
+          <Link href="/sale" className="group flex items-center gap-3 text-[#1A1A1A]">
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em] border-b border-black/[0.05] pb-1 group-hover:border-[#87A96B] transition-colors">Sale Highlights</span>
+            <Tag size={14} className="text-[#1A1A1A]/40 group-hover:text-[#87A96B] transition-colors" />
           </Link>
         </div>
 
       </div>
-    </header>
+    </motion.header>
   );
 }

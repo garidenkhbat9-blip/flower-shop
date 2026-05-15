@@ -128,8 +128,8 @@ function RegisterContent() {
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
         <div className="text-center mb-6">
           <Link href="/" className="inline-flex items-center gap-2 font-black tracking-tight text-gray-900">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">UF</span>
-            <span>Unur Flowers</span>
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">GR</span>
+            <span>Grow room</span>
           </Link>
           <p className="mt-2 text-sm text-gray-500">Хурдан захиалга хийхийн тулд шинэ хэрэглэгч үүсгээрэй.</p>
         </div>

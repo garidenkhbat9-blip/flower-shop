@@ -5,9 +5,25 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { ShoppingBag, ArrowRight, Truck, Star, ShieldCheck, Heart, Sparkles } from "lucide-react";
+import { ShoppingBag, ArrowRight, Heart, Sparkles, Truck } from "lucide-react";
 import Link from "next/link";
 import { Product, Category } from "@/types";
+import { motion, useScroll, useTransform, Variants } from "framer-motion";
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const fadeUpVariant: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 15 } }
+};
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -16,6 +32,9 @@ export default function HomePage() {
 
   const { addToCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
+  const { scrollYProgress } = useScroll();
+  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.5]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,211 +55,322 @@ export default function HomePage() {
   }, []);
 
   if (loading) return (
-    <div className="h-screen flex items-center justify-center bg-[#FFFDF9]">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-[3px] border-[#f0ece8] border-t-[#E2A9BE] rounded-full animate-spin" />
-        <span className="text-xs font-semibold tracking-[0.2em] text-[#E2A9BE] uppercase">Уншиж байна</span>
-      </div>
+    <div className="h-screen flex items-center justify-center bg-[#FAFAFA]">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex flex-col items-center gap-4"
+      >
+        <div className="w-12 h-12 border-[3px] border-gray-100 border-t-[#111] rounded-full animate-spin" />
+        <span className="text-[10px] font-bold tracking-[0.3em] text-[#111] uppercase">Уншиж байна</span>
+      </motion.div>
     </div>
   );
 
   return (
-    <div className="bg-[#FFFDF9] min-h-screen font-sans text-[#333333]">
+    <div className="bg-[#FAFAFA] min-h-screen font-montserrat text-[#111] overflow-hidden selection:bg-[#111] selection:text-white">
 
-      {/* 1. HERO — Cinematic Pastel Style */}
-      <section className="relative h-[92svh] w-full overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=2000"
-          alt="hero"
-          className="absolute inset-0 w-full h-full object-cover scale-105 animate-[slowZoom_12s_ease-out_forwards]"
-        />
-
-        <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/20 to-black/60" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#333333]/30 to-transparent" />
-
-        {/* Floating pill badge */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-8 md:top-8 z-20">
-          <span className="inline-flex items-center gap-2 bg-[#FFFDF9]/10 backdrop-blur-xl border border-white/20 text-white px-4 py-2 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase shadow-lg">
-            <Sparkles size={11} className="text-[#E2A9BE]" />
-            Natural Beauty · {new Date().getFullYear()}
-          </span>
+      <section className="relative min-h-[60svh] lg:min-h-[90svh] w-full bg-[#FCFBF9] overflow-hidden flex flex-col lg:flex-row items-center pt-20 lg:pt-0">
+        {/* Subtle Geometric Background Pattern */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.08] z-0 flex items-center justify-center">
+          <motion.svg
+            animate={{ rotate: 360 }}
+            transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
+            width="600" height="600" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg" className="scale-[2] lg:scale-150"
+          >
+            <circle cx="300" cy="300" r="150" stroke="#1A1A1A" strokeWidth="1" />
+            <line x1="300" y1="0" x2="300" y2="600" stroke="#1A1A1A" strokeWidth="1" />
+            <line x1="0" y1="300" x2="600" y2="300" stroke="#1A1A1A" strokeWidth="1" />
+            <path d="M150 150 L450 450" stroke="#1A1A1A" strokeWidth="1" />
+            <path d="M450 150 L150 450" stroke="#1A1A1A" strokeWidth="1" />
+          </motion.svg>
         </div>
 
-        <div className="relative z-10 h-full flex flex-col justify-end px-6 pb-16 md:pb-20 md:px-16 max-w-7xl mx-auto w-full">
-          <p className="text-[#E2A9BE] text-xs font-bold tracking-[0.3em] uppercase mb-4 animate-[fadeUp_0.6s_ease_forwards]">
-            Шинэхэн түүсэн цэцэгс
-          </p>
-
-          <h1 className="text-[clamp(2.6rem,8vw,5.5rem)] font-black text-white leading-[0.95] tracking-tighter mb-6 max-w-2xl animate-[fadeUp_0.7s_ease_forwards]">
-            Хайртдаа өгөх<br />
-            <em className="not-italic text-[#E2A9BE]">хамгийн нандин</em><br />
-            бэлэг
-          </h1>
-
-          <p className="text-white/80 text-sm md:text-base max-w-sm mb-8 leading-relaxed animate-[fadeUp_0.8s_ease_forwards]">
-            Сэтгэл шингэсэн баглааг <strong className="text-white">30 минутын дотор</strong> хүргэж, таны хайрыг дамжуулна.
-          </p>
-
-          <div className="flex gap-3 animate-[fadeUp_0.9s_ease_forwards]">
-            <Link
-              href="/products"
-              className="group flex items-center gap-2.5 bg-[#E2A9BE] text-white px-7 py-4 rounded-2xl font-black text-sm hover:bg-[#d497ab] active:scale-95 transition-all shadow-xl shadow-[#E2A9BE]/30"
+        {/* Left Side: Bold Editorial Typography */}
+        <div className="w-full lg:w-[45%] h-full flex flex-col justify-center px-6 md:px-12 lg:px-24 z-20 relative text-center lg:text-left">
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: { staggerChildren: 0.2, delayChildren: 0.5 }
+              }
+            }}
+            className="flex flex-col items-center lg:items-start"
+          >
+            <motion.span
+              variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+              className="inline-block text-[10px] md:text-[12px] font-light tracking-[0.6em] uppercase text-[#1A1A1A]/50 mb-8 lg:mb-10 font-montserrat"
             >
-              <ShoppingBag size={16} />
-              Захиалах
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+              Grow Room Collection — {new Date().getFullYear()}
+            </motion.span>
 
-          </div>
+            <motion.h1
+              variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="font-playfair text-[clamp(2.8rem,10vw,5.5rem)] leading-[1.1] lg:leading-[0.9] tracking-[-0.03em] font-medium text-[#1A1A1A] mb-10 lg:mb-12"
+            >
+              Flowers crafted <br className="hidden lg:block" />
+              for <br className="hidden lg:block" />
+              <span className="italic font-normal text-[#1A1A1A]/80">unforgettable</span> <br className="hidden lg:block" />
+              moments
+            </motion.h1>
+
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
+              className="text-[#1A1A1A]/80 text-[11px] font-bold uppercase tracking-[0.3em] mb-4 font-montserrat"
+            >
+              “Цэцэг өгөх нь авахаасаа илүү жаргалтай”
+            </motion.p>
+
+
+
+            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+              <Link
+                href="/products"
+                className="group relative inline-flex items-center gap-6 text-[#1A1A1A] py-4 lg:py-5 font-montserrat"
+              >
+                <span className="text-[10px] lg:text-[11px] font-medium uppercase tracking-[0.5em] border-b border-[#1A1A1A]/20 pb-2 group-hover:border-[#87A96B] transition-colors duration-500">
+                  Цуглуулга үзэх
+                </span>
+                <div className="w-10 h-10 rounded-full border border-[#1A1A1A]/10 flex items-center justify-center group-hover:bg-[#87A96B] group-hover:border-[#87A96B] group-hover:text-white transition-all duration-500">
+                  <ArrowRight size={14} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Right Side: Design Collage Card & Floating Pills */}
+        {/* Right Side: Hidden on Mobile, Visible on LG */}
+        <div className="hidden lg:flex w-full lg:w-[55%] h-full relative px-12 lg:px-0 items-center py-0">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: 50 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full max-w-[900px] bg-white p-4 md:p-6 rounded-[2px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.08)] border border-black/[0.03] z-10"
+          >
+            <div className="aspect-[1.3/1] md:aspect-[1.6/1] rounded-[2px] overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1687022466417-6fa5c452f63f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                className="w-full h-full object-cover"
+                alt="White Tulips"
+              />
+            </div>
+          </motion.div>
+
+          {/* Floating Premium Pills */}
+          {/* Top Right: Craftsmanship */}
+
+
+          {/* Bottom Center (Offset): Delivery Status */}
+          {/* Floating Premium Pill - Only visible on LG to avoid clutter on mobile */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2, duration: 1 }}
+            className="absolute bottom-[-5%] left-[10%] z-20 hidden lg:block"
+          >
+            <div className="bg-white px-8 py-6 rounded-[2px] shadow-[0_30px_60px_rgba(0,0,0,0.08)] border border-black/[0.03] flex items-center gap-4">
+              <div className="w-12 h-12 bg-[#FCFBF9] rounded-[2px] flex items-center justify-center text-[#1A1A1A] shrink-0 border border-black/[0.03]">
+                <Truck size={20} strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-[9px] font-medium uppercase tracking-[0.3em] text-[#1A1A1A]/30 leading-none mb-2 font-montserrat">Хүргэлтийн төлөв</p>
+                <p className="text-[11px] font-medium text-[#1A1A1A] font-montserrat uppercase tracking-widest">Улаанбаатар хот даяар</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* 2. TRUST STRIP — Using Sage Green highlights */}
+      <div className="max-w-7xl mx-auto px-5 md:px-12">
 
-
-      <div className="max-w-7xl mx-auto px-5 md:px-8">
-
-        {/* 3. CATEGORIES — Gentle Sage & Cream cards */}
-        <section className="pt-14 pb-12">
-          <div className="flex items-end justify-between mb-7">
+        {/* 3. CATEGORIES — Clean Grid */}
+        <section className="pt-24 pb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="flex items-end justify-between mb-10"
+          >
             <div>
-              <p className="text-[10px] font-bold tracking-[0.25em] text-[#87A96B] uppercase mb-1">Explore</p>
-              <h2 className="text-2xl md:text-3xl font-black text-[#333333] tracking-tight leading-none">Ангилалууд</h2>
+              <p className="text-[9px] font-light tracking-[0.5em] text-[#999] uppercase mb-3 font-montserrat">Нээж үзэх</p>
+              <h2 className="text-4xl md:text-6xl font-playfair font-medium text-[#111] tracking-tight leading-none">Ангилал</h2>
             </div>
-            <Link href="/products" className="group text-xs font-bold text-[#999] hover:text-[#E2A9BE] flex items-center gap-1 transition-colors">
-              Бүгд <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            <Link href="/products" className="group text-xs font-bold text-[#111] flex items-center gap-1.5 hover:opacity-70 transition-opacity">
+              Бүгд <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-5 px-5 pb-3">
-            {categories.map((cat) => (
-              <Link
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar -mx-5 px-5 pb-5 md:mx-0 md:px-0"
+          >
+            {categories.map((cat, index) => (
+              <motion.div
                 key={cat.id}
-                href={`/products?category=${encodeURIComponent(cat.name)}`}
-                className="group relative shrink-0 w-[160px] h-[220px] md:w-[220px] md:h-[300px] rounded-[28px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 50, damping: 15, delay: index * 0.1 }}
+                className="shrink-0"
               >
-                <img
-                  src={cat.imageUrl || "https://images.unsplash.com/photo-1533616688419-b7a585564566?q=80&w=600"}
-                  alt={cat.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#333333]/80 via-transparent to-transparent" />
-                <div className="absolute bottom-0 inset-x-0 p-5 z-10">
-                  <span className="text-white font-black text-sm md:text-base uppercase tracking-wide block">{cat.name}</span>
-                </div>
-              </Link>
+                <Link
+                  href={`/products?category=${encodeURIComponent(cat.name)}`}
+                  className="group relative block w-[200px] h-[280px] md:w-[280px] md:h-[380px] rounded-[2px] overflow-hidden bg-gray-100"
+                >
+                  <motion.img
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
+                    src={cat.imageUrl || "https://images.unsplash.com/photo-1533616688419-b7a585564566?q=80&w=600"}
+                    alt={cat.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-80" />
+                  <div className="absolute bottom-0 inset-x-0 p-6 z-10">
+                    <span className="text-white font-playfair italic font-normal text-xl md:text-2xl tracking-tight block group-hover:translate-y-[-4px] transition-transform duration-500">{cat.name}</span>
+                  </div>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
 
-        {/* 4. DIVIDER BANNER — Soft Lifestyle */}
-        <div className="mb-12 rounded-[28px] overflow-hidden relative h-[140px] md:h-[180px] bg-[#87A96B]">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1487530811015-780780f14196?q=80&w=1600')] bg-cover bg-center opacity-30 mix-blend-overlay" />
-          <div className="relative z-10 h-full flex items-center justify-between px-8 md:px-12">
-            <div>
-              <p className="text-white/80 text-[10px] font-bold tracking-[0.25em] uppercase mb-2">Насан туршийн дурсамж</p>
-              <h3 className="text-white font-black text-xl md:text-3xl tracking-tight">Хайрын баглаа</h3>
-            </div>
-            <Link
-              href="/products"
-              className="shrink-0 bg-[#FFFDF9] text-[#333333] px-6 py-3 rounded-xl font-black text-sm hover:bg-[#E2A9BE] hover:text-white transition-all active:scale-95"
-            >
-              Захиалах
-            </Link>
-          </div>
-        </div>
 
-        {/* 5. NEW ARRIVALS — Product grid with Dusty Rose accents */}
-        <section className="pb-28 md:pb-16">
-          <div className="flex items-end justify-between mb-7">
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.25em] text-[#E2A9BE] uppercase mb-1">Шинэ</p>
-              <h2 className="text-2xl md:text-3xl font-black text-[#333333] tracking-tight leading-none">New Arrivals</h2>
-            </div>
-            <Link href="/products" className="group text-xs font-bold text-[#999] hover:text-[#333333] flex items-center gap-1 transition-colors">
-              Бүгд <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
+        {/* 5. NEW ARRIVALS — Minimal Cards */}
+        <section className="pb-32 md:pb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="flex items-end justify-between mb-10"
+          >
+            <div>
+              <p className="text-[9px] font-light tracking-[0.5em] text-[#999] uppercase mb-3 font-montserrat">Шинэ</p>
+              <h2 className="text-4xl md:text-6xl font-playfair font-medium text-[#111] tracking-tight leading-none">Шинэ цуглуулга</h2>
+            </div>
+            <Link href="/products" className="group text-xs font-bold text-[#111] flex items-center gap-1.5 hover:opacity-70 transition-opacity">
+              Бүгд <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
+          >
             {products.map((product, i) => {
               const isWished = product.id ? isWishlisted(product.id) : false;
 
               return (
-                <div
+                <motion.div
                   key={product.id}
-                  className="group bg-white rounded-[24px] overflow-hidden border border-[#f0ece8] hover:shadow-xl transition-all duration-300"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ type: "spring", stiffness: 50, damping: 15, delay: i * 0.1 }}
+                  className="group flex flex-col"
                 >
-                  <div className="relative aspect-[3/4] bg-[#f7f3f0] overflow-hidden">
-                    <Link href={`/products/${product.id}`} className="block w-full h-full">
-                      <img
+                  <div className="relative aspect-[3/4] bg-white rounded-[2px] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-black/[0.03] mb-4">
+                    <Link href={`/products/${product.id}`} className="block w-full h-full bg-gray-50">
+                      <motion.img
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
                         src={product.imageUrls?.[0]}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-full object-cover"
                       />
                     </Link>
+
+                    {/* Glassmorphism Wishlist Button */}
                     <div className="absolute top-3 right-3 z-10">
                       <button
                         onClick={() => product.id && toggleWishlist(product.id)}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${isWished
-                            ? "bg-[#E2A9BE] border-[#E2A9BE] text-white shadow-lg shadow-[#E2A9BE]/20"
-                            : "bg-white/80 border-white/60 text-[#777] hover:text-[#E2A9BE]"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-xl border transition-all duration-300 active:scale-90 ${isWished
+                          ? "bg-white border-white text-[#E2A9BE] shadow-lg shadow-[#E2A9BE]/20"
+                          : "bg-white/60 border-white/40 text-[#111] hover:bg-white"
                           }`}
                       >
-                        <Heart size={15} fill={isWished ? "currentColor" : "none"} />
+                        <motion.div
+                          animate={isWished ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <Heart size={16} fill={isWished ? "currentColor" : "none"} strokeWidth={isWished ? 0 : 2} className={isWished ? "scale-110" : ""} />
+                        </motion.div>
                       </button>
                     </div>
-                    {/* Desktop Hover Add to Cart */}
-                    <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden md:block">
-                      <button onClick={() => product.id && addToCart(product)} className="w-full bg-[#E2A9BE] text-white text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-[#d497ab] transition-colors">
-                        <ShoppingBag size={13} />
+
+                    {/* Desktop Hover Add to Cart - Minimal Style */}
+                    <div className="absolute inset-x-3 bottom-3 translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hidden md:block z-20">
+                      <button onClick={() => product.id && addToCart(product)} className="w-full bg-[#87A96B] text-white text-[10px] uppercase tracking-[0.2em] font-medium py-4 rounded-[2px] flex items-center justify-center gap-2 hover:bg-[#76945d] transition-colors duration-300 shadow-2xl">
+                        <ShoppingBag size={14} strokeWidth={1.5} />
                         Сагсанд нэмэх
                       </button>
                     </div>
                   </div>
 
-                  <div className="p-3.5">
-                    <Link href={`/products/${product.id}`}>
-                      <h3 className="text-[13px] font-bold text-[#333333] line-clamp-1 mb-2 hover:text-[#E2A9BE] transition-colors">{product.name}</h3>
-                    </Link>
-                    <div className="flex items-center justify-between">
-                      <span className="font-black text-[#333333] text-sm">
-                        {(product.discountedPrice ?? product.price).toLocaleString()}₮
-                      </span>
+                  <div className="px-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <Link href={`/products/${product.id}`} className="flex-1">
+                        <h3 className="text-[12px] md:text-[14px] font-medium text-[#1A1A1A] line-clamp-1 leading-snug group-hover:opacity-60 transition-opacity font-montserrat uppercase tracking-wider">{product.name}</h3>
+                      </Link>
+
                       {/* Mobile Add to Cart */}
-                      <button onClick={() => product.id && addToCart(product)} className="md:hidden w-9 h-9 bg-[#87A96B] text-white rounded-xl flex items-center justify-center active:scale-90 transition-all">
-                        <ShoppingBag size={14} />
+                      <button onClick={() => product.id && addToCart(product)} className="md:hidden w-8 h-8 shrink-0 bg-[#87A96B] text-white rounded-[2px] flex items-center justify-center active:scale-90 transition-transform shadow-lg">
+                        <ShoppingBag size={12} strokeWidth={1.5} />
                       </button>
                     </div>
-                    <Link href={`/products/${product.id}`} className="inline-block mt-2 text-[10px] text-[#999] hover:text-[#E2A9BE] font-bold uppercase tracking-wider">Дэлгэрэнгүй</Link>
+
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="font-medium text-[#111] tracking-tight">
+                        {(product.discountedPrice ?? product.price).toLocaleString()}₮
+                      </span>
+                    </div>
+
+                    <Link href={`/products/${product.id}`} className="inline-block mt-3 text-[10px] text-[#999] hover:text-[#111] font-bold uppercase tracking-[0.1em] transition-colors">Дэлгэрэнгүй</Link>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
 
-          <div className="mt-12 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-16 text-center"
+          >
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 border-2 border-[#333333] text-[#333333] px-10 py-4 rounded-2xl font-black text-sm hover:bg-[#333333] hover:text-white transition-all active:scale-95"
+              className="inline-flex items-center gap-4 bg-[#87A96B] text-white px-12 py-6 rounded-[2px] font-medium text-[11px] uppercase tracking-[0.3em] hover:bg-[#76945d] transition-all active:scale-95 shadow-2xl"
             >
-              Бүх бүтээгдэхүүн <ArrowRight size={15} />
+              Бүх бүтээгдэхүүн <ArrowRight size={16} />
             </Link>
-          </div>
+          </motion.div>
         </section>
       </div>
 
       <style jsx global>{`
-        @keyframes slowZoom {
-          from { transform: scale(1.05); }
-          to   { transform: scale(1); }
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-15px); }
+        }
+        @keyframes float-delayed {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float-delayed 8s ease-in-out infinite 1s; }
       `}</style>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { db, storage } from "@/lib/firebase"; 
+import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -34,7 +34,7 @@ export default function AddProductPage() {
     name: "", price: "", discountedPrice: "", description: "", careInstructions: "",
     flowerType: "", packaging: "Баглаа", size: "Дунд", stemCount: ""
   });
-  
+
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPurposes, setSelectedPurposes] = useState<string[]>([]); // Зориулалт хадгалах
@@ -57,7 +57,7 @@ export default function AddProductPage() {
     e.preventDefault();
     if (imageFiles.length === 0) return alert("Зураг заавал оруулна уу!");
     if (selectedCategories.length === 0) return alert("Ангилал сонгоно уу!");
-    
+
     setLoading(true);
     try {
       const uploadPromises = imageFiles.map(async (file) => {
@@ -90,152 +90,149 @@ export default function AddProductPage() {
     }
   };
 
+
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8 bg-gray-50 min-h-screen pb-20">
-      <div className="flex items-center justify-between mb-8">
-        <button onClick={() => router.back()} className="p-2 hover:bg-white rounded-full transition shadow-sm border"><ChevronLeft size={24} /></button>
-        <h1 className="text-2xl font-black text-gray-900 tracking-tight italic uppercase">Add New Product</h1>
-        <div className="w-10" />
+    <div className="max-w-6xl mx-auto p-8 font-montserrat text-[#1A1A1A]">
+      <div className="flex items-center justify-between mb-12">
+        <button onClick={() => router.back()} className="p-4 hover:bg-[#1A1A1A] hover:text-white rounded-[2px] transition-all border border-black/[0.05] bg-white shadow-sm"><ChevronLeft size={20} strokeWidth={1.5} /></button>
+        <h1 className="text-2xl lg:text-4xl font-playfair font-medium text-[#1A1A1A]">Add New Product</h1>
+        <div className="w-12" />
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left Column */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-               Category & Occasion
-            </h2>
-            <div className="space-y-6">
-               {/* 1. Үндсэн Ангилал */}
-               <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase mb-3 block ml-1">Үндсэн ангилал</label>
-                  <div className="flex flex-wrap gap-2">
-                    {dbCategories.map(cat => (
-                      <button 
-                        key={cat.id} type="button" 
-                        onClick={() => toggleItem(selectedCategories, setSelectedCategories, cat.name)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${selectedCategories.includes(cat.name) ? "bg-black text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}
-                      >
-                        {cat.name === "Бэлэг дурсгал" ? <Gift size={14}/> : <Flower2 size={14}/>}
-                        {cat.name}
-                      </button>
-                    ))}
-                  </div>
-               </div>
 
-               {/* 2. Зориулалт (ШИНЭ ХЭСЭГ) */}
-               <div>
-                  <label className="text-[10px] font-bold text-green-600 uppercase mb-3 block ml-1">Зориулалт (Occasions)</label>
-                  <div className="flex flex-wrap gap-2">
-                    {PURPOSE_OPTIONS.map(purp => (
-                      <button 
-                        key={purp} type="button" 
-                        onClick={() => toggleItem(selectedPurposes, setSelectedPurposes, purp)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition border ${selectedPurposes.includes(purp) ? "bg-green-600 border-green-600 text-white shadow-md shadow-green-100" : "bg-white border-gray-100 text-gray-400 hover:border-green-200"}`}
-                      >
-                        {selectedPurposes.includes(purp) && <Check size={12} className="mr-1"/>}
-                        {purp}
-                      </button>
-                    ))}
-                  </div>
-               </div>
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-8">
+
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm">
+            <h2 className="text-[10px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+              Category & Occasion
+            </h2>
+            <div className="space-y-10">
+              {/* 1. Үндсэн Ангилал */}
+              <div>
+                <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Үндсэн ангилал</label>
+                <div className="flex flex-wrap gap-3">
+                  {dbCategories.map(cat => (
+                    <button
+                      key={cat.id} type="button"
+                      onClick={() => toggleItem(selectedCategories, setSelectedCategories, cat.name)}
+                      className={`px-6 py-3 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${selectedCategories.includes(cat.name) ? "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. Зориулалт */}
+              <div>
+                <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Зориулалт (Occasions)</label>
+                <div className="flex flex-wrap gap-3">
+                  {PURPOSE_OPTIONS.map(purp => (
+                    <button
+                      key={purp} type="button"
+                      onClick={() => toggleItem(selectedPurposes, setSelectedPurposes, purp)}
+                      className={`px-6 py-3 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${selectedPurposes.includes(purp) ? "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}
+                    >
+                      {purp}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
-             <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Зураг</h2>
-             
-             {/* Uploaded Images Grid */}
-             {imageFiles.length > 0 && (
-               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-4">
-                 {imageFiles.map((file, i) => (
-                   <div key={i} className="relative group aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                     <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="" />
-                     {i === 0 && (
-                       <span className="absolute top-1.5 left-1.5 bg-black/70 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Нүүр</span>
-                     )}
-                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                     <button 
-                       type="button" 
-                       onClick={() => setImageFiles(prev => prev.filter((_, idx) => idx !== i))} 
-                       className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                     >
-                       <X size={12}/>
-                     </button>
-                   </div>
-                 ))}
-               </div>
-             )}
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm">
+            <h2 className="text-[10px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.3em] mb-8">Зураг</h2>
 
-             {/* Drop Zone */}
-             <div 
-               onClick={() => fileInputRef.current?.click()}
-               onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-green-400', 'bg-green-50/50'); }}
-               onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-green-400', 'bg-green-50/50'); }}
-               onDrop={(e) => { 
-                 e.preventDefault(); 
-                 e.currentTarget.classList.remove('border-green-400', 'bg-green-50/50');
-                 if (e.dataTransfer.files) setImageFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
-               }}
-               className={`relative cursor-pointer border-2 border-dashed rounded-2xl transition-all hover:border-green-300 hover:bg-green-50/30 ${
-                 imageFiles.length === 0 
-                   ? 'border-gray-200 py-16' 
-                   : 'border-gray-100 py-6'
-               }`}
-             >
-               <div className="flex flex-col items-center justify-center gap-3 text-center px-4">
-                 <div className={`rounded-full flex items-center justify-center transition-all ${
-                   imageFiles.length === 0 
-                     ? 'w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-50 text-green-500' 
-                     : 'w-10 h-10 bg-gray-100 text-gray-400'
-                 }`}>
-                   <ImagePlus size={imageFiles.length === 0 ? 28 : 20} />
-                 </div>
-                 {imageFiles.length === 0 ? (
-                   <>
-                     <div>
-                       <p className="text-sm font-bold text-gray-700">Зураг чирж оруулах эсвэл дарна уу</p>
-                       <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP — олон зураг нэг дор сонгож болно</p>
-                     </div>
-                     <span className="inline-flex items-center gap-1.5 bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-gray-800 transition mt-1">
-                       <ImagePlus size={14} /> Зураг сонгох
-                     </span>
-                   </>
-                 ) : (
-                   <p className="text-xs text-gray-400 font-medium">
-                     + Нэмэлт зураг оруулах <span className="text-gray-300">({imageFiles.length} зураг байна)</span>
-                   </p>
-                 )}
-               </div>
-             </div>
-             <input 
-               type="file" 
-               multiple 
-               accept="image/*"
-               ref={fileInputRef} 
-               className="hidden" 
-               onChange={(e) => e.target.files && setImageFiles([...imageFiles, ...Array.from(e.target.files)])} 
-             />
+            {/* Uploaded Images Grid */}
+            {imageFiles.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 mb-8">
+                {imageFiles.map((file, i) => (
+                  <div key={i} className="relative group aspect-[4/5] rounded-[2px] overflow-hidden border border-black/[0.03] shadow-sm">
+                    <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="" />
+                    {i === 0 && (
+                      <span className="absolute top-2 left-2 bg-[#1A1A1A]/80 text-white text-[7px] font-medium px-2 py-1 rounded-sm uppercase tracking-widest">Main</span>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
+                    <button
+                      type="button"
+                      onClick={() => setImageFiles(prev => prev.filter((_, idx) => idx !== i))}
+                      className="absolute top-2 right-2 bg-white text-[#1A1A1A] rounded-full p-2 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-[#1A1A1A] hover:text-white"
+                    >
+                      <X size={12} strokeWidth={2} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Drop Zone */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[#1A1A1A]', 'bg-[#FCFBF9]'); }}
+              onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-[#1A1A1A]', 'bg-[#FCFBF9]'); }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('border-[#1A1A1A]', 'bg-[#FCFBF9]');
+                if (e.dataTransfer.files) setImageFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
+              }}
+              className={`relative cursor-pointer border border-dashed rounded-[2px] transition-all hover:border-[#1A1A1A] hover:bg-[#FCFBF9] ${imageFiles.length === 0
+                  ? 'border-black/[0.05] py-20'
+                  : 'border-black/[0.05] py-10'
+                }`}
+            >
+              <div className="flex flex-col items-center justify-center gap-4 text-center px-6">
+                <div className={`rounded-full flex items-center justify-center transition-all ${imageFiles.length === 0
+                    ? 'w-20 h-20 bg-[#F3F2F0] text-[#1A1A1A]'
+                    : 'w-12 h-12 bg-[#F3F2F0] text-[#1A1A1A]'
+                  }`}>
+                  <ImagePlus size={imageFiles.length === 0 ? 32 : 20} strokeWidth={1.5} />
+                </div>
+                {imageFiles.length === 0 ? (
+                  <>
+                    <div>
+                      <p className="text-[11px] font-medium text-[#1A1A1A] uppercase tracking-[0.1em]">Зураг чирж оруулах эсвэл дарна уу</p>
+                      <p className="text-[9px] text-[#1A1A1A]/30 mt-2 uppercase tracking-widest font-light">PNG, JPG, WEBP — Multiple files supported</p>
+                    </div>
+                    <span className="inline-flex items-center gap-2 bg-[#1A1A1A] text-white text-[9px] font-medium uppercase tracking-[0.2em] px-8 py-4 rounded-[2px] hover:bg-black transition shadow-xl mt-4">
+                      <ImagePlus size={14} strokeWidth={1.5} /> Зураг сонгох
+                    </span>
+                  </>
+                ) : (
+                  <p className="text-[9px] text-[#1A1A1A]/40 font-medium uppercase tracking-widest">
+                    + Нэмэлт зураг оруулах <span className="text-[#1A1A1A]/20">({imageFiles.length} зургууд)</span>
+                  </p>
+                )}
+              </div>
+            </div>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={(e) => e.target.files && setImageFiles([...imageFiles, ...Array.from(e.target.files)])}
+            />
           </div>
 
-          <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="col-span-1 md:col-span-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Бүтээгдэхүүний гарчиг (Нэр)</label>
-                <input required type="text" placeholder="Жишээ: 101 Сарнайтай сагс" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-gray-50 border-none rounded-2xl p-4 mt-1 font-bold outline-none focus:ring-2 focus:ring-black" />
+                <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Бүтээгдэхүүний гарчиг (Нэр)</label>
+                <input required type="text" placeholder="Жишээ: 101 Сарнайтай сагс" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 font-playfair text-lg outline-none focus:border-[#1A1A1A] transition-all" />
               </div>
 
               {!isGiftProduct && (
                 <div className="col-span-1 md:col-span-2">
-                  <label className="text-[10px] font-bold text-green-600 uppercase ml-2">Цэцэгний төрөл</label>
-                  <input 
-                    list="flower-names" type="text" 
-                    placeholder="Сарнай, Алтанзул гэх мэт..." 
-                    value={formData.flowerType} 
-                    onChange={e => setFormData({...formData, flowerType: e.target.value})} 
-                    className="w-full bg-green-50/50 border border-green-100 rounded-2xl p-4 mt-1 font-bold outline-none focus:ring-2 focus:ring-green-500" 
+                  <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Цэцэгний төрөл</label>
+                  <input
+                    list="flower-names" type="text"
+                    placeholder="Сарнай, Алтанзул гэх мэт..."
+                    value={formData.flowerType}
+                    onChange={e => setFormData({ ...formData, flowerType: e.target.value })}
+                    className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 text-[11px] uppercase tracking-wider outline-none focus:border-[#1A1A1A] transition-all"
                   />
                   <datalist id="flower-names">
                     {FLOWER_NAME_SUGGESTIONS.map(name => <option key={name} value={name} />)}
@@ -244,70 +241,70 @@ export default function AddProductPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-8">
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Үнэ (₮)</label>
-                <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full bg-gray-50 border-none rounded-2xl p-4 mt-1 font-black" />
+                <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Үнэ (₮)</label>
+                <input required type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 font-playfair text-xl outline-none focus:border-[#1A1A1A] transition-all" />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Хямдарсан үнэ (₮)</label>
-                <input type="number" value={formData.discountedPrice} onChange={e => setFormData({...formData, discountedPrice: e.target.value})} className="w-full bg-gray-50 border-none rounded-2xl p-4 mt-1 font-black text-rose-600" />
+                <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Хямдарсан үнэ (₮)</label>
+                <input type="number" value={formData.discountedPrice} onChange={e => setFormData({ ...formData, discountedPrice: e.target.value })} className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 font-playfair text-xl text-rose-600 outline-none focus:border-[#1A1A1A] transition-all" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Right Column */}
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-6">
-            
+        <div className="space-y-8">
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm space-y-10">
+
             {!isGiftProduct && (
               <>
                 <div>
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Савалгаа</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4">Савалгаа</h3>
+                  <div className="grid grid-cols-2 gap-3">
                     {PACKAGING_OPTIONS.map(opt => (
-                      <button key={opt} type="button" onClick={() => setFormData({...formData, packaging: opt})} className={`py-3 rounded-xl text-[11px] font-bold transition shadow-sm ${formData.packaging === opt ? "bg-black text-white" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}>{opt}</button>
+                      <button key={opt} type="button" onClick={() => setFormData({ ...formData, packaging: opt })} className={`py-4 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${formData.packaging === opt ? "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}>{opt}</button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Тоо ширхэг (Иш)</h3>
-                  <input type="number" placeholder="Жишээ: 51" value={formData.stemCount} onChange={e => setFormData({...formData, stemCount: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-4 text-sm font-black" />
+                  <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4">Тоо ширхэг (Иш)</h3>
+                  <input type="number" placeholder="Жишээ: 51" value={formData.stemCount} onChange={e => setFormData({ ...formData, stemCount: e.target.value })} className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 text-sm font-playfair font-medium outline-none focus:border-[#1A1A1A]" />
                 </div>
               </>
             )}
 
             <div>
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Өнгө сонгох</h3>
-              <div className="flex flex-wrap gap-3 p-2 bg-gray-50 rounded-2xl">
+              <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4">Өнгө сонгох</h3>
+              <div className="flex flex-wrap gap-4 p-4 bg-[#FCFBF9] rounded-[2px] border border-black/[0.03]">
                 {COLOR_OPTIONS.map(color => (
-                  <button 
-                    key={color.name} type="button" 
+                  <button
+                    key={color.name} type="button"
                     onClick={() => toggleItem(selectedColors, setSelectedColors, color.name)}
-                    className={`w-8 h-8 rounded-full border-2 shadow-sm transition-transform active:scale-90 ${selectedColors.includes(color.name) ? "border-black scale-110" : "border-transparent hover:scale-105"}`}
+                    className={`w-10 h-10 rounded-full border-2 transition-all active:scale-90 ${selectedColors.includes(color.name) ? "border-[#1A1A1A] scale-110 shadow-lg" : "border-transparent hover:scale-105"}`}
                     style={{ background: color.hex }}
                     title={color.name}
                   >
-                     {selectedColors.includes(color.name) && <Check size={14} className={color.name === 'Цагаан' ? 'text-black mx-auto' : 'text-white mx-auto'} />}
+                    {selectedColors.includes(color.name) && <Check size={16} className={color.name === 'Цагаан' ? 'text-black mx-auto' : 'text-white mx-auto'} strokeWidth={2.5} />}
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Хэмжээ</h3>
-              <div className="flex gap-2">
+              <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4">Хэмжээ</h3>
+              <div className="flex gap-3">
                 {SIZE_OPTIONS.map(s => (
-                  <button key={s} type="button" onClick={() => setFormData({...formData, size: s})} className={`flex-1 py-3 rounded-xl text-[11px] font-bold transition ${formData.size === s ? "bg-black text-white" : "bg-gray-50 text-gray-400"}`}>{s}</button>
+                  <button key={s} type="button" onClick={() => setFormData({ ...formData, size: s })} className={`flex-1 py-4 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${formData.size === s ? "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}>{s}</button>
                 ))}
               </div>
             </div>
 
-            <button 
-              type="submit" disabled={loading} 
-              className="w-full bg-green-600 text-white font-black py-5 rounded-[24px] hover:bg-green-700 transition active:scale-95 disabled:bg-gray-200 shadow-xl shadow-green-100 uppercase tracking-widest text-sm"
+            <button
+              type="submit" disabled={loading}
+              className="w-full bg-[#1A1A1A] text-white font-medium py-6 rounded-[2px] hover:bg-black transition-all active:scale-95 disabled:bg-gray-200 shadow-2xl shadow-black/10 uppercase tracking-[0.3em] text-[11px]"
             >
               {loading ? "Saving..." : "Save Product"}
             </button>

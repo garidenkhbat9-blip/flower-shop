@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { motion } from "framer-motion";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -33,7 +34,6 @@ export default function ProductDetailPage() {
           const productData = { id: docSnap.id, ...docSnap.data() } as Product;
           setProduct(productData);
 
-          // categories эсвэл category аль нь байгааг шалгаж query хийх
           const cats = (productData as any).categories as string[] | undefined;
           const catsSingle = (productData as any).category as string[] | undefined;
           const allCats = cats || catsSingle || [];
@@ -44,13 +44,11 @@ export default function ProductDetailPage() {
               limit(9)
             );
             const recSnap = await getDocs(q);
-            // categories field байхгүй бол category field-ээр дахин татна
             let recList = recSnap.docs
               .map(d => ({ id: d.id, ...d.data() } as Product))
               .filter(p => p.id !== id)
               .slice(0, 8);
 
-            // Хэрэв categories query-ээр олдоогүй бол category field-ээр оролдох
             if (recList.length === 0 && allCats.length > 0) {
               const q2 = query(
                 collection(db, "products"),
@@ -95,64 +93,64 @@ export default function ProductDetailPage() {
 
   if (loading)
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-gray-400">Уншиж байна...</span>
-        </div>
+      <div className="h-screen flex items-center justify-center bg-[#FAFAFA]">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-[3px] border-gray-100 border-t-[#111] rounded-full animate-spin" />
+          <span className="text-[10px] font-bold tracking-[0.3em] text-[#111] uppercase">Уншиж байна...</span>
+        </motion.div>
       </div>
     );
 
   if (!product)
     return (
-      <div className="h-screen flex flex-col items-center justify-center gap-4">
-        <p className="font-bold text-gray-500">Бүтээгдэхүүн олдсонгүй.</p>
-        <Link href="/products" className="text-sm text-green-600 hover:underline">
+      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-[#FAFAFA]">
+        <p className="font-bold text-[#999] tracking-widest uppercase text-[10px]">Бүтээгдэхүүн олдсонгүй.</p>
+        <Link href="/products" className="text-sm font-bold text-[#111] border-b-2 border-[#111] pb-1 hover:opacity-70 transition-opacity">
           Бүх бараа руу буцах
         </Link>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-28 font-sans">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FAFAFA] pb-28 font-montserrat text-[#1A1A1A]">
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6">
 
         {/* Буцах товч + Breadcrumbs */}
-        <div className="flex flex-col gap-3 mb-8">
+        <div className="flex flex-col gap-4 mb-10">
           {/* Mobile буцах товч */}
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition w-fit group"
+            className="flex items-center gap-3 text-xs font-bold text-[#111] hover:opacity-70 transition-opacity w-fit group uppercase tracking-widest"
           >
-            <span className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center group-hover:border-gray-400 group-hover:bg-gray-50 transition shadow-sm">
+            <span className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center group-hover:border-[#111] transition-colors shadow-sm">
               <ChevronLeft size={16} />
             </span>
             Буцах
           </button>
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <Link href="/" className="hover:text-black transition">Нүүр</Link>
+          <div className="flex items-center gap-2 text-[9px] font-light uppercase tracking-[0.4em] text-[#999]">
+            <Link href="/" className="hover:text-[#1A1A1A] transition-colors">Нүүр</Link>
             <span>/</span>
-            <Link href="/products" className="hover:text-black transition">Бүх бараа</Link>
+            <Link href="/products" className="hover:text-[#1A1A1A] transition-colors">Бүх бараа</Link>
             <span>/</span>
-            <span className="text-black font-medium truncate max-w-[160px]">{product.name}</span>
+            <span className="text-[#1A1A1A] truncate max-w-[160px] md:max-w-[300px]">{product.name}</span>
           </div>
         </div>
 
         {/* Product Main Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white p-4 md:p-10 rounded-2xl shadow-sm border border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white p-6 md:p-12 rounded-[32px] shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-black/[0.03]">
 
           {/* Images */}
-          <div className="lg:col-span-7 flex flex-col md:flex-row gap-4">
+          <div className="lg:col-span-7 flex flex-col md:flex-row gap-5">
             {/* Thumbnails */}
-            <div className="order-2 md:order-1 flex md:flex-col gap-2 shrink-0">
+            <div className="order-2 md:order-1 flex md:flex-col gap-3 shrink-0 overflow-x-auto no-scrollbar pb-2 md:pb-0">
               {product.imageUrls.map((url, index) => (
                 <div
                   key={index}
                   onClick={() => setSelectedImg(index)}
-                  className={`w-14 h-14 md:w-18 md:h-18 rounded-xl overflow-hidden border-2 cursor-pointer transition-all flex-shrink-0 ${selectedImg === index
-                      ? "border-green-600 shadow-md opacity-100"
-                      : "border-transparent opacity-50 hover:opacity-75"
+                  className={`w-16 h-16 md:w-20 md:h-20 rounded-[2px] overflow-hidden border cursor-pointer transition-all flex-shrink-0 ${selectedImg === index
+                      ? "border-[#1A1A1A] opacity-100"
+                      : "border-transparent opacity-50 hover:opacity-100 bg-gray-50"
                     }`}
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
@@ -160,47 +158,53 @@ export default function ProductDetailPage() {
               ))}
             </div>
             {/* Main Image */}
-            <div className="order-1 md:order-2 flex-1 aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+            <motion.div 
+              key={selectedImg}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="order-1 md:order-2 flex-1 aspect-square rounded-[2px] overflow-hidden bg-gray-50 border border-gray-100"
+            >
               <img
                 src={product.imageUrls[selectedImg]}
                 alt={product.name}
-                className="w-full h-full object-cover transition-all duration-300"
+                className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
               />
-            </div>
+            </motion.div>
           </div>
 
           {/* Details */}
-          <div className="lg:col-span-5 space-y-5">
-            {/* Категори badge */}
-            {(product as any).categories?.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {(product as any).categories.map((cat: string) => (
-                  <span key={cat} className="text-[10px] font-bold uppercase tracking-widest bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100">
-                    {cat}
-                  </span>
-                ))}
-              </div>
-            )}
-
+          <div className="lg:col-span-5 flex flex-col justify-center space-y-8">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{product.name}</h1>
+              {/* Категори badge */}
+              {(product as any).categories?.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {(product as any).categories.map((cat: string) => (
+                    <span key={cat} className="text-[10px] font-black uppercase tracking-[0.2em] bg-gray-100 text-[#111] px-3 py-1.5 rounded-full">
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <h1 className="text-3xl md:text-5xl font-playfair font-medium text-[#1A1A1A] leading-[1.1] tracking-tight mb-4">{product.name}</h1>
             </div>
 
             {/* Price */}
-            <div className="space-y-1">
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-widest">Үнэ</p>
-              <div className="flex items-baseline gap-3">
+            <div className="space-y-2">
+              <p className="text-[9px] font-light text-[#999] uppercase tracking-[0.5em]">Үнэ</p>
+              <div className="flex items-baseline gap-4">
                 {product.discountedPrice ? (
                   <>
-                    <p className="text-3xl font-black text-gray-900">
+                    <p className="text-4xl md:text-5xl font-playfair font-medium text-[#1A1A1A] tracking-tight">
                       {product.discountedPrice.toLocaleString()} ₮
                     </p>
-                    <p className="text-sm text-gray-300 line-through">
+                    <p className="text-lg md:text-xl font-medium text-[#999] line-through">
                       {product.price.toLocaleString()} ₮
                     </p>
                   </>
                 ) : (
-                  <p className="text-3xl font-black text-gray-900">
+                  <p className="text-4xl md:text-5xl font-playfair font-medium text-[#1A1A1A] tracking-tight">
                     {product.price.toLocaleString()} ₮
                   </p>
                 )}
@@ -209,9 +213,9 @@ export default function ProductDetailPage() {
 
             {/* Purposes */}
             {(product as any).purposes?.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2 pt-2">
                 {(product as any).purposes.map((p: string) => (
-                  <span key={p} className="text-[11px] font-semibold bg-pink-50 text-pink-600 px-3 py-1 rounded-full border border-pink-100">
+                  <span key={p} className="text-[10px] font-bold uppercase tracking-[0.1em] border border-gray-200 text-[#666] px-3.5 py-1.5 rounded-full">
                     {p}
                   </span>
                 ))}
@@ -219,49 +223,48 @@ export default function ProductDetailPage() {
             )}
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
               <button
                 onClick={handleAddToCart}
-                className={`flex items-center justify-center gap-2 border-2 font-bold py-4 rounded-xl transition active:scale-95 uppercase text-xs tracking-widest ${addedToCart
-                    ? "border-green-600 bg-green-600 text-white"
-                    : "border-gray-900 text-gray-900 hover:bg-gray-50"
+                className={`flex items-center justify-center gap-3 border font-medium py-5 rounded-[2px] transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] ${addedToCart
+                    ? "bg-[#87A96B] text-white border-[#87A96B]"
+                    : "border-gray-200 text-[#1A1A1A] hover:border-[#87A96B]"
                   }`}
               >
-                <ShoppingCart size={16} />
+                <ShoppingCart size={15} strokeWidth={1.5} />
                 {addedToCart ? "Нэмэгдлээ ✓" : "Сагсанд хийх"}
               </button>
               <button
                 onClick={handleCheckoutAction}
-                className="flex items-center justify-center gap-2 bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 transition active:scale-95 uppercase text-xs tracking-widest shadow-lg shadow-green-100"
+                className="flex items-center justify-center gap-3 bg-[#1A1A1A] text-white font-medium py-5 rounded-[2px] hover:bg-black transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-black/10"
               >
-                <CreditCard size={16} /> Худалдан авах
+                <CreditCard size={15} strokeWidth={1.5} /> Худалдан авах
               </button>
             </div>
 
             {/* Stores */}
-            <div className="pt-5 space-y-3 border-t border-gray-50">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+            <div className="pt-6 space-y-4">
+              <p className="text-[10px] font-black text-[#999] uppercase tracking-[0.2em]">
                 Худалдаалж буй салбарууд
               </p>
-              <StoreItem name="Төв салбар" address="Бага тойрог, Улаанбаатар" />
-              <StoreItem name="Наадмаар салбар" address="ХУД, 15-р хороо, Наадам Центр" />
+              <StoreItem name="Төв салбар" address="Ulaanbaatar Galleria, 2-р давхар" />
             </div>
           </div>
         </div>
 
         {/* Specifications */}
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-900 mb-5 uppercase tracking-tight">
+        <div className="mt-16 md:mt-24">
+          <h2 className="text-xl md:text-3xl font-playfair font-medium text-[#1A1A1A] mb-8 tracking-tight">
             Үзүүлэлтүүд
           </h2>
-          <div className="bg-white border border-gray-100 p-6 md:p-8 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0">
+          <div className="bg-white border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6 md:p-12 rounded-[2px] grid grid-cols-1 md:grid-cols-2 gap-0 divide-y border-gray-100 md:divide-y-0">
             <SpecRow label="Өнгө" value={product.colors?.join(", ") || "—"} />
             <SpecRow label="Тоо ширхэг" value={product.stemCount ? `${product.stemCount} ширхэг` : "—"} />
             <SpecRow label="Савалгаа" value={product.packaging || "—"} />
             <SpecRow label="Хэмжээ" value={product.size || "—"} />
             {product.description && (
-              <div className="md:col-span-2 pt-5 mt-2 border-t border-gray-50">
-                <p className="text-[13px] text-gray-500 leading-relaxed">{product.description}</p>
+              <div className="md:col-span-2 pt-8 mt-6 border-t border-gray-100">
+                <p className="text-sm md:text-base text-[#666] leading-relaxed max-w-4xl">{product.description}</p>
               </div>
             )}
           </div>
@@ -269,43 +272,48 @@ export default function ProductDetailPage() {
 
         {/* ✅ Санал болгох бараа — 8 хүртэл, "Бүх бараа харах" товчтой */}
         {recommended.length > 0 && (
-          <div className="mt-20">
+          <div className="mt-24 md:mt-32">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
               <div>
-                <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+                <p className="text-[9px] font-light tracking-[0.5em] text-[#999] uppercase mb-3 font-montserrat">Explore</p>
+                <h2 className="text-3xl md:text-5xl font-playfair font-medium text-[#1A1A1A] tracking-tight">
                   Танд санал болгох
                 </h2>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Ижил төстэй {recommended.length} бүтээгдэхүүн
-                </p>
               </div>
               {/* ✅ Бүх бараа харах — /products руу буцаана */}
               <Link
                 href="/products"
-                className="flex items-center gap-1.5 text-xs font-bold text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-full transition"
+                className="flex items-center gap-2 text-[10px] font-bold text-[#111] hover:opacity-70 transition-opacity uppercase tracking-widest border-b-2 border-[#111] pb-1 w-fit"
               >
                 Бүгдийг харах
-                <ArrowRight size={13} />
+                <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Grid — 2 col mobile, 4 col desktop, max 8 items */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {recommended.map(item => (
-                <RecommendedCard
+              {recommended.map((item, index) => (
+                <motion.div
                   key={item.id}
-                  item={item}
-                  onAddToCart={() => addToCart(item, 1)}
-                />
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <RecommendedCard
+                    item={item}
+                    onAddToCart={() => addToCart(item, 1)}
+                  />
+                </motion.div>
               ))}
             </div>
 
             {/* Bottom CTA — мөн /products руу */}
-            <div className="mt-10 flex justify-center">
+            <div className="mt-16 flex justify-center">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 border-2 border-gray-900 text-gray-900 font-bold px-8 py-3.5 rounded-full hover:bg-gray-900 hover:text-white transition-all duration-200 text-sm uppercase tracking-widest"
+                className="inline-flex items-center gap-3 bg-[#111] text-white font-bold px-10 py-5 rounded-full hover:bg-black transition-all duration-300 text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:scale-105"
               >
                 <ChevronLeft size={16} />
                 Бүх бараа руу буцах
@@ -315,7 +323,7 @@ export default function ProductDetailPage() {
         )}
 
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -323,24 +331,24 @@ export default function ProductDetailPage() {
 
 function SpecRow({ label, value }: { label: string; value: any }) {
   return (
-    <div className="flex items-center justify-between py-3.5 px-2 border-b border-gray-50 last:border-0">
-      <span className="text-[12px] font-bold text-gray-400 uppercase tracking-wide w-28 shrink-0">
+    <div className="flex items-center justify-between py-5 px-4 border-b border-gray-100 last:border-0 md:border-b-0 md:even:border-l md:even:pl-8">
+      <span className="text-[10px] font-black text-[#999] uppercase tracking-[0.2em] shrink-0">
         {label}
       </span>
-      <span className="text-[13px] text-gray-700 font-medium text-right">{value}</span>
+      <span className="text-[13px] text-[#111] font-bold text-right ml-4">{value}</span>
     </div>
   );
 }
 
 function StoreItem({ name, address }: { name: string; address: string }) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-50 bg-gray-50/50 hover:border-green-100 transition">
-      <div className="p-2 bg-white rounded-lg border border-gray-100 text-green-600 flex-shrink-0">
-        <MapPin size={15} />
+    <div className="flex items-center gap-4 p-4 rounded-[16px] border border-gray-100 bg-gray-50 hover:bg-white hover:border-[#111] hover:shadow-md transition-all duration-300 cursor-default">
+      <div className="p-3 bg-white rounded-[12px] border border-gray-200 text-[#111] flex-shrink-0 shadow-sm">
+        <MapPin size={16} />
       </div>
       <div>
-        <p className="text-xs font-bold text-gray-800">{name}</p>
-        <p className="text-[10px] text-gray-400 mt-0.5">{address}</p>
+        <p className="text-[13px] font-bold text-[#111]">{name}</p>
+        <p className="text-[11px] text-[#666] mt-1 font-medium">{address}</p>
       </div>
     </div>
   );
@@ -365,42 +373,42 @@ function RecommendedCard({
   const hasDiscount = item.discountedPrice && item.discountedPrice < item.price;
 
   return (
-    <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col">
+    <div className="group bg-white rounded-[2px] border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_10px_40px_rgba(0,0,0,0.06)] transition-all duration-500 flex flex-col h-full">
       {/* Image */}
       <Link href={`/products/${item.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-50">
         <img
           src={item.imageUrls?.[0] || "/placeholder.jpg"}
           alt={item.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <div className="bg-white/90 backdrop-blur-sm p-2.5 rounded-full transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300">
-            <Eye size={18} className="text-gray-700" />
+        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <div className="bg-white/90 backdrop-blur-md p-3 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)]">
+            <Eye size={16} className="text-[#111]" />
           </div>
         </div>
         {/* Discount badge */}
         {hasDiscount && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
+          <div className="absolute top-3 left-3 bg-[#87A96B] text-white text-[9px] font-black px-3 py-1 rounded-full shadow-md uppercase tracking-widest">
             -{Math.round(((item.price - item.discountedPrice!) / item.price) * 100)}%
           </div>
         )}
       </Link>
 
       {/* Info */}
-      <div className="p-3 sm:p-4 flex flex-col flex-grow gap-2">
+      <div className="p-4 flex flex-col flex-grow gap-2">
         <Link href={`/products/${item.id}`}>
-          <h3 className="text-[12px] sm:text-sm font-bold text-gray-800 line-clamp-2 leading-snug hover:text-green-600 transition-colors uppercase">
+          <h3 className="text-[12px] sm:text-[13px] font-bold text-[#111] line-clamp-2 leading-snug hover:text-gray-500 transition-colors uppercase tracking-tight">
             {item.name}
           </h3>
         </Link>
 
-        <div className="flex items-baseline gap-2 mt-auto">
-          <p className={`font-black text-[14px] ${hasDiscount ? "text-red-500" : "text-gray-900"}`}>
+        <div className="flex items-baseline gap-2 mt-auto mb-4">
+          <p className={`font-black text-[14px] md:text-[15px] ${hasDiscount ? "text-[#111]" : "text-[#111]"}`}>
             {(hasDiscount ? item.discountedPrice! : item.price).toLocaleString()} ₮
           </p>
           {hasDiscount && (
-            <p className="text-[11px] text-gray-300 line-through">
+             <p className="text-[10px] text-[#999] line-through font-medium">
               {item.price.toLocaleString()} ₮
             </p>
           )}
@@ -408,12 +416,12 @@ function RecommendedCard({
 
         <button
           onClick={handleAdd}
-          className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 ${added
-              ? "bg-green-600 text-white"
-              : "bg-gray-900 hover:bg-green-600 text-white"
+          className={`w-full flex items-center justify-center gap-2 py-4 rounded-[2px] text-[10px] uppercase tracking-[0.2em] font-medium transition-all duration-300 active:scale-95 ${added
+              ? "bg-[#87A96B] text-white shadow-md"
+              : "bg-gray-50 hover:bg-[#87A96B] hover:text-white text-[#1A1A1A] border border-gray-100"
             }`}
         >
-          <ShoppingCart size={13} />
+          <ShoppingCart size={14} />
           {added ? "Нэмэгдлээ ✓" : "Сагсанд нэмэх"}
         </button>
       </div>

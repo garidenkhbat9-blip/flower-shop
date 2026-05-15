@@ -1,187 +1,236 @@
 "use client";
 
-import { Flower2, Truck, Star, ShieldCheck, Heart, MapPin, Phone, Instagram, Facebook } from "lucide-react";
-import Image from "next/image";
+import { motion } from "framer-motion";
+import { ArrowRight, MapPin, Phone, Instagram, Facebook, Mail } from "lucide-react";
 import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#FDFDFD] pb-24 font-sans">
+    <div className="min-h-screen bg-[#FCFBF9] selection:bg-[#1A1A1A] selection:text-white overflow-hidden">
       
-      {/* 1. HERO SECTION */}
-      <section className="relative h-[400px] md:h-[500px] w-full overflow-hidden flex items-center justify-center text-center px-6">
-        <div className="absolute inset-0 bg-black/30 z-10" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519304812571-01552210493a?q=80&w=2000')] bg-cover bg-center" />
+      {/* 1. LUXURY HERO SECTION */}
+      <section className="relative h-[40svh] md:h-[50svh] w-full flex items-center justify-center px-6 overflow-hidden">
+        {/* Background Image with subtle parallax effect */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-black/30 z-10" />
+          <motion.img 
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            src="https://images.unsplash.com/photo-1519304812571-01552210493a?q=80&w=2000" 
+            className="w-full h-full object-cover"
+            alt="Flower Background"
+          />
+        </div>
         
-        <div className="relative z-20 max-w-3xl">
-          <span className="bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-4 inline-block border border-white/30">
-            Since 2018
-          </span>
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 uppercase italic tracking-tighter leading-none">
-            Бидний тухай <br /> <span className="text-rose-300">Unur Flowers</span>
-          </h1>
-          <p className="text-white/80 text-sm md:text-lg font-medium leading-relaxed">
-            Цэцэг бол зөвхөн бэлэг биш, энэ бол таны сэтгэл хөдлөл, хайр халамжийн илэрхийлэл юм.
-          </p>
+        <div className="relative z-20 max-w-4xl text-center">
+          <motion.span 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="inline-block text-[10px] md:text-[12px] font-bold text-white uppercase tracking-[0.5em] mb-4 font-montserrat"
+          >
+            Since 2018 — Grow Room
+          </motion.span>
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 1 }}
+            className="text-[clamp(2rem,6vw,4.5rem)] font-playfair font-medium text-white leading-tight tracking-tight mb-4"
+          >
+            Бидний <span className="italic font-normal text-white/90">түүх</span>
+          </motion.h1>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
+        >
+          <div className="w-[1px] h-8 bg-gradient-to-b from-white/60 to-transparent" />
+        </motion.div>
+      </section>
+
+      {/* 2. EDITORIAL STORY SECTION */}
+      <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
+          
+          <div className="lg:col-span-6 space-y-12">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <span className="text-[#87A96B] font-bold text-[10px] uppercase tracking-[0.4em] font-montserrat block">Бидний философи</span>
+              <h2 className="text-4xl md:text-6xl font-playfair font-medium text-[#1A1A1A] leading-[1.1] tracking-tight">
+                Цэцэг бүрт <br /> <span className="italic font-normal text-[#1A1A1A]/70">хайраа шингээдэг</span>
+              </h2>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="space-y-8 text-[#1A1A1A]/60 leading-relaxed text-base md:text-lg font-montserrat font-light"
+            >
+              <p>
+                Grow Room нь Улаанбаатар Галлериад байрлах орчин үеийн цэцгийн дэлгүүр бөгөөд онцгой мөч бүрт зориулсан шинэхэн цэцгийн баглаа, бэлгийн шийдэл, захиалгат үйлчилгээ үзүүлдэг. 
+              </p>
+              <p className="font-medium text-[#1A1A1A] italic">
+                “Цэцэг өгөх нь авахаасаа илүү жаргалтай”
+              </p>
+              <p>
+                Бид 2018 оноос эхлэн Улаанбаатар хотод үйл ажиллагаагаа явуулж эхэлсэн бөгөөд өдгөө цэцэг хүргэлтийн салбарт өөрийн гэсэн өнгө төрхийг бүтээж, чанар болон найдвартай байдлаараа танигдаад байна.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
+              <Link href="/products" className="group inline-flex items-center gap-6 text-[#1A1A1A] font-montserrat">
+                <span className="text-[11px] font-bold uppercase tracking-[0.4em] border-b border-[#1A1A1A]/10 pb-2 group-hover:border-[#87A96B] transition-all">Цуглуулга үзэх</span>
+                <div className="w-12 h-12 rounded-full border border-[#1A1A1A]/10 flex items-center justify-center group-hover:bg-[#87A96B] group-hover:border-[#87A96B] group-hover:text-white transition-all">
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            </motion.div>
+          </div>
+
+          <div className="lg:col-span-6">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative aspect-[4/5] bg-white p-4 md:p-8 rounded-[2px] shadow-[0_40px_100px_rgba(0,0,0,0.06)] border border-black/[0.03]"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=1000" 
+                className="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-700" 
+                alt="Our craftsmanship"
+              />
+              {/* Architectural badge */}
+              <div className="absolute -bottom-10 -left-10 bg-[#87A96B] text-white p-10 hidden md:block rounded-[2px] shadow-2xl">
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] mb-2">Years of</p>
+                <p className="text-5xl font-playfair font-medium">06</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] mt-2">Excellence</p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 mt-20">
-        
-        {/* 2. MISSION & VISION */}
-        {/* 2. MISSION & VISION */}
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center mb-32">
-  
-  {/* ЗҮҮН ТАЛ: Зураг (lg:col-span-5 болгож арай нарийсгав) */}
-  <div className="lg:col-span-5 relative">
-     <div className="relative w-full max-w-[450px] mx-auto lg:mx-0">
-        <div className="aspect-square rounded-[50px] overflow-hidden shadow-2xl border-8 border-white">
-           <img 
-             src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=1000" 
-             className="w-full h-full object-cover" 
-             alt="Our bouquets"
-           />
+      {/* 3. CRAFTSMANSHIP SHOWCASE */}
+      <section className="bg-white py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-24">
+            <span className="text-[#87A96B] font-bold text-[10px] uppercase tracking-[0.4em] font-montserrat block mb-4">Ур чадвар</span>
+            <h2 className="text-4xl md:text-5xl font-playfair font-medium text-[#1A1A1A]">Яагаад Grow Room гэж?</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20">
+            <FeatureCard 
+              number="01"
+              title="Шинэхэн цэцэгс"
+              desc="Бид өглөө бүр хамгийн шинэхэн, чанартай цэцэгсийг хүлээн авч, баглаа болгон урладаг."
+            />
+            <FeatureCard 
+              number="02"
+              title="Найдвартай хүргэлт"
+              desc="Таны сэтгэлийн илэрхийлэл болсон цэцэгсийг бид Улаанбаатар хот даяар яг цагт нь хүргэдэг."
+            />
+            <FeatureCard 
+              number="03"
+              title="Онцгой дизайн"
+              desc="Цэцэгчин бүр манай баглаа бүрийг дахин давтагдашгүй, урлагийн бүтээл болгохыг эрмэлздэг."
+            />
+          </div>
         </div>
-        
-        {/* Float badge - Байрлалыг нь засав */}
-        <div className="absolute -bottom-6 -right-6 md:right-0 bg-white p-5 md:p-7 rounded-[30px] shadow-2xl border border-gray-50 hidden md:block animate-bounce-slow">
-           <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center shrink-0">
-                 <Heart size={20} fill="currentColor"/>
+      </section>
+
+      {/* 4. CONTACT & LOCATION SECTION */}
+      <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
+        <div className="bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-8 md:p-24 shadow-[0_50px_100px_rgba(0,0,0,0.04)] relative overflow-hidden">
+          {/* Subtle Background Pattern */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#87A96B]/[0.03] rounded-full -translate-y-1/2 translate-x-1/2" />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+            <div className="lg:col-span-5 space-y-10">
+              <h3 className="text-4xl font-playfair font-medium text-[#1A1A1A]">Холбоо барих</h3>
+              <div className="space-y-8">
+                <ContactItem icon={<MapPin size={18}/>} title="Салбар" info="Ulaanbaatar Galleria, 2-р давхар" />
+                <ContactItem icon={<Phone size={18}/>} title="Утас" info="9993 2671" />
+                <ContactItem icon={<Mail size={18}/>} title="И-мэйл" info="growroom@gmail.com" />
               </div>
-              <div className="pr-4">
-                 <p className="text-xl font-black text-gray-900 leading-none">10k+</p>
-                 <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Аз жаргалтай <br/> захиалагч</p>
+
+              <div className="flex gap-4 pt-4">
+                <SocialLink icon={<Facebook size={18}/>} href="https://facebook.com/grow_room" />
+                <SocialLink icon={<Instagram size={18}/>} href="https://instagram.com/grow_room" />
               </div>
-           </div>
+            </div>
+
+            <div className="lg:col-span-7 h-full min-h-[400px]">
+              <div className="w-full h-full bg-gray-100 rounded-[2px] overflow-hidden border border-black/[0.05]">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2673.8828607137887!2d106.91740927691651!3d47.92058007920367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5d969248238622c5%3A0x62955f2d658c49e7!2sGalleria%20Ulaanbaatar!5e0!3m2!1sen!2smn!4v1715671234567!5m2!1sen!2smn" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen={true} 
+                  loading="lazy" 
+                />
+              </div>
+            </div>
+          </div>
         </div>
-     </div>
-  </div>
-
-  {/* БАРУУН ТАЛ: Текст (lg:col-span-7 болгож ихэсгэв) */}
-  <div className="lg:col-span-7 space-y-8">
-     <div className="space-y-4">
-        <span className="text-[#8BB711] font-black text-[11px] uppercase tracking-[0.3em]">Манай түүх</span>
-        <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic text-gray-900 leading-tight">
-          Цэцэг бүрт <br /> <span className="text-rose-400 text-2xl md:text-4xl">Сэтгэлээ шингээдэг</span>
-        </h2>
-        <div className="h-1.5 w-20 bg-[#8BB711] rounded-full" />
-     </div>
-     
-     <div className="space-y-6 text-gray-500 leading-relaxed text-base md:text-lg font-medium">
-        <p>
-           Unur Flowers нь 2018 оноос эхлэн Улаанбаатар хотод үйл ажиллагаагаа явуулж эхэлсэн бөгөөд өдгөө цэцэг хүргэлтийн салбарт тэргүүлэгч дэлгүүрүүдийн нэг болон өргөжжээ. 
-        </p>
-        <p>
-           Бидний гол зорилго бол хамгийн шинэхэн, чанартай цэцэгсээр дамжуулан таны нандин бүхнийг илүү утга учиртай, аз жаргалтай болгоход оршино.
-        </p>
-     </div>
-
-  
-  </div>
-</div>
-
-        {/* 3. CORE VALUES */}
-        <section className="mb-20 md:mb-32">
-   {/* Гарчиг хэсэг - Зайг нь утсан дээр багасгав */}
-   <div className="text-center mb-10 md:mb-16 px-6">
-      <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic mb-2 md:mb-4 text-gray-900">Яагаад биднийг сонгох вэ?</h2>
-      <p className="text-gray-400 text-xs md:text-sm font-medium">Бид үйлчилгээ бүртээ сэтгэлээ шингээдэг</p>
-   </div>
-   
-   {/* Картууд - Утсан дээр хөндлөн гүйдэг, Компьютерт 3 багана */}
-   <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 px-6 md:px-0 md:grid md:grid-cols-3 md:gap-8">
-      <ValueCard 
-        icon={<Star size={28}/>} 
-        title="Мэргэжлийн ур чадвар" 
-        desc="Манай цэцэгчид загвар бүрийг урлагийн бүтээл болгож бэлддэг." 
-        color="text-yellow-600"
-        bgColor="bg-yellow-50"
-      />
-      <ValueCard 
-        icon={<ShieldCheck size={28}/>} 
-        title="Найдвартай байдал" 
-        desc="Таны захиалга яг цагтаа, зурагтайгаа ижилхэн очих болно." 
-        color="text-blue-600"
-        bgColor="bg-blue-50"
-      />
-      <ValueCard 
-        icon={<Heart size={28}/>} 
-        title="Сэтгэл ханамж" 
-        desc="Бид мартагдашгүй сэтгэгдэл үлдээхийг хамгийн түрүүнд эрмэлздэг." 
-        color="text-rose-600"
-        bgColor="bg-rose-50"
-      />
-   </div>
-</section>
-
-        {/* 4. LOCATIONS & CONTACT */}
-        <section className="bg-white border border-gray-100 rounded-[50px] p-8 md:p-16 shadow-2xl shadow-gray-200/50">
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-              <div>
-                 <h3 className="text-3xl font-black uppercase tracking-tighter italic mb-8">Холбоо барих</h3>
-                 <div className="space-y-6">
-                    <ContactItem icon={<MapPin/>} title="Хаяг" info="Улаанбаатар хот, Сүхбаатар дүүрэг, 1-р хороо, Бага тойрог"/>
-                    <ContactItem icon={<Phone/>} title="Утас" info="8097 9624, 7733-7733"/>
-                    <div className="flex gap-4 pt-6">
-                       <Link href="https://www.facebook.com/Unurflowers" className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
-                          <Facebook size={24}/>
-                       </Link>
-                       <Link href="https://www.instagram.com/unurflowers_" className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white transition-all">
-                          <Instagram size={24}/>
-                       </Link>
-                    </div>
-                 </div>
-              </div>
-              <div className="space-y-6">
-                 <h4 className="text-[11px] font-black uppercase tracking-widest text-gray-400">Манай салбарууд</h4>
-                 <div className="space-y-4">
-                    <BranchItem name="Төв салбар" time="09:00 - 21:00" desc="Бага тойрог, Драмын театрын эсрэг талд"/>
-                    <BranchItem name="Наадам Центр салбар" time="10:00 - 22:00" desc="ХУД, 15-р хороо, Наадам Центр, 1 давхарт"/>
-                 </div>
-              </div>
-           </div>
-        </section>
-
-      </div>
+      </section>
     </div>
   );
 }
 
-// ТУСЛАХ КОМПОНЕНТУУД
-function ValueCard({ icon, title, desc, color, bgColor }: any) {
+function FeatureCard({ number, title, desc }: any) {
   return (
-    // md:w-full (Компьютерт бүтэн өргөн), w-[280px] (Утсан дээр тогтмол өргөн)
-    <div className="bg-white p-6 md:p-10 rounded-[32px] md:rounded-[40px] border border-gray-50 shadow-sm flex-shrink-0 w-[260px] md:w-full snap-center group transition-all duration-500 hover:shadow-xl">
-       <div className={`${bgColor} ${color} w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform`}>
-          {icon}
-       </div>
-       <h4 className="text-lg md:text-xl font-black uppercase tracking-tighter mb-3 md:mb-4 leading-tight">{title}</h4>
-       <p className="text-gray-400 text-xs md:text-sm leading-relaxed font-medium">{desc}</p>
-    </div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="group space-y-6"
+    >
+      <div className="flex items-end gap-4">
+        <span className="text-4xl md:text-5xl font-playfair text-[#1A1A1A]/10 group-hover:text-[#87A96B]/20 transition-colors duration-500 font-medium leading-none">{number}</span>
+        <h4 className="text-xl font-bold uppercase tracking-widest text-[#1A1A1A] pb-1 font-montserrat">{title}</h4>
+      </div>
+      <p className="text-[#1A1A1A]/50 text-sm leading-loose font-montserrat font-light">{desc}</p>
+      <div className="w-12 h-[1px] bg-[#1A1A1A]/10 group-hover:w-full group-hover:bg-[#87A96B]/30 transition-all duration-700" />
+    </motion.div>
   );
 }
 
 function ContactItem({ icon, title, info }: any) {
   return (
-    <div className="flex items-start gap-4">
-       <div className="p-3 bg-gray-50 rounded-xl text-gray-400">{icon}</div>
-       <div>
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">{title}</p>
-          <p className="text-lg font-bold text-gray-800">{info}</p>
-       </div>
+    <div className="flex items-start gap-6">
+      <div className="w-10 h-10 bg-white border border-black/[0.03] rounded-full flex items-center justify-center text-[#1A1A1A]/40 shrink-0 shadow-sm">{icon}</div>
+      <div>
+        <p className="text-[9px] font-black text-[#999] uppercase tracking-[0.2em] mb-1 font-montserrat">{title}</p>
+        <p className="text-base font-medium text-[#1A1A1A] font-montserrat">{info}</p>
+      </div>
     </div>
   );
 }
 
-function BranchItem({ name, time, desc }: any) {
+function SocialLink({ icon, href }: any) {
   return (
-    <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
-       <div className="flex justify-between items-center mb-2">
-          <h5 className="font-black uppercase text-sm tracking-tight text-gray-900">{name}</h5>
-          <span className="text-[10px] font-bold text-[#8BB711] bg-white px-2 py-1 rounded-lg border border-green-50 shadow-sm">{time}</span>
-       </div>
-       <p className="text-xs text-gray-400 font-medium">{desc}</p>
-    </div>
+    <Link 
+      href={href} 
+      target="_blank"
+      className="w-12 h-12 bg-white border border-black/[0.03] rounded-full flex items-center justify-center text-[#1A1A1A]/40 hover:bg-[#1A1A1A] hover:text-white transition-all duration-500 shadow-sm"
+    >
+      {icon}
+    </Link>
   );
 }

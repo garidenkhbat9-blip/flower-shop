@@ -12,18 +12,18 @@ export interface Product {
   name: string;
   price: number;
   discountedPrice?: number | null;
-  description: string; 
-  careInstructions: string;  
+  description: string;
+  careInstructions: string;
   imageUrls: string[];
-  
 
- packaging: string;        // Баглаа, Сагстай, Хайрцагтай
+
+  packaging: string;        // Баглаа, Сагстай, Хайрцагтай
   colors: string[];         // ["Улаан", "Ягаан"]
   size: "Жижиг" | "Дунд" | "Том";
   tags: string[];           // ["Ээждээ", "Хайртайдаа", "Баяр хүргэх"]
   stemCount?: number;
 
-  category: string[]; 
+  category: string[];
   inStock: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -34,7 +34,7 @@ export interface OrderItem {
   name: string;
   quantity: number;
   price: number;
-  imageUrl?: string; 
+  imageUrl?: string;
 }
 
 export interface Order {
@@ -43,13 +43,36 @@ export interface Order {
   items: OrderItem[];
   totalAmount: number;
   status: "Хүлээгдэж буй" | "Төлбөр төлөгдсөн" | "Хүргэлтэнд гарсан" | "Хүргэгдсэн" | "Цуцлагдсан";
+  paymentStatus?: string;
   shippingAddress: {
     name: string;
     phone: string;
-    addressDetail?: string; 
+    addressDetail?: string;
+  };
+  shippingInfo?: {
+    senderName?: string;
+    senderPhone?: string;
+    senderPhoneAlt?: string;
+    senderEmail?: string;
+    recipientName?: string;
+    recipientPhone?: string;
+    deliveryDate?: string;
+    cardMessage?: string;
+    deliveryType?: string;
+    city?: string;
+    district?: string;
+    khoroo?: string;
+    building?: string;
+    apartmentNumber?: string;
+    street?: string;
+    additionalInfo?: string;
   };
   orderDate: Timestamp;
+  createdAt?: Timestamp;
   deliveryDate?: Timestamp | null;
+  deliveryPhoto?: string;
+  deliveryStartedAt?: Timestamp | null;
+  deliveredAt?: Timestamp | null;
 }
 
 export interface UserProfile {
@@ -65,6 +88,7 @@ export interface UserProfile {
   createdAt: Timestamp;
   lastLogin: Timestamp;
   isAdmin: boolean;
+  role?: "admin" | "delivery" | "user";
   likedProducts?: string[];
   recentlyViewedProducts?: {
     productId: string;

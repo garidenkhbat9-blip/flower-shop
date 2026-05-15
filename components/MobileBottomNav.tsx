@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Percent, User, ChevronDown, LayoutDashboard } from "lucide-react"; // LayoutDashboard icon нэмлээ
+import { Home, Percent, User, ChevronDown, LayoutDashboard, Truck } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { db, auth } from "@/lib/firebase"; // auth нэмэгдсэн
@@ -11,8 +11,8 @@ export default function MobileBottomNav() {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [dbCategories, setDbCategories] = useState<any[]>([]);
 
-  // --- ШИНЭ: Админ эрх шалгах state-үүд ---
-  const [isAdmin, setIsAdmin] = useState(false);
+  // --- ШИНЭ: Админ болон Хүргэлтийн эрх шалгах state-үүд ---
+  const [userRole, setUserRole] = useState<"admin" | "delivery" | "user">("user");
   const [profilePath, setProfilePath] = useState("/profile");
 
   // 1. Категориудыг татах
@@ -35,20 +35,30 @@ export default function MobileBottomNav() {
         // Хэрэглэгч нэвтэрсэн бол Firestore-оос isAdmin эсэхийг шалгана
         try {
           const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists() && userDoc.data().isAdmin === true) {
-            setIsAdmin(true);
-            setProfilePath("/admin"); // Админ бол админ самбар руу
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            if (data.isAdmin || data.role === "admin") {
+              setUserRole("admin");
+              setProfilePath("/admin");
+            } else if (data.role === "delivery") {
+              setUserRole("delivery");
+              setProfilePath("/delivery");
+            } else {
+              setUserRole("user");
+              setProfilePath("/profile");
+            }
           } else {
-            setIsAdmin(false);
-            setProfilePath("/profile"); // Энгийн хэрэглэгч бол профайл руу
+            setUserRole("user");
+            setProfilePath("/profile");
           }
         } catch (error) {
           console.error("Эрх шалгахад алдаа гарлаа:", error);
+          setUserRole("user");
           setProfilePath("/profile");
         }
       } else {
         // Нэвтрээгүй бол шууд profile (нэвтрэх хуудас руу)
-        setIsAdmin(false);
+        setUserRole("user");
         setProfilePath("/profile");
       }
     });
@@ -141,16 +151,21 @@ export default function MobileBottomNav() {
           <span>Хямдрал</span>
         </Link>
 
-        {/* ӨӨРЧЛӨГДӨХ ХЭСЭГ: Хэрэв админ бол Админ хуудас руу, үгүй бол Профайл руу */}
+        {/* ӨӨРЧЛӨГДӨХ ХЭСЭГ: Хэрэв админ бол Админ хуудас руу, хүргэлт бол Хүргэлт рүү, үгүй бол Профайл руу */}
         <Link
           href={profilePath}
           onClick={() => setIsCategoryOpen(false)}
-          className={`flex flex-col items-center gap-1 w-16 transition-colors ${isAdmin ? "text-green-600" : "hover:text-black"}`}
+          className={`flex flex-col items-center gap-1 w-16 transition-colors ${userRole === "admin" ? "text-green-600" : userRole === "delivery" ? "text-blue-600" : "hover:text-black"}`}
         >
-          {isAdmin ? (
+          {userRole === "admin" ? (
             <>
               <LayoutDashboard className="w-6 h-6" />
               <span>Админ</span>
+            </>
+          ) : userRole === "delivery" ? (
+            <>
+              <Truck className="w-6 h-6" />
+              <span>Хүргэлт</span>
             </>
           ) : (
             <>

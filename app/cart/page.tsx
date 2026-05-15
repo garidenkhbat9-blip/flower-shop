@@ -21,30 +21,7 @@ export default function CartPage() {
     );
   }
 
-  // 2. Хэрэв нэвтрээгүй бол
-  if (!user) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center bg-white px-6 text-center font-sans">
-        <div className="w-24 h-24 bg-gray-50 text-gray-300 rounded-[40px] flex items-center justify-center mb-8">
-          <UserCircle2 size={60} />
-        </div>
-        <h2 className="text-2xl font-black uppercase tracking-tighter mb-2">Та нэвтрээгүй байна</h2>
-        <p className="text-gray-500 max-w-xs mb-10 text-sm leading-relaxed font-medium">
-          Сагсанд байгаа бараануудаа харахын тулд та эхлээд бүртгүүлж эсвэл нэвтэрч өөрийн ID-г баталгаажуулна уу.
-        </p>
-        <div className="flex flex-col gap-4 w-full max-w-xs">
-          <Link href="/auth/login" className="bg-black text-white py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-gray-200">
-            Нэвтрэх
-          </Link>
-          <Link href="/auth/register" className="text-gray-400 font-black uppercase text-[10px] tracking-widest hover:text-black transition">
-            Бүртгүүлэх
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. Хэрэв сагс хоосон бол
+  // 2. Хэрэв сагс хоосон бол
   if (cart.length === 0) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-white px-6 text-center font-sans">

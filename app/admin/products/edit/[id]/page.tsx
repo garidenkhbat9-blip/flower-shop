@@ -183,64 +183,63 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   if (loading) return <div className="h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div></div>;
 
   return (
-    <div className="p-8 max-w-4xl mx-auto pb-24 font-sans">
+    <div className="max-w-6xl mx-auto p-8 font-montserrat text-[#1A1A1A]">
       
       {showSuccess && (
-        <div className="fixed top-8 right-8 bg-white border-l-4 border-green-500 shadow-xl p-4 rounded-r-lg flex items-center gap-4 z-50 animate-bounce">
-          <div className="bg-green-100 p-2 rounded-full"><Check size={20} className="text-green-600"/></div>
-          <div>
-            <h3 className="font-bold text-gray-800 text-sm">Амжилттай хадгалагдлаа!</h3>
-          </div>
+        <div className="fixed bottom-12 right-12 bg-[#1A1A1A] text-white border border-black shadow-2xl px-8 py-5 rounded-[2px] flex items-center gap-4 z-50 animate-in slide-in-from-bottom-4">
+          <Check size={18} strokeWidth={1.5} />
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em]">Амжилттай хадгалагдлаа!</span>
         </div>
       )}
 
-      <div className="flex items-center gap-4 mb-8">
-        <button onClick={() => router.back()} className="text-gray-400 hover:text-gray-800 text-2xl transition">←</button>
-        <h1 className="text-2xl font-black text-gray-800 uppercase tracking-tighter italic">Засварлах</h1>
+      <div className="flex items-center justify-between mb-12">
+        <button onClick={() => router.back()} className="p-4 hover:bg-[#1A1A1A] hover:text-white rounded-[2px] transition-all border border-black/[0.05] bg-white shadow-sm"><ChevronLeft size={20} strokeWidth={1.5} /></button>
+        <h1 className="text-2xl lg:text-4xl font-playfair font-medium text-[#1A1A1A]">Edit Product</h1>
+        <div className="w-12" />
       </div>
       
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* ЗҮҮН ТАЛ: ЗУРАГ БОЛОН ҮНДСЭН МЭДЭЭЛЭЛ */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-4">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Зураг</h2>
+        <div className="lg:col-span-8 space-y-8">
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm">
+            <h2 className="text-[10px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.3em] mb-8">Зураг</h2>
             
             {/* Uploaded Images Grid */}
             {(formData.imageUrls.length > 0 || newImageFiles.length > 0) && (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 mb-8">
                 {/* Existing Images */}
                 {formData.imageUrls.map((url, index) => (
-                  <div key={`exist-${index}`} className="relative group aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                   <div key={`exist-${index}`} className="relative group aspect-[4/5] rounded-[2px] overflow-hidden border border-black/[0.03] shadow-sm">
                     <img src={url} className="w-full h-full object-cover" alt="" />
                     {index === 0 && (
-                      <span className="absolute top-1.5 left-1.5 bg-black/70 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Нүүр</span>
+                      <span className="absolute top-2 left-2 bg-[#1A1A1A]/80 text-white text-[7px] font-medium px-2 py-1 rounded-sm uppercase tracking-widest">Main</span>
                     )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
                     <button 
                       type="button" 
                       onClick={() => removeExistingImage(index)} 
-                      className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      className="absolute top-2 right-2 bg-white text-[#1A1A1A] rounded-full p-2 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-[#1A1A1A] hover:text-white"
                     >
-                      ✕
+                      <X size={12} strokeWidth={2}/>
                     </button>
                   </div>
                 ))}
                 
                 {/* New Images */}
                 {newImageFiles.map((file, index) => (
-                  <div key={`new-${index}`} className="relative group aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={`new-${index}`} className="relative group aspect-[4/5] rounded-[2px] overflow-hidden border border-black/[0.03] shadow-sm">
                     <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="" />
                     {formData.imageUrls.length === 0 && index === 0 && (
-                      <span className="absolute top-1.5 left-1.5 bg-black/70 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Нүүр</span>
+                       <span className="absolute top-2 left-2 bg-[#1A1A1A]/80 text-white text-[7px] font-medium px-2 py-1 rounded-sm uppercase tracking-widest">Main</span>
                     )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
                     <button 
                       type="button" 
                       onClick={() => removeNewImage(index)} 
-                      className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      className="absolute top-2 right-2 bg-white text-[#1A1A1A] rounded-full p-2 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-[#1A1A1A] hover:text-white"
                     >
-                      ✕
+                      <X size={12} strokeWidth={2}/>
                     </button>
                   </div>
                 ))}
@@ -250,43 +249,43 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             {/* Drop Zone */}
             <div 
               onClick={() => document.getElementById('edit-image-upload')?.click()}
-              onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[#E2A9BE]', 'bg-[#E2A9BE]/10'); }}
-              onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-[#E2A9BE]', 'bg-[#E2A9BE]/10'); }}
+              onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[#1A1A1A]', 'bg-[#FCFBF9]'); }}
+              onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-[#1A1A1A]', 'bg-[#FCFBF9]'); }}
               onDrop={(e) => { 
                 e.preventDefault(); 
-                e.currentTarget.classList.remove('border-[#E2A9BE]', 'bg-[#E2A9BE]/10');
+                e.currentTarget.classList.remove('border-[#1A1A1A]', 'bg-[#FCFBF9]');
                 if (e.dataTransfer.files) {
                   const filesArray = Array.from(e.dataTransfer.files);
                   setNewImageFiles(prev => [...prev, ...filesArray]);
                 }
               }}
-              className={`relative cursor-pointer border-2 border-dashed rounded-2xl transition-all hover:border-[#E2A9BE] hover:bg-[#E2A9BE]/5 ${
+              className={`relative cursor-pointer border border-dashed rounded-[2px] transition-all hover:border-[#1A1A1A] hover:bg-[#FCFBF9] ${
                 (formData.imageUrls.length === 0 && newImageFiles.length === 0) 
-                  ? 'border-gray-200 py-16' 
-                  : 'border-gray-100 py-6 mt-4'
+                  ? 'border-black/[0.05] py-20' 
+                  : 'border-black/[0.05] py-10'
               }`}
             >
-              <div className="flex flex-col items-center justify-center gap-3 text-center px-4">
+              <div className="flex flex-col items-center justify-center gap-4 text-center px-6">
                 <div className={`rounded-full flex items-center justify-center transition-all ${
                   (formData.imageUrls.length === 0 && newImageFiles.length === 0) 
-                    ? 'w-16 h-16 bg-[#E2A9BE]/20 text-[#E2A9BE]' 
-                    : 'w-10 h-10 bg-gray-100 text-gray-400'
+                    ? 'w-20 h-20 bg-[#F3F2F0] text-[#1A1A1A]' 
+                    : 'w-12 h-12 bg-[#F3F2F0] text-[#1A1A1A]'
                 }`}>
-                  <span className="text-2xl text-current">+</span>
+                   <ImagePlus size={imageFiles.length === 0 ? 32 : 20} strokeWidth={1.5} />
                 </div>
                 {(formData.imageUrls.length === 0 && newImageFiles.length === 0) ? (
                   <>
                     <div>
-                      <p className="text-sm font-bold text-gray-700">Зураг чирж оруулах эсвэл дарна уу</p>
-                      <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP — олон зураг нэг дор сонгож болно</p>
+                      <p className="text-[11px] font-medium text-[#1A1A1A] uppercase tracking-[0.1em]">Зураг чирж оруулах эсвэл дарна уу</p>
+                      <p className="text-[9px] text-[#1A1A1A]/30 mt-2 uppercase tracking-widest font-light">PNG, JPG, WEBP — Multiple files supported</p>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 bg-[#333333] text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-black transition mt-1">
-                      + Зураг сонгох
+                    <span className="inline-flex items-center gap-2 bg-[#1A1A1A] text-white text-[9px] font-medium uppercase tracking-[0.2em] px-8 py-4 rounded-[2px] hover:bg-black transition shadow-xl mt-4">
+                      <ImagePlus size={14} strokeWidth={1.5} /> Зураг сонгох
                     </span>
                   </>
                 ) : (
-                  <p className="text-xs text-gray-400 font-medium">
-                    + Нэмэлт зураг оруулах <span className="text-gray-300">({formData.imageUrls.length + newImageFiles.length} зураг байна)</span>
+                  <p className="text-[9px] text-[#1A1A1A]/40 font-medium uppercase tracking-widest">
+                    + Нэмэлт зураг оруулах <span className="text-[#1A1A1A]/20">({formData.imageUrls.length + newImageFiles.length} зургууд)</span>
                   </p>
                 )}
               </div>
@@ -302,53 +301,54 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             />
           </div>
 
-          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-4">
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Мэдээлэл</h2>
-            <input required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Жишээ: 101 Сарнайтай сагс" className="w-full bg-gray-50 border-none rounded-xl p-4 font-bold" />
-            
-            {!isGiftProduct && (
-              <div className="mt-4">
-                <label className="text-[10px] font-bold text-[#87A96B] uppercase ml-2">Цэцэгний төрөл</label>
-                <input 
-                  list="flower-names" type="text" name="flowerType"
-                  placeholder="Сарнай, Алтанзул гэх мэт..." 
-                  value={formData.flowerType} 
-                  onChange={handleChange} 
-                  className="w-full bg-[#87A96B]/10 border border-[#87A96B]/20 rounded-xl p-4 mt-1 font-bold outline-none focus:ring-2 focus:ring-[#87A96B]" 
-                />
-                <datalist id="flower-names">
-                  {FLOWER_NAME_SUGGESTIONS.map(name => <option key={name} value={name} />)}
-                </datalist>
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm space-y-8">
+            <h2 className="text-[10px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.3em]">Мэдээлэл</h2>
+            <div className="space-y-8">
+              <div>
+                <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Бүтээгдэхүүний гарчиг (Нэр)</label>
+                <input required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Жишээ: 101 Сарнайтай сагс" className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 font-playfair text-lg outline-none focus:border-[#1A1A1A] transition-all" />
               </div>
-            )}
+              
+              {!isGiftProduct && (
+                <div>
+                  <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Цэцэгний төрөл</label>
+                  <input 
+                    list="flower-names" type="text" name="flowerType"
+                    placeholder="Сарнай, Алтанзул гэх мэт..." 
+                    value={formData.flowerType} 
+                    onChange={handleChange} 
+                    className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 text-[11px] uppercase tracking-wider outline-none focus:border-[#1A1A1A] transition-all" 
+                  />
+                  <datalist id="flower-names">
+                    {FLOWER_NAME_SUGGESTIONS.map(name => <option key={name} value={name} />)}
+                  </datalist>
+                </div>
+              )}
 
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Үнэ (₮)</label>
-                <input required type="number" name="price" value={formData.price} onChange={handleChange} placeholder="Үнэ (₮)" className="w-full bg-gray-50 border-none rounded-xl p-4 font-black mt-1" />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase ml-2">Хямдарсан (₮)</label>
-                <input type="number" name="discountedPrice" value={formData.discountedPrice} onChange={handleChange} placeholder="Хямдарсан (₮)" className="w-full bg-gray-50 border-none rounded-xl p-4 font-black text-rose-500 mt-1" />
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Үнэ (₮)</label>
+                  <input required type="number" name="price" value={formData.price} onChange={handleChange} placeholder="Үнэ (₮)" className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 font-playfair text-xl outline-none focus:border-[#1A1A1A] transition-all" />
+                </div>
+                <div>
+                  <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-4 block">Хямдарсан (₮)</label>
+                  <input type="number" name="discountedPrice" value={formData.discountedPrice} onChange={handleChange} placeholder="Хямдарсан (₮)" className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 font-playfair text-xl text-rose-600 outline-none focus:border-[#1A1A1A] transition-all" />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* БАРУУН ТАЛ: КАТЕГОРИ, СОНГОЛТУУД БОЛОН ХАДГАЛАХ */}
-        <div className="lg:col-span-4 space-y-6">
-          
-          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-6">
+        <div className="lg:col-span-4 space-y-8">
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm space-y-10">
             <div>
-              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                Ангилал
-              </h2>
-              <div className="flex flex-wrap gap-2">
+              <h2 className="text-[10px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.3em] mb-6">Ангилал</h2>
+              <div className="flex flex-wrap gap-3">
                   {dbCategories.map(cat => {
                       const isSelected = formData.categories.includes(cat.name);
                       return (
-                          <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name)} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${isSelected ? "bg-[#333333] border-[#333333] text-white shadow-md" : "bg-gray-50 text-gray-500 border-transparent hover:bg-gray-100"}`}>
-                              {cat.name === "Бэлэг дурсгал" ? <Gift size={12}/> : <Flower2 size={12}/>}
+                          <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name)} className={`px-4 py-3 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${isSelected ? "bg-[#1A1A1A] border-[#1A1A1A] text-white shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}>
                               {cat.name}
                           </button>
                       );
@@ -357,13 +357,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-[#87A96B] uppercase mb-3 block ml-1">Зориулалт (Occasions)</label>
-              <div className="flex flex-wrap gap-2">
+              <label className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-6 block">Зориулалт (Occasions)</label>
+              <div className="flex flex-wrap gap-3">
                 {PURPOSE_OPTIONS.map(purp => (
                   <button 
                     key={purp} type="button" 
                     onClick={() => toggleItem(selectedPurposes, setSelectedPurposes, purp)}
-                    className={`px-3 py-2 rounded-xl text-[11px] font-bold transition border ${selectedPurposes.includes(purp) ? "bg-[#87A96B] border-[#87A96B] text-white shadow-sm" : "bg-white border-gray-100 text-gray-400 hover:border-gray-300"}`}
+                    className={`px-4 py-3 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${selectedPurposes.includes(purp) ? "bg-[#1A1A1A] border-[#1A1A1A] text-white shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}
                   >
                     {purp}
                   </button>
@@ -372,57 +372,56 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm space-y-6">
+          <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm space-y-10">
             {!isGiftProduct && (
               <>
                 <div>
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Савалгаа</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-6">Савалгаа</h3>
+                  <div className="grid grid-cols-2 gap-3">
                     {PACKAGING_OPTIONS.map(opt => (
-                      <button key={opt} type="button" onClick={() => setFormData({...formData, packaging: opt})} className={`py-3 rounded-xl text-[11px] font-bold transition shadow-sm ${formData.packaging === opt ? "bg-[#333333] text-white" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}>{opt}</button>
+                      <button key={opt} type="button" onClick={() => setFormData({...formData, packaging: opt})} className={`py-4 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${formData.packaging === opt ? "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}>{opt}</button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Тоо ширхэг (Иш)</h3>
-                  <input type="number" name="stemCount" placeholder="Жишээ: 51" value={formData.stemCount} onChange={handleChange} className="w-full bg-gray-50 border-none rounded-xl p-4 text-sm font-black" />
+                  <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-6">Тоо ширхэг (Иш)</h3>
+                  <input type="number" name="stemCount" placeholder="Жишээ: 51" value={formData.stemCount} onChange={handleChange} className="w-full bg-[#FCFBF9] border border-black/[0.03] rounded-[2px] p-5 text-sm font-playfair font-medium outline-none focus:border-[#1A1A1A]" />
                 </div>
               </>
             )}
 
             <div>
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Өнгө сонгох</h3>
-              <div className="flex flex-wrap gap-3 p-2 bg-gray-50 rounded-2xl">
+              <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-6">Өнгө сонгох</h3>
+              <div className="flex flex-wrap gap-4 p-4 bg-[#FCFBF9] rounded-[2px] border border-black/[0.03]">
                 {COLOR_OPTIONS.map(color => (
                   <button 
                     key={color.name} type="button" 
                     onClick={() => toggleItem(selectedColors, setSelectedColors, color.name)}
-                    className={`w-8 h-8 rounded-full border-2 shadow-sm transition-transform active:scale-90 flex items-center justify-center ${selectedColors.includes(color.name) ? "border-[#333333] scale-110" : "border-transparent hover:scale-105"}`}
+                    className={`w-10 h-10 rounded-full border-2 transition-all active:scale-90 flex items-center justify-center ${selectedColors.includes(color.name) ? "border-[#1A1A1A] scale-110 shadow-lg" : "border-transparent hover:scale-105"}`}
                     style={{ background: color.hex }}
                     title={color.name}
                   >
-                     {selectedColors.includes(color.name) && <Check size={14} className={color.name === 'Цагаан' ? 'text-black' : 'text-white'} />}
+                     {selectedColors.includes(color.name) && <Check size={16} className={color.name === 'Цагаан' ? 'text-black' : 'text-white'} strokeWidth={2.5} />}
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase mb-3">Хэмжээ</h3>
-              <div className="flex gap-2">
+              <h3 className="text-[9px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.2em] mb-6">Хэмжээ</h3>
+              <div className="flex gap-3">
                 {SIZE_OPTIONS.map(s => (
-                  <button key={s} type="button" onClick={() => setFormData({...formData, size: s})} className={`flex-1 py-3 rounded-xl text-[11px] font-bold transition ${formData.size === s ? "bg-[#333333] text-white" : "bg-gray-50 text-gray-400 hover:bg-gray-100"}`}>{s}</button>
+                  <button key={s} type="button" onClick={() => setFormData({...formData, size: s})} className={`flex-1 py-4 rounded-[2px] text-[10px] font-medium uppercase tracking-wider transition-all border ${formData.size === s ? "bg-[#1A1A1A] text-white border-[#1A1A1A] shadow-xl" : "bg-white text-[#1A1A1A]/40 border-black/[0.05] hover:border-[#1A1A1A] hover:text-[#1A1A1A]"}`}>{s}</button>
                 ))}
               </div>
             </div>
+
+            <button type="submit" disabled={saving} className="w-full bg-[#1A1A1A] text-white font-medium py-6 rounded-[2px] hover:bg-black transition-all active:scale-95 disabled:bg-gray-200 shadow-2xl shadow-black/10 uppercase tracking-[0.3em] text-[11px]">
+              {saving ? "Хадгалж байна..." : "Өөрчлөлтийг хадгалах"}
+            </button>
           </div>
-
-          <button type="submit" disabled={saving} className="w-full bg-[#E2A9BE] text-white font-black py-5 rounded-[24px] shadow-xl shadow-[#E2A9BE]/20 hover:bg-[#d89bb1] transition active:scale-95 disabled:bg-gray-200 uppercase tracking-widest text-xs">
-            {saving ? "Хадгалж байна..." : "Өөрчлөлтийг хадгалах"}
-          </button>
         </div>
-
       </form>
     </div>
   );

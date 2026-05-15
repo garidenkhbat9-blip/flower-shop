@@ -60,7 +60,7 @@ export default function ContactPage() {
           <ContactCard
             icon={<Mail size={24} />}
             title="И-мэйл"
-            value="unurflowers@gmail.com"
+            value="growroom@gmail.com"
             sub="24 цагийн дотор хариулна"
           />
 

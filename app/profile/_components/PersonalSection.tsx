@@ -126,41 +126,41 @@ export default function PersonalSection() {
 
   return (
     <div className="max-w-4xl space-y-12">
-      
+
       {/* SECTION 1: TOKHIRGOO */}
       <section className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Тохиргоо</h2>
-          <p className="text-sm text-gray-500">Өөрийн хувийн мэдээллийг засах</p>
+          <h2 className="text-xl md:text-3xl font-playfair font-medium text-[#1A1A1A]">Тохиргоо</h2>
+          <p className="text-[10px] text-[#1A1A1A]/40 mt-2 font-light uppercase tracking-[0.2em]">Өөрийн хувийн мэдээллийг засах</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">Нэр</label>
-            <input 
-              type="text" 
+            <label className="text-[10px] font-medium text-[#1A1A1A]/60 uppercase tracking-[0.1em]">Нэр</label>
+            <input
+              type="text"
               value={formData.firstName}
-              onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none" 
+              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              className="w-full bg-white border border-black/[0.05] p-4 rounded-[2px] focus:border-[#1A1A1A] text-[#1A1A1A] outline-none transition-colors font-montserrat"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">Овог</label>
-            <input 
-              type="text" 
+            <label className="text-[10px] font-medium text-[#1A1A1A]/60 uppercase tracking-[0.1em]">Овог</label>
+            <input
+              type="text"
               value={formData.lastName}
-              onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none" 
+              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              className="w-full bg-white border border-black/[0.05] p-4 rounded-[2px] focus:border-[#1A1A1A] text-[#1A1A1A] outline-none transition-colors font-montserrat"
             />
           </div>
 
-          <div className="md:col-span-2 space-y-2">
-            <label className="text-sm font-bold text-gray-700">Зураг</label>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-tr from-teal-500 to-orange-400 rounded-full overflow-hidden">
+          <div className="md:col-span-2 space-y-4">
+            <label className="text-[10px] font-medium text-[#1A1A1A]/60 uppercase tracking-[0.1em]">Зураг</label>
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 bg-[#F3F2F0] rounded-full overflow-hidden border border-black/[0.05]">
                 {formData.photoURL && <img src={formData.photoURL} className="w-full h-full object-cover" />}
               </div>
-              <label className="cursor-pointer border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50">
+              <label className="cursor-pointer border border-[#1A1A1A]/10 px-6 py-3 rounded-[2px] text-[10px] font-medium uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all">
                 Зураг оруулах
                 <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
               </label>
@@ -168,29 +168,29 @@ export default function PersonalSection() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">И-мэйл</label>
-            <input 
-              type="email" 
-              disabled 
+            <label className="text-[10px] font-medium text-[#1A1A1A]/60 uppercase tracking-[0.1em]">И-мэйл</label>
+            <input
+              type="email"
+              disabled
               value={formData.email}
-              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl text-gray-400 cursor-not-allowed outline-none" 
+              className="w-full bg-[#FCFBF9] border border-black/[0.05] p-4 rounded-[2px] text-[#1A1A1A]/40 cursor-not-allowed outline-none font-montserrat"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">Утасны дугаар</label>
-            <input 
-              type="text" 
+            <label className="text-[10px] font-medium text-[#1A1A1A]/60 uppercase tracking-[0.1em]">Утасны дугаар</label>
+            <input
+              type="text"
               value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none" 
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="w-full bg-white border border-black/[0.05] p-4 rounded-[2px] focus:border-[#1A1A1A] text-[#1A1A1A] outline-none transition-colors font-montserrat"
             />
           </div>
         </div>
         <div className="flex justify-end">
-          <button 
+          <button
             onClick={handleInfoSave}
             disabled={savingInfo}
-            className="bg-[#E2A9BE] text-[#FFFDF9] px-8 py-3 rounded-xl font-bold hover:bg-[#d89bb1] transition disabled:opacity-50"
+            className="bg-[#1A1A1A] text-white px-12 py-4 rounded-[2px] text-[10px] font-medium uppercase tracking-[0.3em] hover:bg-black transition disabled:opacity-50 shadow-2xl shadow-black/10"
           >
             {savingInfo ? "Түр хүлээнэ үү..." : "Хадгалах"}
           </button>
@@ -200,28 +200,28 @@ export default function PersonalSection() {
       {/* SECTION 2: PASSWORD CHANGE */}
       <section className="space-y-6 pt-6 border-t border-gray-100">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Нууц үг солих</h2>
-          <p className="text-sm text-gray-500">Өөрийн нэвтрэх нууц үгийг солих</p>
+          <h2 className="text-xl md:text-3xl font-playfair font-medium text-[#1A1A1A]">Нууц үг солих</h2>
+          <p className="text-[10px] text-[#1A1A1A]/40 mt-2 font-light uppercase tracking-[0.2em]">Өөрийн нэвтрэх нууц үгийг солих</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">Шинэ нууц үг</label>
-            <input 
-              type="password" 
+            <label className="text-[10px] font-medium text-[#1A1A1A]/60 uppercase tracking-[0.1em]">Шинэ нууц үг</label>
+            <input
+              type="password"
               value={passwords.newPassword}
-              onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
-              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none placeholder-gray-400" 
+              onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+              className="w-full bg-white border border-black/[0.05] p-4 rounded-[2px] focus:border-[#1A1A1A] text-[#1A1A1A] outline-none transition-colors font-montserrat placeholder-[#1A1A1A]/20"
               placeholder="••••••••"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">Шинэ нууц үг давтах</label>
-            <input 
-              type="password" 
+            <label className="text-[10px] font-medium text-[#1A1A1A]/60 uppercase tracking-[0.1em]">Шинэ нууц үг давтах</label>
+            <input
+              type="password"
               value={passwords.confirmPassword}
-              onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
-              className="w-full bg-[#FFFDF9] border border-[#f0ece8] p-3 rounded-xl focus:ring-2 focus:ring-[#87A96B] text-[#333333] outline-none placeholder-gray-400" 
+              onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+              className="w-full bg-white border border-black/[0.05] p-4 rounded-[2px] focus:border-[#1A1A1A] text-[#1A1A1A] outline-none transition-colors font-montserrat placeholder-[#1A1A1A]/20"
               placeholder="Шинэ нууц үг давтах"
             />
           </div>
@@ -236,10 +236,10 @@ export default function PersonalSection() {
         </div>
 
         <div className="flex justify-end">
-          <button 
+          <button
             onClick={handlePasswordSave}
             disabled={savingPass || !Object.values(validations).every(v => v)}
-            className="bg-[#E2A9BE] text-[#FFFDF9] px-8 py-3 rounded-xl font-bold hover:bg-[#d89bb1] transition disabled:opacity-50"
+            className="bg-[#1A1A1A] text-white px-12 py-4 rounded-[2px] text-[10px] font-medium uppercase tracking-[0.3em] hover:bg-black transition disabled:opacity-50 shadow-2xl shadow-black/10"
           >
             {savingPass ? "Түр хүлээнэ үү..." : "Хадгалах"}
           </button>
