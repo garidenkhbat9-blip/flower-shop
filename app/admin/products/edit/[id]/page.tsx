@@ -5,7 +5,7 @@ import { db, storage } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
-import { Check, Tag, Flower2, Gift } from "lucide-react";
+import { Check, Tag, Flower2, Gift, ChevronLeft, X, ImagePlus } from "lucide-react";
 
 const PACKAGING_OPTIONS = ["Баглаа", "Хайрцагтай", "Сагстай", "Хөрстэй"];
 const SIZE_OPTIONS = ["Жижиг", "Дунд", "Том"];
@@ -271,7 +271,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     ? 'w-20 h-20 bg-[#F3F2F0] text-[#1A1A1A]' 
                     : 'w-12 h-12 bg-[#F3F2F0] text-[#1A1A1A]'
                 }`}>
-                   <ImagePlus size={imageFiles.length === 0 ? 32 : 20} strokeWidth={1.5} />
+                   <ImagePlus size={newImageFiles.length === 0 ? 32 : 20} strokeWidth={1.5} />
                 </div>
                 {(formData.imageUrls.length === 0 && newImageFiles.length === 0) ? (
                   <>
