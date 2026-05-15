@@ -263,7 +263,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, margin: "-50px" }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4"
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"
           >
             {products.map((product, i) => {
               const isWished = product.id ? isWishlisted(product.id) : false;
