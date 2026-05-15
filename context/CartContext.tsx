@@ -145,18 +145,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       <AnimatePresence>
         {showToast && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] pointer-events-none"
+            initial={{ opacity: 0, y: 30, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            className="fixed bottom-24 md:bottom-12 left-1/2 z-[200] pointer-events-none w-[90%] max-w-[320px]"
           >
-            <div className="bg-[#1A1A1A] text-white px-8 py-4 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4 border border-white/10 backdrop-blur-xl">
-              <div className="w-8 h-8 bg-[#87A96B] rounded-full flex items-center justify-center">
-                <Check size={14} className="text-white" strokeWidth={3} />
+            <div className="bg-white/90 backdrop-blur-xl px-6 py-3.5 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] flex items-center gap-3 border border-black/[0.05]">
+              <div className="w-7 h-7 bg-[#87A96B] rounded-full flex items-center justify-center shrink-0">
+                <Check size={12} className="text-white" strokeWidth={4} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 leading-none mb-1">Амжилттай</span>
-                <span className="text-[11px] font-medium uppercase tracking-[0.1em]">Сагсанд нэмэгдлээ</span>
+                <span className="text-[11px] font-bold text-[#1A1A1A] uppercase tracking-wider">Сагсанд нэмэгдлээ</span>
               </div>
             </div>
           </motion.div>
