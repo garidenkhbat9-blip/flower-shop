@@ -42,8 +42,7 @@ export default function HomePage() {
         const catSnap = await getDocs(collection(db, "categories"));
         setCategories(catSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Category[]);
 
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(10));
-        const prodSnap = await getDocs(q);
+        const prodSnap = await getDocs(collection(db, "products"));
         setProducts(prodSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Product[]);
       } catch (error) {
         console.error("Дата татахад алдаа гарлаа:", error);

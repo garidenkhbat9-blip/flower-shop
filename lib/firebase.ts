@@ -3,12 +3,8 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Өгөгдлийн сан нэмсэн
 import { getStorage } from "firebase/storage"; 
 
-const rawApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyAWD6xtSfVnxbPePu423KpKJm4OqqH6FR8";
-
-const cleanApiKey = rawApiKey.replace(":1", "").trim(); 
-
 const firebaseConfig = {
-  apiKey: cleanApiKey, // Цэвэрлэсэн түлхүүрээ энд өгнө
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyAWD6xtSfVnxbPePu423KpKJm4OqqH6FR8",
   authDomain: "unurflower-0913.firebaseapp.com",
   projectId: "unurflower-0913",
   storageBucket: "unurflower-0913.firebasestorage.app", 

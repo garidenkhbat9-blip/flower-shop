@@ -23,8 +23,7 @@ export default function ProductsListPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collection(db, "products"));
       const productsData = querySnapshot.docs.map(document => ({
         id: document.id,
         ...document.data()

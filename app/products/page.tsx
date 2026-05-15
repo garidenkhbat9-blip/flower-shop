@@ -92,8 +92,8 @@ function AllProductsContent() {
     const fetchData = async () => {
       try {
         const [prodSnap, catSnap] = await Promise.all([
-          getDocs(query(collection(db, "products"), orderBy("createdAt", "desc"))),
-          getDocs(query(collection(db, "categories"), orderBy("name", "asc"))),
+          getDocs(collection(db, "products")),
+          getDocs(collection(db, "categories")),
         ]);
         setProducts(prodSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Product[]);
         setDbCategories(catSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Category[]);
