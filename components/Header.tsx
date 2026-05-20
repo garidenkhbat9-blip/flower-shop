@@ -63,7 +63,7 @@ export default function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className={`w-full sticky top-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100" : "bg-white border-b border-gray-100"}`}
+      className={`w-full sticky top-0 z-50 transition-all duration-300 print:hidden ${isScrolled ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100" : "bg-white border-b border-gray-100"}`}
     >
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isScrolled ? "py-2 md:py-2.5" : "py-3 md:py-4"}`}>
 

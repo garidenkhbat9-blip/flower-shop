@@ -110,7 +110,7 @@ export default function MobileBottomNav() {
       )}
 
       {/* 2. ДООД ҮНДСЭН NAV BAR */}
-      <nav className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-100 flex justify-around items-center py-2 px-2 z-[70] text-[10px] font-bold text-gray-400 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+      <nav className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-100 flex justify-around items-center py-2 px-2 z-[70] text-[10px] font-bold text-gray-400 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] print:hidden">
         <Link
           href="/"
           onClick={() => setIsCategoryOpen(false)}

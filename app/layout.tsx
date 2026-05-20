@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Playfair_Display, Cormorant_Garamond } from "next/font/google";
+import { Montserrat, Playfair_Display, Cormorant_Garamond, Caveat } from "next/font/google";
 import Header from "@/components/Header"; 
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -28,6 +28,11 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["cyrillic", "latin"],
+});
+
 export const metadata: Metadata = {
   title: "Grow room | Цэцэг хүргэлтийн онлайн дэлгүүр",
   description: "Хамгийн шинэхэн цэцэгсийг таны хайртай хүнд хүргэж өгнө.",
@@ -40,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="mn">
-      <body className={`${montserrat.variable} ${playfair.variable} ${cormorant.variable} antialiased font-montserrat`}>
+      <body className={`${montserrat.variable} ${playfair.variable} ${cormorant.variable} ${caveat.variable} antialiased font-montserrat`}>
          <AuthProvider>
           <CartProvider>
             <WishlistProvider>

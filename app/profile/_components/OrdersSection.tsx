@@ -67,36 +67,65 @@ export default function OrdersSection() {
           <Link 
             key={order.id} 
             href={`/order/${order.id}`}
-            className="block bg-white border border-black/[0.03] rounded-[2px] p-8 hover:border-[#87A96B]/30 transition-all hover:shadow-2xl hover:shadow-black/[0.02] group"
+            className="block bg-white border border-gray-200 rounded-xl p-5 md:p-8 hover:border-[#87A96B] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] group relative"
           >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex items-center gap-8">
-                <div className="w-14 h-14 bg-[#FCFBF9] rounded-[2px] flex items-center justify-center text-[#1A1A1A]/20 group-hover:bg-[#87A96B] group-hover:text-white transition-all duration-500">
-                  <Package size={20} strokeWidth={1} />
+            <div className="flex flex-col gap-6">
+              {/* Header: Icon + ID + Date */}
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FCFBF9] rounded-[2px] border border-black/[0.03] flex items-center justify-center text-[#1A1A1A]/30 group-hover:bg-[#87A96B] group-hover:text-white transition-all duration-500 shrink-0">
+                    <Package size={18} strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <h4 className="font-montserrat font-medium text-[12px] md:text-[14px] text-[#1A1A1A] tracking-[0.1em] uppercase">Захиалга #{shortId}</h4>
+                    <p className="text-[9px] text-[#1A1A1A]/40 font-light uppercase tracking-[0.3em] mt-1.5">{dateStr} · {order.items?.length || 0} БАРАА</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-playfair font-medium text-[18px] text-[#1A1A1A]">Захиалга #{shortId}</h4>
-                  <p className="text-[10px] text-[#1A1A1A]/30 font-light uppercase tracking-[0.3em] mt-2">{dateStr} · {order.items?.length || 0} ITEMS</p>
+                
+                {/* Price */}
+                <div className="text-right mt-1">
+                  <p className="font-montserrat font-medium text-[16px] md:text-[18px] text-[#1A1A1A] tracking-wide">{order.totalAmount?.toLocaleString()}₮</p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between md:justify-end gap-10">
-                <div className="text-right">
-                  <p className="font-playfair font-medium text-[18px] text-[#1A1A1A]">{order.totalAmount?.toLocaleString()}₮</p>
-                  <div className="flex items-center gap-2 mt-2 justify-end">
-                    {order.paymentStatus === "Төлөгдсөн" ? (
-                      <span className="flex items-center gap-1.5 text-[9px] font-bold text-[#87A96B] uppercase tracking-[0.1em]">
-                        <CheckCircle2 size={12} strokeWidth={2} /> Төлөгдсөн
+              <div className="w-full h-px bg-gray-100"></div>
+
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full md:w-auto">
+                  {/* Payment Status - Minimal */}
+                  {order.paymentStatus === "Төлөгдсөн" ? (
+                    <span className="flex items-center gap-1.5 text-[9px] font-medium text-[#1A1A1A]/40 uppercase tracking-[0.2em]">
+                      <CheckCircle2 size={12} strokeWidth={1.5} /> Төлөгдсөн
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-[9px] font-medium text-[#1A1A1A]/40 uppercase tracking-[0.2em]">
+                      <Clock size={12} strokeWidth={1.5} /> Төлөөгүй
+                    </span>
+                  )}
+
+                  {order.shippingInfo?.deliveryType !== "pickup" && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-[#1A1A1A]/10 hidden md:block"></span>
+
+                      {/* Order Status - Minimal */}
+                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#87A96B] uppercase tracking-[0.2em]">
+                        <Truck size={14} strokeWidth={2} className="text-[#87A96B]" /> 
+                        {(!order.status || order.status === "Төлбөр төлөгдсөн" || order.status === "Шинэ захиалга") 
+                          ? "Бэлтгэгдэж байна" 
+                          : order.status}
                       </span>
-                    ) : (
-                      <span className="flex items-center gap-1.5 text-[9px] font-bold text-orange-400 uppercase tracking-[0.1em]">
-                        <Clock size={12} strokeWidth={2} /> Төлөөгүй
-                      </span>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </div>
-                <ChevronRight className="text-[#1A1A1A]/10 group-hover:text-[#87A96B] group-hover:translate-x-1 transition-all" size={20} strokeWidth={1} />
+
+                {/* Always visible mobile button */}
+                <div className="w-full md:w-auto flex justify-end mt-2 md:mt-0">
+                  <span className="flex items-center justify-center gap-2 w-full md:w-auto bg-[#87A96B] md:bg-transparent md:text-[#87A96B] text-white px-6 py-4 md:p-0 rounded-[2px] md:rounded-none text-[9px] font-medium uppercase tracking-[0.3em] group-hover:opacity-60 transition-opacity">
+                    Явц хянах <ChevronRight size={14} strokeWidth={1.5} />
+                  </span>
+                </div>
               </div>
+
             </div>
           </Link>
         );

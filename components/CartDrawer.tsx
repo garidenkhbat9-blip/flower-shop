@@ -34,8 +34,8 @@ export default function CartDrawer() {
         {/* Header */}
         <div className="p-8 md:p-12 pb-6 flex items-center justify-between shrink-0">
           <div className="flex flex-col gap-1">
-             <span className="text-[10px] font-light tracking-[0.5em] text-[#999] uppercase font-montserrat">Your Selection</span>
-             <h2 className="text-3xl md:text-4xl font-playfair font-medium text-[#111] tracking-tight">Shopping Bag</h2>
+             <span className="text-[10px] font-light tracking-[0.5em] text-[#999] uppercase font-montserrat">Таны сонголт</span>
+             <h2 className="text-3xl md:text-4xl font-playfair font-medium text-[#111] tracking-tight">Сагс</h2>
           </div>
           <button 
             onClick={() => setIsCartOpen(false)} 
@@ -56,13 +56,14 @@ export default function CartDrawer() {
                <div className="w-24 h-24 bg-[#FAFAFA] rounded-full flex items-center justify-center mb-8 border border-black/[0.03]">
                  <ShoppingBag size={28} className="text-[#111]/20" />
                </div>
-               <p className="text-[#999] font-medium uppercase text-[10px] tracking-[0.3em] font-montserrat mb-8">Your bag is empty</p>
-               <button 
+               <p className="text-[#999] font-medium uppercase text-[10px] tracking-[0.3em] font-montserrat mb-8">Таны сагс хоосон байна</p>
+               <Link 
+                 href="/products"
                  onClick={() => setIsCartOpen(false)}
                  className="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-[#111] pb-2 hover:opacity-50 transition-opacity"
                >
-                 Explore Collections
-               </button>
+                 Дэлгүүр хэсэх
+               </Link>
             </div>
           ) : (
             <div className="space-y-12 mt-4 pb-12">
@@ -115,12 +116,12 @@ export default function CartDrawer() {
           <div className="p-8 md:p-12 bg-white border-t border-black/[0.05] space-y-8 shrink-0">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                 <span className="text-[10px] font-medium text-[#999] uppercase tracking-[0.3em] font-montserrat">Subtotal</span>
+                 <span className="text-[10px] font-medium text-[#999] uppercase tracking-[0.3em] font-montserrat">Нийт дүн</span>
                  <span className="text-xl font-medium text-[#111] font-montserrat">{cartTotal.toLocaleString()}₮</span>
               </div>
               <div className="flex justify-between items-center">
-                 <span className="text-[10px] font-medium text-[#999] uppercase tracking-[0.3em] font-montserrat">Shipping</span>
-                 <span className="text-[10px] font-bold text-[#111] uppercase tracking-[0.1em] font-montserrat">Calculated at checkout</span>
+                 <span className="text-[10px] font-medium text-[#999] uppercase tracking-[0.3em] font-montserrat">Хүргэлт</span>
+                 <span className="text-[10px] font-bold text-[#111] uppercase tracking-[0.1em] font-montserrat">Төлбөр төлөх хэсэгт бодогдоно</span>
               </div>
             </div>
 
@@ -129,7 +130,7 @@ export default function CartDrawer() {
               onClick={() => setIsCartOpen(false)}
               className="group relative w-full bg-[#87A96B] text-white py-6 rounded-[2px] font-medium uppercase text-[11px] tracking-[0.4em] flex items-center justify-center gap-4 hover:bg-[#76945d] transition-all active:scale-[0.98] shadow-2xl"
             >
-              Secure Checkout
+              Худалдан авах
               <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-[#87A96B] transition-all">
                 <ChevronRight size={12} />
               </div>

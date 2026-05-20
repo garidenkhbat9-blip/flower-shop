@@ -4,7 +4,7 @@ import Image from "next/image"; // Image нэмэгдсэн
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-white border-t border-gray-200 mt-auto font-sans pb-20 md:pb-0">
+    <footer className="w-full bg-white border-t border-gray-200 mt-auto font-sans pb-20 md:pb-0 print:hidden">
 
       {/* 1. БАТАЛГААЖУУЛАЛТЫН ХЭСЭГ */}
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-16 border-b border-black/[0.03]">
@@ -79,7 +79,7 @@ export default function Footer() {
             <h4 className="font-bold text-[10px] mb-8 uppercase tracking-[0.3em] text-[#1A1A1A]">Холбоо барих</h4>
             <ul className="space-y-4">
               <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest leading-relaxed">Ulaanbaatar Galleria, 2-р давхар, Ulaanbaatar 14200</li>
-              <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">9993 2671</li>
+              <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">9993 2671, 9993 3526</li>
               <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">growroom@gmail.com</li>
             </ul>
           </div>

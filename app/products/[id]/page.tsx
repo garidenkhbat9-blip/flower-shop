@@ -192,15 +192,15 @@ export default function ProductDetailPage() {
               <div className="flex items-baseline gap-4">
                 {product.discountedPrice ? (
                   <>
-                    <p className="text-4xl md:text-5xl font-playfair font-medium text-[#1A1A1A] tracking-tight">
+                    <p className="text-3xl md:text-4xl font-montserrat font-medium text-[#1A1A1A] tracking-tight">
                       {product.discountedPrice.toLocaleString()} ₮
                     </p>
-                    <p className="text-lg md:text-xl font-medium text-[#999] line-through">
+                    <p className="text-lg md:text-xl font-montserrat font-medium text-[#999] line-through">
                       {product.price.toLocaleString()} ₮
                     </p>
                   </>
                 ) : (
-                  <p className="text-4xl md:text-5xl font-playfair font-medium text-[#1A1A1A] tracking-tight">
+                  <p className="text-3xl md:text-4xl font-montserrat font-medium text-[#1A1A1A] tracking-tight">
                     {product.price.toLocaleString()} ₮
                   </p>
                 )}
@@ -219,24 +219,32 @@ export default function ProductDetailPage() {
             )}
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
-              <button
-                onClick={handleAddToCart}
-                className={`flex items-center justify-center gap-3 border font-medium py-5 rounded-[2px] transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] ${addedToCart
-                    ? "bg-[#87A96B] text-white border-[#87A96B]"
-                    : "border-gray-200 text-[#1A1A1A] hover:border-[#87A96B]"
-                  }`}
-              >
-                <ShoppingCart size={15} strokeWidth={1.5} />
-                {addedToCart ? "Нэмэгдлээ ✓" : "Сагсанд хийх"}
-              </button>
-              <button
-                onClick={handleCheckoutAction}
-                className="flex items-center justify-center gap-3 bg-[#1A1A1A] text-white font-medium py-5 rounded-[2px] hover:bg-black transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-black/10"
-              >
-                <CreditCard size={15} strokeWidth={1.5} /> Худалдан авах
-              </button>
-            </div>
+            {product.inStock === false ? (
+              <div className="pt-6 border-t border-gray-100">
+                <div className="bg-gray-100 text-[#1A1A1A]/40 font-medium py-5 rounded-[2px] text-center uppercase text-[10px] tracking-[0.2em]">
+                  Уучлаарай, энэ бараа дууссан байна.
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
+                <button
+                  onClick={handleAddToCart}
+                  className={`flex items-center justify-center gap-3 border font-medium py-5 rounded-[2px] transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] ${addedToCart
+                      ? "bg-[#87A96B] text-white border-[#87A96B]"
+                      : "border-gray-200 text-[#1A1A1A] hover:border-[#87A96B]"
+                    }`}
+                >
+                  <ShoppingCart size={15} strokeWidth={1.5} />
+                  {addedToCart ? "Нэмэгдлээ ✓" : "Сагсанд хийх"}
+                </button>
+                <button
+                  onClick={handleCheckoutAction}
+                  className="flex items-center justify-center gap-3 bg-[#1A1A1A] text-white font-medium py-5 rounded-[2px] hover:bg-black transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-black/10"
+                >
+                  <CreditCard size={15} strokeWidth={1.5} /> Худалдан авах
+                </button>
+              </div>
+            )}
 
             {/* Stores */}
             <div className="pt-6 space-y-4">
@@ -378,11 +386,16 @@ function RecommendedCard({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
         {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
           <div className="bg-white/90 backdrop-blur-md p-3 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)]">
             <Eye size={16} className="text-[#111]" />
           </div>
         </div>
+        {item.inStock === false && (
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-20 backdrop-blur-[1px]">
+            <span className="bg-black text-white px-4 py-2 text-[10px] font-bold tracking-[0.3em] uppercase rounded-[2px] shadow-xl">Дууссан</span>
+          </div>
+        )}
         {/* Discount badge */}
         {hasDiscount && (
           <div className="absolute top-3 left-3 bg-[#87A96B] text-white text-[9px] font-black px-3 py-1 rounded-full shadow-md uppercase tracking-widest">
@@ -411,14 +424,12 @@ function RecommendedCard({
         </div>
 
         <button
-          onClick={handleAdd}
-          className={`w-full flex items-center justify-center gap-2 py-4 rounded-[2px] text-[10px] uppercase tracking-[0.2em] font-medium transition-all duration-300 active:scale-95 ${added
-              ? "bg-[#87A96B] text-white shadow-md"
-              : "bg-gray-50 hover:bg-[#87A96B] hover:text-white text-[#1A1A1A] border border-gray-100"
-            }`}
+          onClick={(e) => { e.preventDefault(); if (item.inStock !== false) handleAdd(e); }}
+          disabled={item.inStock === false}
+          className={`w-full flex items-center justify-center gap-2 py-4 rounded-[2px] text-[10px] uppercase tracking-[0.2em] font-medium transition-all duration-300 ${item.inStock === false ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : added ? "bg-[#87A96B] text-white shadow-md active:scale-95" : "bg-gray-50 hover:bg-[#87A96B] hover:text-white text-[#1A1A1A] border border-gray-100 active:scale-95"}`}
         >
           <ShoppingCart size={14} />
-          {added ? "Нэмэгдлээ ✓" : "Сагсанд нэмэх"}
+          {item.inStock === false ? "Дууссан" : added ? "Нэмэгдлээ ✓" : "Сагсанд нэмэх"}
         </button>
       </div>
     </div>

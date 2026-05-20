@@ -69,19 +69,37 @@ export default function HomePage() {
   return (
     <div className="bg-[#FAFAFA] min-h-screen font-montserrat text-[#111] overflow-hidden selection:bg-[#111] selection:text-white">
 
-      <section className="relative min-h-[60svh] lg:min-h-[90svh] w-full bg-[#FCFBF9] overflow-hidden flex flex-col lg:flex-row items-center pt-20 lg:pt-0">
-        {/* Subtle Geometric Background Pattern */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.08] z-0 flex items-center justify-center">
+      <section className="relative min-h-[60svh] lg:min-h-[90svh] w-full bg-[#FFF0F5] overflow-hidden flex flex-col lg:flex-row items-center pt-20 lg:pt-0">
+        {/* Elegant Layered Flower Background Pattern */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.13] z-0 flex items-center justify-center text-[#E2A9BE]">
           <motion.svg
             animate={{ rotate: 360 }}
-            transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-            width="600" height="600" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg" className="scale-[2] lg:scale-150"
+            transition={{ duration: 160, repeat: Infinity, ease: "linear" }}
+            width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg" className="scale-[1.5] lg:scale-125"
           >
-            <circle cx="300" cy="300" r="150" stroke="#1A1A1A" strokeWidth="1" />
-            <line x1="300" y1="0" x2="300" y2="600" stroke="#1A1A1A" strokeWidth="1" />
-            <line x1="0" y1="300" x2="600" y2="300" stroke="#1A1A1A" strokeWidth="1" />
-            <path d="M150 150 L450 450" stroke="#1A1A1A" strokeWidth="1" />
-            <path d="M450 150 L150 450" stroke="#1A1A1A" strokeWidth="1" />
+            {/* Outer Large Petals */}
+            {[...Array(8)].map((_, i) => (
+              <path
+                key={`large-${i}`}
+                d="M 400 400 C 520 300, 520 120, 400 20 C 280 120, 280 300, 400 400"
+                stroke="currentColor" strokeWidth="1.5"
+                fill="currentColor" fillOpacity="0.03"
+                transform={`rotate(${i * 45} 400 400)`}
+              />
+            ))}
+            {/* Middle Petals */}
+            {[...Array(8)].map((_, i) => (
+              <path
+                key={`medium-${i}`}
+                d="M 400 400 C 480 320, 490 180, 400 100 C 310 180, 320 320, 400 400"
+                stroke="currentColor" strokeWidth="1.5"
+                fill="currentColor" fillOpacity="0.04"
+                transform={`rotate(${i * 45 + 22.5} 400 400)`}
+              />
+            ))}
+            {/* Center Core */}
+            <circle cx="400" cy="400" r="40" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="400" cy="400" r="20" fill="#FFF0F5" stroke="currentColor" strokeWidth="1" />
           </motion.svg>
         </div>
 
@@ -109,23 +127,12 @@ export default function HomePage() {
             <motion.h1
               variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              className="font-playfair text-[clamp(2.8rem,10vw,5.5rem)] leading-[1.1] lg:leading-[0.9] tracking-[-0.03em] font-medium text-[#1A1A1A] mb-10 lg:mb-12"
+              className="font-cormorant italic text-[clamp(2.8rem,10vw,5rem)] leading-[1.15] tracking-tight font-light text-[#1A1A1A] mb-10 lg:mb-12"
             >
-              Flowers crafted <br className="hidden lg:block" />
-              for <br className="hidden lg:block" />
-              <span className="italic font-normal text-[#1A1A1A]/80">unforgettable</span> <br className="hidden lg:block" />
-              moments
+              Цэцэг өгөх нь <br />
+              <span className="text-[#1A1A1A]/80">авахаасаа</span> илүү <br />
+              жаргалтай
             </motion.h1>
-
-            <motion.p
-              variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
-              className="text-[#1A1A1A]/80 text-[11px] font-bold uppercase tracking-[0.3em] mb-4 font-montserrat"
-            >
-              “Цэцэг өгөх нь авахаасаа илүү жаргалтай”
-            </motion.p>
-
-
-
             <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
               <Link
                 href="/products"

@@ -76,8 +76,102 @@ export default function OrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#111] pb-24 font-sans">
-      <div className="max-w-[800px] mx-auto px-6 pt-8">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#111] pb-24 font-sans print:bg-white print:pb-0 print:min-h-0 print:w-full">
+
+      {/* PRINT ONLY RECEIPT */}
+      <style type="text/css" media="print">
+        {`
+          @page { size: A4; margin: 0; }
+        `}
+      </style>
+      <div className="hidden print:block text-black bg-white w-full max-w-none mx-auto p-0 font-sans">
+        <div className="flex justify-between items-start text-[10px] mb-6">
+          <p>{new Date().toLocaleString("mn-MN")}</p>
+          <p>Захиалга #{shortId} - Grow room Цэцгийн дэлгүүр</p>
+        </div>
+
+        <div className="text-center mb-10">
+          <h1 className="text-xl font-bold mb-1">Grow room Цэцгийн дэлгүүр</h1>
+          <p className="text-sm">Захиалгын баримт</p>
+        </div>
+
+        {/* Order Info */}
+        <div className="flex justify-between items-start border-b-2 border-black pb-4 mb-4">
+          <div>
+            <p className="font-bold text-sm">Захиалга #{shortId}</p>
+            <p className="text-xs">{dateStr}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-gray-500 uppercase">Төлөв</p>
+            <p className="font-bold text-sm">{order.paymentStatus === "Төлөгдсөн" ? "Төлөгдсөн" : "Төлбөр хүлээгдэж буй"}</p>
+          </div>
+        </div>
+
+        {/* Addresses */}
+        <div className="grid grid-cols-2 gap-8 mb-8 border-b-2 border-black pb-4">
+          <div>
+            <p className="font-bold text-[10px] uppercase mb-2">Хүлээн авагч</p>
+            <p className="text-xs">{shipping?.recipientName || shipping?.senderName || ""}</p>
+            <p className="text-xs">{shipping?.recipientPhone || shipping?.senderPhone || ""}</p>
+          </div>
+          <div>
+            <p className="font-bold text-[10px] uppercase mb-2">{isPickup ? "Авах салбар" : "Хүргэх хаяг"}</p>
+            <p className="text-xs max-w-[250px]">{fullAddress}</p>
+          </div>
+        </div>
+
+        {/* Items Table */}
+        <table className="w-full text-xs mb-8">
+          <thead>
+            <tr className="border-b border-black">
+              <th className="text-left font-bold py-2 uppercase">Бараа</th>
+              <th className="text-right font-bold py-2 uppercase">Тоо</th>
+              <th className="text-right font-bold py-2 uppercase">Үнэ</th>
+              <th className="text-right font-bold py-2 uppercase">Дүн</th>
+            </tr>
+          </thead>
+          <tbody>
+            {order.items?.map((item: any, idx: number) => (
+              <tr key={idx} className="border-b border-gray-200">
+                <td className="py-3">
+                  <p className="font-bold uppercase">{item.name}</p>
+                  <p className="text-[10px] text-gray-500">Үндсэн төрөл</p>
+                </td>
+                <td className="text-right py-3">{item.quantity}</td>
+                <td className="text-right py-3">{item.price?.toLocaleString()}₮</td>
+                <td className="text-right py-3">{(item.price * item.quantity)?.toLocaleString()}₮</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Totals */}
+        <div className="flex justify-end mb-16">
+          <div className="w-[300px]">
+            <div className="flex justify-between border-b border-gray-200 py-2">
+              <span className="text-xs">Барааны дүн</span>
+              <span className="text-xs font-bold">{order.subTotal?.toLocaleString() || order.totalAmount?.toLocaleString()}₮</span>
+            </div>
+            {order.deliveryFee > 0 && (
+              <div className="flex justify-between border-b border-gray-200 py-2">
+                <span className="text-xs">Хүргэлт</span>
+                <span className="text-xs font-bold">{order.deliveryFee?.toLocaleString()}₮</span>
+              </div>
+            )}
+            <div className="flex justify-between border-b-2 border-black py-3 font-bold">
+              <span className="text-sm">Нийт төлөх</span>
+              <span className="text-sm">{order.totalAmount?.toLocaleString()}₮</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center text-[10px] text-gray-500 mt-8 pt-4">
+          <p>Энэхүү баримтыг {new Date().toLocaleString("mn-MN")}-нд хэвлэв · Grow room Цэцгийн дэлгүүр</p>
+        </div>
+      </div>
+
+      <div className="max-w-[800px] mx-auto px-6 pt-8 print:hidden">
         {/* Header */}
         <div className="mb-8">
           <p className="text-[12px] text-gray-500 mb-1">Захиалга</p>
@@ -107,9 +201,8 @@ export default function OrderPage() {
               { label: isPickup ? "Олгосон" : "Хүргэгдсэн", icon: <Package size={18} />, step: 4 },
             ].map((s) => (
               <div key={s.step} className="flex flex-col items-center gap-2 bg-white px-2">
-                <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
-                  stepDone(s.step) ? "border-[#e62060] bg-pink-50 text-[#e62060]" : "border-gray-100 bg-white text-gray-300"
-                }`}>
+                <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${stepDone(s.step) ? "border-[#e62060] bg-pink-50 text-[#e62060]" : "border-gray-100 bg-white text-gray-300"
+                  }`}>
                   {s.icon}
                 </div>
                 <p className={`text-[12px] font-bold ${stepDone(s.step) ? "text-[#111]" : "text-gray-400"}`}>{s.label}</p>
@@ -128,8 +221,8 @@ export default function OrderPage() {
               {isPickup ? "Таны баглааг бэлдсэн байна!" : "Захиалга баталгаажлаа!"}
             </h2>
             <p className="text-[14px] text-green-700 max-w-[400px] mb-6">
-              {isPickup 
-                ? "Та манай төв салбар дээр ирж захиалгаа авна уу. Бид таныг хүлээж байна." 
+              {isPickup
+                ? "Та манай төв салбар дээр ирж захиалгаа авна уу. Бид таныг хүлээж байна."
                 : "Таны төлбөр амжилттай хүлээн авлаа. Хүргэлтийг удахгүй эхлүүлэх болно."}
             </p>
             <Link href="/products" className="bg-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-100">
@@ -160,9 +253,9 @@ export default function OrderPage() {
               </div>
             </div>
             <div className="flex gap-2 text-yellow-800">
-              {[{v:h,l:"цаг"},{v:m,l:"мин"},{v:s,l:"сек"}].map((t,i)=>(
+              {[{ v: h, l: "цаг" }, { v: m, l: "мин" }, { v: s, l: "сек" }].map((t, i) => (
                 <div key={i} className="flex flex-col items-center bg-white px-3 py-1.5 rounded-lg border border-yellow-200 shadow-sm">
-                  <span className={`font-black text-lg leading-none ${i===2?"text-[#e62060]":""}`}>{t.v.toString().padStart(2,"0")}</span>
+                  <span className={`font-black text-lg leading-none ${i === 2 ? "text-[#e62060]" : ""}`}>{t.v.toString().padStart(2, "0")}</span>
                   <span className="text-[9px] uppercase tracking-wider mt-1">{t.l}</span>
                 </div>
               ))}
@@ -260,9 +353,6 @@ export default function OrderPage() {
         <div className="flex justify-center gap-6 mt-10 no-print">
           <button onClick={() => window.print()} className="flex items-center gap-2 text-[13px] font-medium text-gray-500 hover:text-black transition">
             <Printer size={16} /> Хэвлэх
-          </button>
-          <button className="flex items-center gap-2 text-[13px] font-medium text-gray-500 hover:text-black transition">
-            <HelpCircle size={16} /> Тусламж
           </button>
         </div>
       </div>

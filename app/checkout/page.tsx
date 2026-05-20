@@ -89,6 +89,18 @@ export default function CheckoutPage() {
       };
 
       const docRef = await addDoc(collection(db, "orders"), orderData);
+      
+      // Send email notification to owner
+      try {
+        await fetch('/api/send-order-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: docRef.id, orderData })
+        });
+      } catch (err) {
+        console.error("Email send failed", err);
+      }
+
       setOrderSuccess(true);
       clearCart();
       router.push(`/order/${docRef.id}`);

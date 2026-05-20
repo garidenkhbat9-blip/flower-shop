@@ -554,11 +554,16 @@ function ProductCard({ product }: { product: any }) {
         <Link href={`/products/${product.id}`} className="block w-full h-full">
           <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
         </Link>
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-4 left-4 z-20">
           {product.discountedPrice && (
             <span className="bg-[#87A96B] text-white text-[9px] font-medium px-4 py-2 rounded-[2px] uppercase tracking-widest shadow-sm">SALE</span>
           )}
         </div>
+        {product.inStock === false && (
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10 backdrop-blur-[1px]">
+            <span className="bg-black text-white px-4 py-2 text-[10px] font-bold tracking-[0.3em] uppercase rounded-[2px] shadow-xl">Дууссан</span>
+          </div>
+        )}
         <button
           onClick={() => product.id && toggleWishlist(product.id)}
           className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 backdrop-blur-md border active:scale-90 ${isWished ? "bg-white border-white text-[#E2A9BE] shadow-lg shadow-[#E2A9BE]/20" : "bg-white/80 border-white/40 text-[#1A1A1A] hover:bg-white"}`}
@@ -573,8 +578,12 @@ function ProductCard({ product }: { product: any }) {
 
         {/* Desktop Quick Buy */}
         <div className="absolute inset-x-4 bottom-4 translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hidden md:block z-20">
-          <button onClick={() => addToCart(product)} className="w-full bg-[#87A96B] text-white text-[10px] font-medium py-5 rounded-[2px] flex items-center justify-center gap-3 hover:bg-[#76945d] transition-all shadow-2xl uppercase tracking-[0.2em]">
-            <ShoppingBag size={14} strokeWidth={1.5} /> Сагсанд нэмэх
+          <button 
+            onClick={(e) => { e.preventDefault(); if(product.inStock !== false) addToCart(product); }}
+            disabled={product.inStock === false}
+            className={`w-full text-white text-[10px] font-medium py-5 rounded-[2px] flex items-center justify-center gap-3 transition-all shadow-2xl uppercase tracking-[0.2em] ${product.inStock !== false ? 'bg-[#87A96B] hover:bg-[#76945d]' : 'bg-gray-400 cursor-not-allowed'}`}
+          >
+            <ShoppingBag size={14} strokeWidth={1.5} /> {product.inStock !== false ? "Сагсанд нэмэх" : "Дууссан"}
           </button>
         </div>
       </div>
@@ -584,13 +593,19 @@ function ProductCard({ product }: { product: any }) {
           <h3 className="text-[12px] md:text-[14px] font-medium text-[#1A1A1A] line-clamp-1 mb-2 hover:opacity-60 transition-opacity font-montserrat uppercase tracking-wider">{product.name}</h3>
         </Link>
         <div className="flex items-center gap-3 mb-6 mt-auto">
-          <span className="font-playfair font-medium text-[16px] text-[#1A1A1A]">{(product.discountedPrice ?? product.price).toLocaleString()}₮</span>
-          {product.discountedPrice && <span className="text-[11px] text-[#1A1A1A]/30 line-through font-light">{product.price.toLocaleString()}₮</span>}
+          <span className="font-montserrat font-medium text-[13px] md:text-[14px] text-[#1A1A1A] tracking-wide">{(product.discountedPrice ?? product.price).toLocaleString()}₮</span>
+          {product.discountedPrice && <span className="text-[11px] font-montserrat text-[#1A1A1A]/30 line-through font-light tracking-wide">{product.price.toLocaleString()}₮</span>}
         </div>
 
         {/* Mobile Buy Button */}
-        <div className="mt-auto flex gap-3 md:hidden">
-          <button onClick={() => addToCart(product)} className="flex-1 bg-[#87A96B] text-white py-4 rounded-[2px] flex items-center justify-center active:scale-95 transition-all shadow-lg"><ShoppingBag size={16} strokeWidth={1.5} /></button>
+        <div className="mt-auto flex gap-3 md:hidden relative z-20">
+          <button 
+            onClick={(e) => { e.preventDefault(); if(product.inStock !== false) addToCart(product); }}
+            disabled={product.inStock === false}
+            className={`flex-1 text-white py-4 rounded-[2px] flex items-center justify-center transition-all shadow-lg ${product.inStock !== false ? 'bg-[#87A96B] active:scale-95' : 'bg-gray-400 cursor-not-allowed'}`}
+          >
+            <ShoppingBag size={16} strokeWidth={1.5} />
+          </button>
           <Link href={`/products/${product.id}`} className="flex-1 border border-black/[0.05] text-[#1A1A1A] text-[9px] font-medium uppercase tracking-[0.2em] py-4 rounded-[2px] flex items-center justify-center hover:border-[#1A1A1A] transition-all">Үзэх</Link>
         </div>
       </div>
