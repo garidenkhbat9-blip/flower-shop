@@ -200,19 +200,7 @@ function LoginContent() {
             />
           </div>
           <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-sm font-medium text-gray-700">Нууц үг</label>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsForgotPassword(true);
-                  setError("");
-                }}
-                className="text-xs font-semibold text-gray-700 hover:text-black underline underline-offset-4"
-              >
-                Нууц үгээ мартсан уу?
-              </button>
-            </div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Нууц үг</label>
             <input
               type="password"
               autoComplete={rememberMe ? "current-password" : "off"}

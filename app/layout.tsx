@@ -36,6 +36,15 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "Grow room | Цэцэг хүргэлтийн онлайн дэлгүүр",
   description: "Хамгийн шинэхэн цэцэгсийг таны хайртай хүнд хүргэж өгнө.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" }
+    ],
+  },
 };
 
 export default function RootLayout({
