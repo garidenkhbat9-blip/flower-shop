@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
   --background: #FFFDF9; /* Cream/Off-white */
   --foreground: #333333; /* Charcoal */
   --primary: #E2A9BE; /* Dusty Rose */
@@ -18,13 +19,6 @@
   --font-caveat: var(--font-caveat);
   --font-cormorant: var(--font-cormorant);
   --font-playfair: var(--font-playfair);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
