@@ -114,7 +114,7 @@ export default function AboutPage() {
             <div className="lg:col-span-5 space-y-10">
               <h3 className="text-4xl font-playfair font-medium text-[#1A1A1A]">Холбоо барих</h3>
               <div className="space-y-8">
-                <ContactItem icon={<MapPin size={18} />} title="Салбар" info="Ulaanbaatar Galleria, 2-р давхар" />
+                <ContactItem icon={<MapPin size={18} />} title="Салбар" info="Ulaanbaatar Galleria, Сүхбаатарын талбайн зүүн талд, Төрийн ордны чанх ард, 2 давхар" />
                 <ContactItem icon={<Clock size={18} />} title="Цагийн хуваарь" info="Өдөр бүр 10:00 - 20:00" />
                 <ContactItem icon={<Phone size={18} />} title="Утас" info="9993 2671, 9993 3526" />
                 <ContactItem icon={<Mail size={18} />} title="И-мэйл" info="growroom@gmail.com" />
