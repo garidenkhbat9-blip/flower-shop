@@ -4,17 +4,21 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import {
-  Clock, CheckCircle2, Package, Printer, HelpCircle, Truck
+  Clock, CheckCircle2, Package, Printer, HelpCircle, Truck, Mail
 } from "lucide-react";
 import Link from "next/link";
 
 export default function OrderPage() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
+  const { user } = useAuth();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(3600);
+  const [qpayInvoice, setQpayInvoice] = useState<any>(null);
+  const [loadingQpay, setLoadingQpay] = useState(false);
 
   // Real-time listener - хүргэлтийн ажилтан статус өөрчлөхөд хэрэглэгчийн хуудас дээр шууд шинэчлэгдэнэ
   useEffect(() => {
@@ -35,10 +39,51 @@ export default function OrderPage() {
   }, [id, router]);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
-    const timer = setInterval(() => setTimeLeft((p) => p - 1), 1000);
+    if (!order || order.paymentStatus === "Төлөгдсөн") return;
+
+    const fetchQpay = async () => {
+      setLoadingQpay(true);
+      try {
+        const res = await fetch('/api/qpay/invoice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: order.totalAmount, orderId: order.id })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        setQpayInvoice(data);
+      } catch (err: any) {
+        console.error("Qpay fetch error:", err);
+      } finally {
+        setLoadingQpay(false);
+      }
+    };
+
+    if (!qpayInvoice) {
+      fetchQpay();
+    }
+  }, [order?.id]);
+
+  useEffect(() => {
+    if (!order?.createdAt || order.paymentStatus === "Төлөгдсөн") return;
+
+    const createdAtDate = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
+    const expirationTime = createdAtDate.getTime() + 3600 * 1000;
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const diffInSeconds = Math.floor((expirationTime - now) / 1000);
+      if (diffInSeconds <= 0) {
+        setTimeLeft(0);
+      } else {
+        setTimeLeft(diffInSeconds);
+      }
+    };
+
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [order?.createdAt, order?.paymentStatus]);
 
   const formatTime = (sec: number) => ({
     h: Math.floor(sec / 3600),
@@ -220,11 +265,28 @@ export default function OrderPage() {
             <h2 className="text-xl font-black text-green-900 mb-2">
               {isPickup ? "Таны баглааг бэлдсэн байна!" : "Захиалга баталгаажлаа!"}
             </h2>
-            <p className="text-[14px] text-green-700 max-w-[400px] mb-6">
+            <p className="text-[14px] text-green-700 max-w-[400px] mb-4">
               {isPickup
                 ? "Та манай төв салбар дээр ирж захиалгаа авна уу. Бид таныг хүлээж байна."
                 : "Таны төлбөр амжилттай хүлээн авлаа. Хүргэлтийг удахгүй эхлүүлэх болно."}
             </p>
+
+            {/* Зочин хэрэглэгч: Имэйл рүү линк илгээсэн мэдэгдэл */}
+            {order.userId === "guest" && order.shippingInfo?.senderEmail && (
+              <div className="flex items-center gap-2 bg-green-100 text-green-800 text-[13px] font-medium px-4 py-2.5 rounded-xl mb-4">
+                <Mail size={16} />
+                <span>{order.shippingInfo.senderEmail} хаяг руу хянах линк илгээлээ</span>
+              </div>
+            )}
+
+            {/* Бүртгэлтэй хэрэглэгч: Profile-ээсээ хянах мэдэгдэл */}
+            {order.userId !== "guest" && user && (
+              <div className="flex items-center gap-2 bg-green-100 text-green-800 text-[13px] font-medium px-4 py-2.5 rounded-xl mb-4">
+                <CheckCircle2 size={16} />
+                <span>Та <Link href="/profile" className="underline font-bold">Profile</Link> хэсгээсээ захиалгаа хянах боломжтой</span>
+              </div>
+            )}
+
             <Link href="/products" className="bg-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-100">
               Үргэлжлүүлэн худалдан авах
             </Link>
@@ -243,23 +305,66 @@ export default function OrderPage() {
         )}
 
         {/* Төлбөр хүлээгдэж буй */}
-        {order.paymentStatus !== "Төлөгдсөн" && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-6 flex items-start justify-between">
-            <div className="flex items-start gap-3">
-              <Clock className="text-yellow-600 mt-0.5" size={20} />
-              <div>
-                <p className="font-bold text-yellow-800 text-[15px]">Төлбөр хүлээгдэж байна</p>
-                <p className="text-[12px] text-yellow-700 mt-1">Доорх дансруу шилжүүлэг хийж баталгаажуулна уу.</p>
+        {order.paymentStatus !== "Төлөгдсөн" && timeLeft > 0 && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-6 mb-6 shadow-sm">
+            <div className="flex flex-col md:flex-row items-start justify-between mb-6 gap-4">
+              <div className="flex items-start gap-3">
+                <Clock className="text-yellow-600 mt-0.5" size={20} />
+                <div>
+                  <p className="font-bold text-gray-900 text-[15px]">Төлбөр хүлээгдэж байна</p>
+                  <p className="text-[12px] text-gray-500 mt-1">Доорх QR кодыг уншуулж эсвэл банкны апп-аар төлнө үү.</p>
+                </div>
+              </div>
+              <div className="flex gap-2 text-yellow-800">
+                {[{ v: h, l: "цаг" }, { v: m, l: "мин" }, { v: s, l: "сек" }].map((t, i) => (
+                  <div key={i} className="flex flex-col items-center bg-yellow-50 px-3 py-1.5 rounded-lg border border-yellow-200 shadow-sm">
+                    <span className={`font-black text-lg leading-none ${i === 2 ? "text-[#e62060]" : ""}`}>{t.v.toString().padStart(2, "0")}</span>
+                    <span className="text-[9px] uppercase tracking-wider mt-1">{t.l}</span>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="flex gap-2 text-yellow-800">
-              {[{ v: h, l: "цаг" }, { v: m, l: "мин" }, { v: s, l: "сек" }].map((t, i) => (
-                <div key={i} className="flex flex-col items-center bg-white px-3 py-1.5 rounded-lg border border-yellow-200 shadow-sm">
-                  <span className={`font-black text-lg leading-none ${i === 2 ? "text-[#e62060]" : ""}`}>{t.v.toString().padStart(2, "0")}</span>
-                  <span className="text-[9px] uppercase tracking-wider mt-1">{t.l}</span>
+
+            {loadingQpay && (
+              <div className="flex justify-center py-10">
+                <div className="w-6 h-6 border-2 border-gray-200 border-t-[#003B6D] rounded-full animate-spin"></div>
+              </div>
+            )}
+            
+            {qpayInvoice && (
+              <div className="flex flex-col items-center border-t border-gray-100 pt-6">
+                <div className="mb-6 p-4 bg-white border border-gray-200 rounded-2xl shadow-sm">
+                  {qpayInvoice.qr_image ? (
+                    <img src={`data:image/png;base64,${qpayInvoice.qr_image}`} alt="QPay QR" className="w-48 h-48 object-contain" />
+                  ) : (
+                    <p className="text-sm text-gray-500">QR код олдсонгүй</p>
+                  )}
                 </div>
-              ))}
+                
+                <div className="w-full max-w-md grid grid-cols-4 sm:grid-cols-5 gap-3">
+                  {qpayInvoice.urls?.map((app: any, idx: number) => (
+                    <a key={idx} href={app.link} className="flex flex-col items-center gap-2 group hover:scale-105 transition-transform">
+                      <img src={app.logo} alt={app.description} className="w-10 h-10 rounded-xl shadow-sm border border-gray-100 bg-white object-contain p-1" />
+                      <span className="text-[9px] text-center text-gray-500 group-hover:text-black line-clamp-1 w-full">{app.name || app.description}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Хугацаа дууссан / Цуцлагдсан */}
+        {order.paymentStatus !== "Төлөгдсөн" && timeLeft <= 0 && (
+          <div className="bg-red-50 border border-red-100 rounded-2xl p-8 mb-6 flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg shadow-red-200">
+              <Clock size={32} strokeWidth={2.5} />
             </div>
+            <h2 className="text-xl font-black text-red-900 mb-2">Захиалга цуцлагдлаа</h2>
+            <p className="text-[14px] text-red-700 max-w-[400px] mb-6">Төлбөр төлөх хугацаа (1 цаг) дууссан тул таны захиалга цуцлагдлаа. Та дахин шинээр захиалга хийнэ үү.</p>
+            <Link href="/products" className="bg-red-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-red-700 transition shadow-lg shadow-red-100">
+              Дахин захиалах
+            </Link>
           </div>
         )}
 

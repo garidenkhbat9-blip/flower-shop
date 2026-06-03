@@ -83,23 +83,23 @@ export default function CheckoutPage() {
         subTotal: cartTotal,
         deliveryFee: deliveryFee,
         shippingInfo: formData,
-        status: "Төлбөр төлөгдсөн",
-        paymentStatus: "Төлөгдсөн",
+        status: "Шинэ",
+        paymentStatus: "Хүлээгдэж буй",
         createdAt: serverTimestamp(),
       };
 
       const docRef = await addDoc(collection(db, "orders"), orderData);
-      
+
       // Send email notification to owner
-      try {
-        await fetch('/api/send-order-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: docRef.id, orderData })
-        });
-      } catch (err) {
-        console.error("Email send failed", err);
-      }
+      // try {
+      //   await fetch('/api/send-order-email', {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({ orderId: docRef.id, orderData })
+      //   });
+      // } catch (err) {
+      //   console.error("Email send failed", err);
+      // }
 
       setOrderSuccess(true);
       clearCart();
@@ -146,7 +146,7 @@ export default function CheckoutPage() {
 
                 <div>
                   <label className={labelClass}>Имэйл хаяг</label>
-                  <input name="senderEmail" type="email" value={formData.senderEmail} onChange={handleChange} placeholder="example@shop.mn" className={inputClass} />
+                  <input name="senderEmail" type="email" value={formData.senderEmail} onChange={handleChange} placeholder="example@gmail.com" className={inputClass} />
                   <p className="text-[10px] text-gray-600 mt-1.5 font-medium">Имэйл хаягийг заавал бөглөх шаардлагагүй.</p>
                 </div>
 

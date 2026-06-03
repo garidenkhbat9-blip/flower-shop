@@ -3,7 +3,7 @@ import { Suspense, useEffect } from "react";
 
 import { useState } from "react";
 import { auth, db } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -34,39 +34,7 @@ function RegisterContent() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  // Google redirect-ээс буцаж ирэхэд үр дүнг боловсруулах
-  useEffect(() => {
-    setGoogleLoading(true);
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result) {
-          const user = result.user;
-          const userDocRef = doc(db, "users", user.uid);
-          const userDocSnap = await getDoc(userDocRef);
-
-          if (!userDocSnap.exists()) {
-            await setDoc(userDocRef, {
-              email: user.email,
-              displayName: user.displayName,
-              isAdmin: false,
-              createdAt: serverTimestamp(),
-            });
-            router.push(nextPath.startsWith("/") ? nextPath : "/profile");
-          } else {
-            if (userDocSnap.data().isAdmin) router.push("/admin");
-            else router.push(nextPath.startsWith("/") ? nextPath : "/profile");
-          }
-        }
-      })
-      .catch((err) => {
-        if (err.code !== "auth/popup-closed-by-user") {
-          setError("Google-ээр нэвтрэхэд алдаа гарлаа.");
-        }
-      })
-      .finally(() => {
-        setGoogleLoading(false);
-      });
-  }, []);
+  // Google popup ашиглах тул getRedirectResult устгав
 
   // 1. ИМЭЙЛ, НУУЦ ҮГЭЭР БҮРТГҮҮЛЭХ
   const handleRegister = async (e: React.FormEvent) => {
@@ -110,31 +78,46 @@ function RegisterContent() {
     }
   };
 
-  // 2. GOOGLE-ЭЭР БҮРТГҮҮЛЭХ/НЭВТРЭХ (redirect ашиглана - утсанд тохиромжтой)
+  // 2. GOOGLE-ЭЭР БҮРТГҮҮЛЭХ/НЭВТРЭХ (popup ашиглана)
   const handleGoogleSignIn = async () => {
     setError("");
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
     try {
-      await signInWithRedirect(auth, provider);
-      // Redirect хийсний дараа хуудас дахин ачаалагдана, getRedirectResult useEffect-д боловсруулагдана
+      setGoogleLoading(true);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        await setDoc(userDocRef, {
+          email: user.email,
+          displayName: user.displayName,
+          isAdmin: false,
+          createdAt: serverTimestamp(),
+        });
+        router.push(nextPath.startsWith("/") ? nextPath : "/profile");
+      } else {
+        if (userDocSnap.data().isAdmin) router.push("/admin");
+        else router.push(nextPath.startsWith("/") ? nextPath : "/profile");
+      }
     } catch (err: any) {
-      setError("Google-ээр нэвтрэхэд алдаа гарлаа.");
+      if (err.code !== "auth/popup-closed-by-user") {
+        setError("Google-ээр нэвтрэхэд алдаа гарлаа.");
+      }
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 bg-gradient-to-b from-rose-50 via-white to-white">
-      <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+      <div className="w-full max-w-[340px] sm:max-w-md p-6 sm:p-8 bg-white rounded-2xl shadow-sm border border-gray-100 mx-auto">
         <div className="text-center mb-6">
-          <Link href="/" className="inline-flex items-center gap-2 font-black tracking-tight text-gray-900">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-black text-white">GR</span>
-            <span>Grow room</span>
-          </Link>
-          <p className="mt-2 text-sm text-gray-500">Хурдан захиалга хийхийн тулд шинэ хэрэглэгч үүсгээрэй.</p>
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">Бүртгүүлэх</h2>
+          <p className="text-[13px] sm:text-sm text-gray-500">Хурдан захиалга хийхийн тулд шинэ хэрэглэгч үүсгээрэй.</p>
         </div>
-
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">Бүртгүүлэх</h2>
 
         {error && <p className="text-red-600 text-sm mb-4 text-center bg-red-50 p-3 rounded-lg font-medium">{error}</p>}
 
@@ -198,7 +181,7 @@ function RegisterContent() {
             </div>
           ) : null}
 
-          <button type="submit" disabled={loading} className="w-full bg-black text-white py-3.5 rounded-xl font-bold hover:bg-gray-800 transition mt-4 disabled:bg-gray-400">
+          <button type="submit" disabled={loading} className="w-full bg-[#8FB596] text-white py-3.5 rounded-xl font-bold hover:bg-[#7C9F82] transition mt-4 disabled:bg-gray-400">
             {loading ? "Түр хүлээнэ үү..." : "Бүртгүүлэх"}
           </button>
         </form>

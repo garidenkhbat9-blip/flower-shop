@@ -35,9 +35,12 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://growroom.mn'),
-  title: "Grow room | Цэцэг хүргэлтийн онлайн дэлгүүр",
-  description: "Хамгийн шинэхэн цэцэгсийг таны хайртай хүнд хүргэж өгнө.",
-  keywords: ["цэцэг хүргэлт", "цэцгийн дэлгүүр", "grow room", "улаанбаатар цэцэг", "цэцэг захиалга", "grow room florist"],
+  title: {
+    default: "Grow Room | Цэцэг хүргэлтийн онлайн дэлгүүр",
+    template: "%s | Grow Room",
+  },
+  description: "Grow Room нь Улаанбаатар хотод цэцэг хүргэлтийн үйлчилгээ үзүүлдэг онлайн дэлгүүр. Шинэхэн цэцгийн баглаа, бэлгийн шийдэл, захиалгат үйлчилгээ. Хамгийн шинэхэн цэцэгсийг таны хайртай хүнд хүргэж өгнө.",
+  keywords: ["цэцэг хүргэлт", "цэцгийн дэлгүүр", "grow room", "улаанбаатар цэцэг", "цэцэг захиалга", "grow room florist", "цэцэг онлайн", "цэцгийн баглаа", "бэлгийн цэцэг", "Улаанбаатар цэцгийн дэлгүүр", "flower delivery Mongolia"],
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -48,8 +51,8 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "Grow room | Цэцэг хүргэлтийн онлайн дэлгүүр",
-    description: "Хамгийн шинэхэн цэцэгсийг таны хайртай хүнд хүргэж өгнө.",
+    title: "Grow Room | Цэцэг хүргэлтийн онлайн дэлгүүр",
+    description: "Grow Room нь Улаанбаатар хотод цэцэг хүргэлтийн үйлчилгээ үзүүлдэг онлайн дэлгүүр. Шинэхэн цэцгийн баглаа, бэлгийн шийдэл, захиалгат үйлчилгээ.",
     url: "/",
     siteName: "Grow Room Florist",
     images: [
@@ -57,7 +60,7 @@ export const metadata: Metadata = {
         url: "/logo.jpg",
         width: 1200,
         height: 630,
-        alt: "Grow Room Logo",
+        alt: "Grow Room - Цэцэг хүргэлтийн онлайн дэлгүүр Улаанбаатар",
       },
     ],
     locale: "mn_MN",
@@ -65,9 +68,23 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Grow room | Цэцэг хүргэлтийн онлайн дэлгүүр",
+    title: "Grow Room | Цэцэг хүргэлтийн онлайн дэлгүүр",
     description: "Хамгийн шинэхэн цэцэгсийг таны хайртай хүнд хүргэж өгнө.",
     images: ["/logo.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: "/",
   },
 };
 
