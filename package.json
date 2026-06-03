@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@vercel/analytics": "^2.0.1",
     "axios": "^1.17.0",
     "firebase": "^12.10.0",
     "framer-motion": "^12.38.0",

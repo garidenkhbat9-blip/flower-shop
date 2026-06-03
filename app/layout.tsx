@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { Montserrat, Playfair_Display, Cormorant_Garamond, Caveat } from "next/font/google";
-import Header from "@/components/Header"; 
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { AuthProvider } from "@/context/AuthContext"; 
+import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { db } from "@/lib/firebase";
 import CartDrawer from "@/components/CartDrawer";
 import "./globals.css";
-import { Analytics } from '@vercel/analytics/react';
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -93,6 +92,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="mn">
       <head>
@@ -142,15 +142,14 @@ export default function RootLayout({
         />
       </head>
       <body className={`${montserrat.variable} ${playfair.variable} ${cormorant.variable} ${caveat.variable} antialiased font-montserrat`}>
-         <AuthProvider>
+        <AuthProvider>
           <CartProvider>
             <WishlistProvider>
               <Header />
               <CartDrawer />
-              <main className="min-h-screen bg-gray-50 pb-20 md:pb-0"> 
-                {children} 
-                <Analytics />
-              </main>        
+              <main className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+                {children}
+              </main>
               <Footer />
               <MobileBottomNav />
             </WishlistProvider>
