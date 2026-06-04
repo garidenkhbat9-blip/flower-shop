@@ -37,6 +37,9 @@ export default function AdminDashboard() {
 
         ordersSnap.forEach((doc) => {
           const data = doc.data();
+          const isPaid = data.paymentStatus === "Төлөгдсөн" || data.paymentStatus === "Paid";
+          if (!isPaid) return; // Зөвхөн төлбөр нь төлөгдсөн захиалгуудыг админд харуулна
+
           allOrders.push({ id: doc.id, ...data });
           if (data.status !== "Цуцлагдсан") {
             revenue += data.totalAmount || 0;
@@ -71,49 +74,49 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[50vh]">
-        <div className="w-8 h-8 border-2 border-gray-100 border-t-[#1A1A1A] rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-gray-150 border-t-[#1A1A1A] rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-10 font-montserrat text-[#1A1A1A]">
+    <div className="space-y-10 font-montserrat text-black">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl lg:text-4xl font-playfair font-medium">Dashboard</h1>
-        <p className="text-[10px] text-[#1A1A1A]/30 uppercase tracking-[0.3em] font-light">Системийн ерөнхий тойм</p>
+        <h1 className="text-2xl lg:text-4xl font-playfair font-bold">Удирдлагын хэсэг</h1>
+        <p className="text-[10px] text-black uppercase tracking-[0.3em] font-bold">Системийн ерөнхий тойм</p>
       </div>
 
       {/* Статистик картууд */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        <StatCard icon={<DollarSign size={18} strokeWidth={1.5} />} title="Revenue" value={`${(stats.totalRevenue / 1000).toFixed(0)}k`} />
-        <StatCard icon={<ShoppingBag size={18} strokeWidth={1.5} />} title="Orders" value={stats.totalOrders} />
-        <StatCard icon={<Clock size={18} strokeWidth={1.5} />} title="Pending" value={stats.pendingOrders} />
-        <StatCard icon={<Flower2 size={18} strokeWidth={1.5} />} title="Products" value={stats.totalProducts} />
-        <StatCard icon={<FolderTree size={18} strokeWidth={1.5} />} title="Categories" value={stats.totalCategories} />
+        <StatCard icon={<DollarSign size={18} strokeWidth={1.5} />} title="Нийт орлого" value={`${(stats.totalRevenue / 1000).toFixed(0)}k`} />
+        <StatCard icon={<ShoppingBag size={18} strokeWidth={1.5} />} title="Захиалгууд" value={stats.totalOrders} />
+        <StatCard icon={<Clock size={18} strokeWidth={1.5} />} title="Хүлээгдэж буй" value={stats.pendingOrders} />
+        <StatCard icon={<Flower2 size={18} strokeWidth={1.5} />} title="Цэцэгс" value={stats.totalProducts} />
+        <StatCard icon={<FolderTree size={18} strokeWidth={1.5} />} title="Ангилал" value={stats.totalCategories} />
       </div>
 
       {/* Хамгийн сүүлийн захиалгууд */}
-      <div className="bg-white rounded-[2px] border border-black/[0.03] shadow-sm overflow-hidden mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="p-8 border-b border-black/[0.03] flex justify-between items-end">
+      <div className="bg-white rounded-[2px] border border-black/10 shadow-sm overflow-hidden mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="p-8 border-b border-black/10 flex justify-between items-end">
           <div className="space-y-1.5">
-            <h2 className="text-[10px] font-medium text-[#1A1A1A]/30 uppercase tracking-[0.3em]">Recent Orders</h2>
-            <p className="text-xl font-playfair font-medium">Сүүлийн захиалгууд</p>
+            <h2 className="text-[10px] font-bold text-black uppercase tracking-[0.3em]">Recent Orders</h2>
+            <p className="text-xl font-playfair font-bold">Сүүлийн захиалгууд</p>
           </div>
-          <Link href="/admin/orders" className="text-[10px] text-[#1A1A1A] font-medium uppercase tracking-[0.2em] flex items-center gap-3 group transition-all">
-            <span className="border-b border-black/[0.1] pb-1 group-hover:border-black transition-all">БҮГДИЙГ ХАРАХ</span>
+          <Link href="/admin/orders" className="text-[10px] text-black font-bold uppercase tracking-[0.2em] flex items-center gap-3 group transition-all">
+            <span className="border-b border-black pb-1 group-hover:border-black transition-all">БҮГДИЙГ ХАРАХ</span>
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
         {recentOrders.length === 0 ? (
           <div className="p-24 text-center">
-            <ShoppingBag size={40} className="mx-auto text-[#1A1A1A]/5 mb-6" strokeWidth={1} />
-            <p className="text-[10px] text-[#1A1A1A]/30 uppercase tracking-[0.3em] font-light">Захиалга байхгүй байна</p>
+            <ShoppingBag size={40} className="mx-auto text-black/10 mb-6" strokeWidth={1} />
+            <p className="text-[10px] text-black uppercase tracking-[0.3em] font-bold">Захиалга байхгүй байна</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[600px]">
-              <thead className="bg-[#FCFBF9] text-[#1A1A1A]/30 uppercase text-[9px] font-medium tracking-[0.2em] border-b border-black/[0.03]">
+              <thead className="bg-[#FCFBF9] text-black uppercase text-[10px] font-bold tracking-[0.2em] border-b border-black/10">
                 <tr>
                   <th className="p-8">Огноо</th>
                   <th className="p-8">Захиалагч</th>
@@ -121,30 +124,36 @@ export default function AdminDashboard() {
                   <th className="p-8 text-center">Төлөв</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-100">
                 {recentOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="p-8 text-[#1A1A1A]/30 font-light text-[11px] uppercase tracking-wider">
+                    <td className="p-8 text-black font-semibold text-[11px] uppercase tracking-wider">
                       {order.createdAt
                         ? new Date(order.createdAt.seconds * 1000).toLocaleDateString('mn-MN')
                         : "---"}
                     </td>
                     <td className="p-8">
-                      <p className="font-playfair font-medium text-[16px] text-[#1A1A1A] tracking-tight uppercase">{order.shippingInfo?.recipientName || order.shippingInfo?.senderName || "Нэргүй"}</p>
-                      <p className="text-[10px] text-[#1A1A1A]/30 font-light uppercase tracking-[0.1em] mt-1.5">{order.shippingInfo?.recipientPhone}</p>
+                      <p className="font-playfair font-bold text-[16px] text-black tracking-tight uppercase">{order.shippingInfo?.recipientName || order.shippingInfo?.senderName || "Нэргүй"}</p>
+                      <p className="text-[10px] text-black font-bold uppercase tracking-[0.1em] mt-1.5">Утас: {order.shippingInfo?.recipientPhone || "---"}</p>
                     </td>
-                    <td className="p-8 font-playfair font-medium text-[#1A1A1A] text-right text-[17px]">
+                    <td className="p-8 font-playfair font-bold text-black text-right text-[17px]">
                       {order.totalAmount?.toLocaleString()}₮
                     </td>
                     <td className="p-8">
                       <div className="flex flex-col items-center gap-2">
-                        {order.shippingInfo?.deliveryType === "pickup" && (
-                          <span className="bg-[#FCFBF9] text-[#1A1A1A]/30 border border-black/[0.05] px-2.5 py-1 rounded-[2px] text-[8px] font-medium uppercase tracking-widest">Pickup</span>
-                        )}
-                        <span className={`px-4 py-2 rounded-[2px] text-[9px] font-medium uppercase tracking-[0.1em] border transition-all ${order.status === 'Хүлээгдэж буй' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                            order.status === 'Хүргэгдсэн' ? 'bg-green-50 text-green-600 border-green-100' :
-                              'bg-[#FCFBF9] text-[#1A1A1A]/40 border-black/[0.03]'
-                          }`}>
+                        <span className={`px-2.5 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border ${
+                          order.shippingInfo?.deliveryType === "pickup"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-blue-50 text-blue-700 border-blue-200"
+                        }`}>
+                          {order.shippingInfo?.deliveryType === "pickup" ? "🏃‍♂️ Салбараас авах" : "🚚 Хүргэлтээр авах"}
+                        </span>
+                        <span className={`px-4 py-2 rounded-[2px] text-[9px] font-bold uppercase tracking-[0.1em] border transition-all ${
+                          order.status === 'Хүлээгдэж буй' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                          order.status === 'Хүргэлтэнд гарсан' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                          order.status === 'Хүргэгдсэн' ? 'bg-green-50 text-green-700 border-green-200' :
+                          'bg-[#FCFBF9] text-black border-black/20'
+                        }`}>
                           {order.status || "Шинэ"}
                         </span>
                       </div>
@@ -163,13 +172,13 @@ export default function AdminDashboard() {
 // Stat Card Component
 function StatCard({ icon, title, value }: any) {
   return (
-    <div className="bg-white p-8 rounded-[2px] border border-black/[0.03] shadow-sm flex flex-col gap-6 hover:shadow-md transition-shadow group">
-      <div className="w-12 h-12 bg-[#F3F2F0] rounded-full flex items-center justify-center text-[#1A1A1A] group-hover:bg-[#1A1A1A] group-hover:text-white transition-colors">
+    <div className="bg-white p-8 rounded-[2px] border border-black/10 shadow-sm flex flex-col gap-6 hover:shadow-md transition-shadow group">
+      <div className="w-12 h-12 bg-[#F3F2F0] rounded-full flex items-center justify-center text-black group-hover:bg-[#1A1A1A] group-hover:text-white transition-colors">
         {icon}
       </div>
       <div>
-        <p className="text-[9px] text-[#1A1A1A]/30 font-medium uppercase tracking-[0.3em] mb-2">{title}</p>
-        <p className="text-2xl lg:text-3xl font-playfair font-medium text-[#1A1A1A]">{value}</p>
+        <p className="text-[9px] text-black font-bold uppercase tracking-[0.3em] mb-2">{title}</p>
+        <p className="text-2xl lg:text-3xl font-playfair font-bold text-black">{value}</p>
       </div>
     </div>
   );

@@ -26,17 +26,19 @@ export async function POST(request: Request) {
         <div style="font-family: sans-serif; color: #111; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
           <h2 style="color: #87A96B; margin-bottom: 20px;">Шинэ захиалга ирлээ!</h2>
           
-          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid ${orderData.shippingInfo.deliveryType === 'pickup' ? '#E28743' : '#87A96B'};">
             <p style="margin: 5px 0;"><strong>Захиалгын ID:</strong> #${orderId}</p>
             <p style="margin: 5px 0;"><strong>Нийт дүн:</strong> ${orderData.totalAmount.toLocaleString()}₮</p>
             <p style="margin: 5px 0;"><strong>Төлөв:</strong> ${orderData.paymentStatus}</p>
+            <p style="margin: 5px 0; font-size: 16px;"><strong>Хүргэлтийн хэлбэр:</strong> <span style="color: ${orderData.shippingInfo.deliveryType === 'pickup' ? '#E28743' : '#87A96B'}; font-weight: bold; font-size: 18px;">${orderData.shippingInfo.deliveryType === 'pickup' ? '🏃‍♂️ ОЧИЖ АВАХ (САЛБАРААС)' : '🚚 ХҮРГЭЛТЭЭР АВАХ'}</span></p>
           </div>
 
           <h3 style="border-bottom: 1px solid #eaeaea; padding-bottom: 8px;">Хүргэлтийн мэдээлэл</h3>
+          <p><strong>Сонголт:</strong> <span style="font-weight: bold; color: ${orderData.shippingInfo.deliveryType === 'pickup' ? '#E28743' : '#87A96B'}; font-size: 15px;">${orderData.shippingInfo.deliveryType === 'pickup' ? '🏃‍♂️ Очиж авах' : '🚚 Хүргүүлэх'}</span></p>
           <p><strong>Хүргэх өдөр:</strong> ${orderData.shippingInfo.deliveryDate}</p>
           <p><strong>Илгээгч:</strong> ${orderData.shippingInfo.senderName} (${orderData.shippingInfo.senderPhone})</p>
           <p><strong>Хүлээн авагч:</strong> ${orderData.shippingInfo.recipientName} (${orderData.shippingInfo.recipientPhone})</p>
-          <p><strong>Хаяг:</strong> ${orderData.shippingInfo.deliveryType === 'pickup' ? 'Салбараас авах' : orderData.shippingInfo.district + ', ' + orderData.shippingInfo.khoroo + ', ' + orderData.shippingInfo.building + ' байр, ' + orderData.shippingInfo.apartmentNumber + ' тоот'}</p>
+          <p><strong>Хаяг:</strong> ${orderData.shippingInfo.deliveryType === 'pickup' ? 'Салбараас авах (Төв дэлгүүр)' : orderData.shippingInfo.district + ', ' + orderData.shippingInfo.khoroo + ', ' + orderData.shippingInfo.building + ' байр, ' + orderData.shippingInfo.apartmentNumber + ' тоот'}</p>
           
           <h3 style="border-bottom: 1px solid #eaeaea; padding-bottom: 8px; margin-top: 20px;">Барааны жагсаалт</h3>
           <ul>

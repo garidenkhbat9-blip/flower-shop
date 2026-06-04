@@ -4,9 +4,11 @@ import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, onSnapshot, query, orderBy } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
+import { useAdminDialog } from "@/context/AdminDialogContext";
 import { ImagePlus, Trash2, X, Edit2, Check, RotateCcw } from "lucide-react";
 
 export default function CategoriesPage() {
+  const { alert, confirm } = useAdminDialog();
   const [categories, setCategories] = useState<any[]>([]);
   const [newCategory, setNewCategory] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -57,7 +59,10 @@ export default function CategoriesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCategory.trim()) return alert("Нэр оруулна уу");
+    if (!newCategory.trim()) {
+      await alert("Нэр оруулна уу");
+      return;
+    }
     
     setLoading(true);
     try {
@@ -78,11 +83,10 @@ export default function CategoriesPage() {
           updatedAt: serverTimestamp(),
         });
       } else {
-        // 3. CREATE (Шинээр нэмэх)
-        if (!finalImageUrl) throw new Error("Зураг сонгоно уу");
+        // 3. CREATE (Шинээр нэмэх) - зургийг заавал шаардахгүй
         await addDoc(collection(db, "categories"), {
           name: newCategory.trim(),
-          imageUrl: finalImageUrl,
+          imageUrl: finalImageUrl || null,
           createdAt: serverTimestamp(),
         });
       }
@@ -90,37 +94,37 @@ export default function CategoriesPage() {
       resetForm();
     } catch (error) {
       console.error(error);
-      alert("Алдаа гарлаа");
+      await alert("Алдаа гарлаа");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Устгахдаа итгэлтэй байна уу?")) {
+    if (await confirm("Устгахдаа итгэлтэй байна уу?")) {
       await deleteDoc(doc(db, "categories", id));
     }
   };
 
   return (
-    <div className="p-4 lg:p-8 max-w-2xl mx-auto pb-24">
+    <div className="p-4 lg:p-8 max-w-2xl mx-auto pb-24 text-black">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.back()} className="text-gray-400 hover:text-gray-800 text-2xl">←</button>
-          <h1 className="text-xl font-bold">{editId ? "Категори засах" : "Категори нэмэх"}</h1>
+          <button onClick={() => router.back()} className="text-black hover:text-gray-800 text-2xl font-bold">←</button>
+          <h1 className="text-xl font-bold text-black">{editId ? "Категори засах" : "Категори нэмэх"}</h1>
         </div>
         {editId && (
-          <button onClick={resetForm} className="text-sm text-orange-500 flex items-center gap-1 font-medium">
+          <button onClick={resetForm} className="text-sm text-orange-600 flex items-center gap-1 font-bold">
             <RotateCcw size={14} /> Цуцлах
           </button>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 space-y-4 mb-8">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-md border border-gray-200 space-y-4 mb-8">
         {/* Зураг сонгох хэсэг */}
         <div 
           onClick={() => !loading && fileInputRef.current?.click()}
-          className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-4 relative min-h-[160px] cursor-pointer hover:bg-gray-50 transition"
+          className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 relative min-h-[160px] cursor-pointer hover:bg-gray-50 transition"
         >
           {imagePreview ? (
             <div className="relative w-full h-40">
@@ -133,8 +137,8 @@ export default function CategoriesPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center">
-              <ImagePlus size={40} className="text-gray-300 mb-2" />
-              <span className="text-sm text-gray-400">Зураг сонгох</span>
+              <ImagePlus size={40} className="text-black mb-2" />
+              <span className="text-sm text-black font-semibold">Зураг сонгох</span>
             </div>
           )}
           <input 
@@ -152,12 +156,12 @@ export default function CategoriesPage() {
             value={newCategory} 
             onChange={(e) => setNewCategory(e.target.value)}
             placeholder="Категорийн нэр..."
-            className="flex-1 border p-3 rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+            className="flex-1 border p-3 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-semibold text-black placeholder:text-gray-500"
           />
           <button 
             type="submit"
             disabled={loading}
-            className={`${editId ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white px-8 py-3 rounded-xl disabled:bg-gray-300 font-bold transition flex items-center gap-2`}
+            className={`${editId ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white px-8 py-3 rounded-xl disabled:bg-gray-300 font-bold transition flex items-center gap-2 cursor-pointer`}
           >
             {loading ? "Түр хүлээнэ үү..." : editId ? <><Check size={18}/> Хадгалах</> : "Нэмэх"}
           </button>
@@ -166,23 +170,27 @@ export default function CategoriesPage() {
 
       {/* Жагсаалт */}
       <div className="grid gap-3">
-        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Нийт {categories.length} категори</h2>
+        <h2 className="text-xs font-bold text-black uppercase tracking-widest mb-2">Нийт {categories.length} категори</h2>
         {categories.map((cat) => (
           <div key={cat.id} className="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100 group">
             <div className="flex items-center gap-4">
-              <img src={cat.imageUrl} alt={cat.name} className="w-12 h-12 rounded-lg object-cover border border-gray-100" />
-              <span className="font-bold text-gray-700">{cat.name}</span>
+              {cat.imageUrl ? (
+                <img src={cat.imageUrl} alt={cat.name} className="w-12 h-12 rounded-lg object-cover border border-gray-200" />
+              ) : (
+                <div className="w-12 h-12 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xl">🌸</div>
+              )}
+              <span className="font-bold text-black">{cat.name}</span>
             </div>
             <div className="flex items-center gap-1">
               <button 
                 onClick={() => handleEditClick(cat)}
-                className="text-gray-400 hover:text-blue-500 p-2 transition-colors"
+                className="text-black hover:text-blue-600 p-2 transition-colors"
               >
                 <Edit2 size={18} />
               </button>
               <button 
                 onClick={() => handleDelete(cat.id)} 
-                className="text-gray-400 hover:text-red-500 transition-colors p-2"
+                className="text-black hover:text-red-600 transition-colors p-2"
               >
                 <Trash2 size={18} />
               </button>

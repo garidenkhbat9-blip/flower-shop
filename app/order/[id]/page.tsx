@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -19,6 +19,8 @@ export default function OrderPage() {
   const [timeLeft, setTimeLeft] = useState(3600);
   const [qpayInvoice, setQpayInvoice] = useState<any>(null);
   const [loadingQpay, setLoadingQpay] = useState(false);
+  const [localPaid, setLocalPaid] = useState(false);
+  const isPaid = order?.paymentStatus === "Төлөгдсөн" || localPaid;
 
   // Real-time listener - хүргэлтийн ажилтан статус өөрчлөхөд хэрэглэгчийн хуудас дээр шууд шинэчлэгдэнэ
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function OrderPage() {
   }, [id, router]);
 
   useEffect(() => {
-    if (!order || order.paymentStatus === "Төлөгдсөн") return;
+    if (!order || isPaid) return;
 
     const fetchQpay = async () => {
       setLoadingQpay(true);
@@ -64,8 +66,78 @@ export default function OrderPage() {
     }
   }, [order?.id]);
 
+  // Төлбөрийн статусыг 4 секунд тутамд шалгаж Firestore шинэчлэхийг өдөөх
   useEffect(() => {
-    if (!order?.createdAt || order.paymentStatus === "Төлөгдсөн") return;
+    if (!order || isPaid || !qpayInvoice?.invoice_id || timeLeft <= 0) return;
+
+    let intervalId: NodeJS.Timeout;
+    let isRequesting = false;
+    let paymentConfirmed = false;
+
+    const pollPaymentStatus = async () => {
+      if (isRequesting || paymentConfirmed) return;
+      isRequesting = true;
+
+      try {
+        const res = await fetch("/api/qpay/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            invoiceId: qpayInvoice.invoice_id,
+            orderId: order.id
+          })
+        });
+        const data = await res.json();
+
+        if (data.paid && !paymentConfirmed) {
+          paymentConfirmed = true;
+          setLocalPaid(true); // UI-ийг шууд төлөгдсөн төлөвт шилжүүлэх
+          console.log("Payment successfully verified by polling!");
+          clearInterval(intervalId); // Polling-ийг шууд зогсоох
+
+          // 1. Клиент талд Firestore-ийн статусыг шинэчлэх
+          try {
+            await updateDoc(doc(db, "orders", order.id), {
+              paymentStatus: "Төлөгдсөн"
+            });
+            console.log("Order updated to paid on the client-side.");
+          } catch (updateErr) {
+            console.warn("Client-side Firestore update rejected (expected for guest checkouts or without permission, will update via webhook):", updateErr);
+          }
+
+          // 2. Сэрвэр рүү имэйл илгээх хүсэлт илгээх (Deduplicated, зөвхөн 1 удаа)
+          try {
+            await fetch("/api/qpay/notify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: order.id,
+                totalAmount: order.totalAmount,
+                shippingInfo: order.shippingInfo,
+                userId: order.userId
+              })
+            });
+            console.log("Payment notification emails requested successfully.");
+          } catch (notifyErr) {
+            console.error("Notification trigger error:", notifyErr);
+          }
+        }
+      } catch (err) {
+        console.error("Payment polling error:", err);
+      } finally {
+        isRequesting = false;
+      }
+    };
+
+    // Анхныхыг шууд ажиллуулаад, дараа нь 4 секунд тутамд давтана
+    pollPaymentStatus();
+    intervalId = setInterval(pollPaymentStatus, 4000);
+
+    return () => clearInterval(intervalId);
+  }, [order?.id, isPaid, qpayInvoice?.invoice_id, timeLeft]);
+
+  useEffect(() => {
+    if (!order?.createdAt || isPaid) return;
 
     const createdAtDate = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
     const expirationTime = createdAtDate.getTime() + 3600 * 1000;
@@ -83,7 +155,7 @@ export default function OrderPage() {
     updateTimer();
     const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
-  }, [order?.createdAt, order?.paymentStatus]);
+  }, [order?.createdAt, isPaid]);
 
   const formatTime = (sec: number) => ({
     h: Math.floor(sec / 3600),
@@ -114,7 +186,7 @@ export default function OrderPage() {
 
   const stepDone = (n: number) => {
     if (n === 1) return true;
-    if (n === 2) return order.paymentStatus === "Төлөгдсөн";
+    if (n === 2) return isPaid;
     if (n === 3) return order.status === "Хүргэлтэнд гарсан" || order.status === "Хүргэгдсэн";
     if (n === 4) return order.status === "Хүргэгдсэн";
     return false;
@@ -148,7 +220,7 @@ export default function OrderPage() {
           </div>
           <div className="text-right">
             <p className="text-xs text-gray-500 uppercase">Төлөв</p>
-            <p className="font-bold text-sm">{order.paymentStatus === "Төлөгдсөн" ? "Төлөгдсөн" : "Төлбөр хүлээгдэж буй"}</p>
+            <p className="font-bold text-sm">{isPaid ? "Төлөгдсөн" : "Төлбөр хүлээгдэж буй"}</p>
           </div>
         </div>
 
@@ -222,7 +294,7 @@ export default function OrderPage() {
           <p className="text-[12px] text-gray-500 mb-1">Захиалга</p>
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-black">#{shortId}</h1>
-            {order.paymentStatus === "Төлөгдсөн" ? (
+            {isPaid ? (
               <span className="bg-green-50 text-green-600 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>Амжилттай төлөгдсөн
               </span>
@@ -256,8 +328,23 @@ export default function OrderPage() {
           </div>
         </div>
 
+        {/* Хүргэгдсэн - амжилттай */}
+        {order.status === "Хүргэгдсэн" && (
+          <div className="bg-green-50 border border-green-100 rounded-2xl p-8 mb-6 text-center">
+            <CheckCircle2 size={40} className="text-green-500 mx-auto mb-3" />
+            <h3 className="text-lg font-black text-green-900 mb-1">Хүргэлт амжилттай!</h3>
+            <p className="text-[13px] text-green-700 mb-4">Таны захиалга амжилттай хүргэгдлээ.</p>
+            {order.deliveryPhoto && (
+              <img src={order.deliveryPhoto} alt="Хүргэлтийн зураг" className="w-full max-w-xs mx-auto rounded-2xl border border-green-200 shadow-sm mb-4" />
+            )}
+            <Link href="/products" className="inline-block bg-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-100">
+              Үргэлжлүүлэн худалдан авах
+            </Link>
+          </div>
+        )}
+
         {/* Success Banner - Төлбөр төлөгдсөн, хүргэлт хүлээгдэж буй */}
-        {order.paymentStatus === "Төлөгдсөн" && order.status !== "Хүргэлтэнд гарсан" && order.status !== "Хүргэгдсэн" && (
+        {isPaid && order.status !== "Хүргэлтэнд гарсан" && order.status !== "Хүргэгдсэн" && (
           <div className="bg-green-50 border border-green-100 rounded-2xl p-8 mb-6 flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg shadow-green-200">
               {isPickup ? <Package size={32} strokeWidth={2.5} /> : <CheckCircle2 size={32} strokeWidth={2.5} />}
@@ -305,7 +392,7 @@ export default function OrderPage() {
         )}
 
         {/* Төлбөр хүлээгдэж буй */}
-        {order.paymentStatus !== "Төлөгдсөн" && timeLeft > 0 && (
+        {!isPaid && timeLeft > 0 && (
           <div className="bg-white border border-gray-100 rounded-2xl p-6 mb-6 shadow-sm">
             <div className="flex flex-col md:flex-row items-start justify-between mb-6 gap-4">
               <div className="flex items-start gap-3">
@@ -330,7 +417,7 @@ export default function OrderPage() {
                 <div className="w-6 h-6 border-2 border-gray-200 border-t-[#003B6D] rounded-full animate-spin"></div>
               </div>
             )}
-            
+
             {qpayInvoice && (
               <div className="flex flex-col items-center border-t border-gray-100 pt-6">
                 <div className="mb-6 p-4 bg-white border border-gray-200 rounded-2xl shadow-sm">
@@ -340,7 +427,7 @@ export default function OrderPage() {
                     <p className="text-sm text-gray-500">QR код олдсонгүй</p>
                   )}
                 </div>
-                
+
                 <div className="w-full max-w-md grid grid-cols-4 sm:grid-cols-5 gap-3">
                   {qpayInvoice.urls?.map((app: any, idx: number) => (
                     <a key={idx} href={app.link} className="flex flex-col items-center gap-2 group hover:scale-105 transition-transform">
@@ -355,7 +442,7 @@ export default function OrderPage() {
         )}
 
         {/* Хугацаа дууссан / Цуцлагдсан */}
-        {order.paymentStatus !== "Төлөгдсөн" && timeLeft <= 0 && (
+        {!isPaid && timeLeft <= 0 && (
           <div className="bg-red-50 border border-red-100 rounded-2xl p-8 mb-6 flex flex-col items-center text-center">
             <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-white mb-4 shadow-lg shadow-red-200">
               <Clock size={32} strokeWidth={2.5} />
@@ -439,20 +526,7 @@ export default function OrderPage() {
           </div>
         </div>
 
-        {/* Хүргэгдсэн - амжилттай */}
-        {order.status === "Хүргэгдсэн" && (
-          <div className="bg-green-50 border border-green-100 rounded-2xl p-8 mb-6 text-center">
-            <CheckCircle2 size={40} className="text-green-500 mx-auto mb-3" />
-            <h3 className="text-lg font-black text-green-900 mb-1">Хүргэлт амжилттай!</h3>
-            <p className="text-[13px] text-green-700 mb-4">Таны захиалга амжилттай хүргэгдлээ.</p>
-            {order.deliveryPhoto && (
-              <img src={order.deliveryPhoto} alt="Хүргэлтийн зураг" className="w-full max-w-xs mx-auto rounded-2xl border border-green-200 shadow-sm mb-4" />
-            )}
-            <Link href="/products" className="inline-block bg-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-100">
-              Үргэлжлүүлэн худалдан авах
-            </Link>
-          </div>
-        )}
+
 
         {/* Print / Help */}
         <div className="flex justify-center gap-6 mt-10 no-print">

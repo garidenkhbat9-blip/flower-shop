@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
+import QRCode from "qrcode";
 import { getQPayToken } from "@/lib/qpay";
 
 // Нэхэмжлэх (Invoice) үүсгэх API
@@ -34,8 +35,27 @@ export async function POST(request: Request) {
             }
         );
 
+        const responseData = response.data;
+        
+        // QR text-ээс өндөр чанартай QR зураг үүсгэх
+        if (responseData.qr_text) {
+            try {
+                const qrDataUrl = await QRCode.toDataURL(responseData.qr_text, {
+                    width: 512,
+                    margin: 2,
+                    color: {
+                        dark: "#000000",
+                        light: "#ffffff",
+                    }
+                });
+                responseData.qr_image = qrDataUrl.replace(/^data:image\/png;base64,/, "");
+            } catch (qrErr) {
+                console.error("QR Code generation helper error:", qrErr);
+            }
+        }
+
         // 4. Үр дүнг Frontend рүү буцаана (qr_text, urls, invoice_id гэх мэт)
-        return NextResponse.json(response.data);
+        return NextResponse.json(responseData);
     } catch (error: any) {
         console.error("QPay Invoice Error:", error.response?.data || error.message);
         return NextResponse.json(

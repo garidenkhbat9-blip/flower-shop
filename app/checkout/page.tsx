@@ -74,7 +74,7 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
-      const deliveryFee = formData.deliveryType === 'delivery' ? 8000 : 0;
+      const deliveryFee = formData.deliveryType === 'delivery' ? 1 : 0;
 
       const orderData = {
         userId: user?.uid || "guest",
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
 
 
 
-  const deliveryFee = formData.deliveryType === 'delivery' ? 8000 : 0;
+  const deliveryFee = formData.deliveryType === 'delivery' ? 1 : 0;
 
   // Minimalist label & input classes
   const labelClass = "block text-[11px] font-bold text-gray-800 mb-1.5 uppercase tracking-wide";

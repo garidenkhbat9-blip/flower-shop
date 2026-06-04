@@ -19,10 +19,12 @@ export default function OrdersSection() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const ordersData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const ordersData = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter((order: any) => order.paymentStatus === "Төлөгдсөн");
       setOrders(ordersData);
       setLoading(false);
     });

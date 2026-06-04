@@ -65,13 +65,25 @@ export default function DeliveryPage() {
   }, [userProfile, authLoading, router]);
 
   const filteredOrders = orders.filter(order => {
-    if (activeTab === "pending") return order.status === "Хүлээгдэж буй" || order.status === "Төлбөр төлөгдсөн";
+    if (activeTab === "pending") {
+      return order.status === "Хүлээгдэж буй" || 
+             order.status === "Төлбөр төлөгдсөн" || 
+             order.status === "Шинэ" || 
+             order.status === "Шинэ захиалга" ||
+             !order.status;
+    }
     if (activeTab === "delivering") return order.status === "Хүргэлтэнд гарсан";
     if (activeTab === "delivered") return order.status === "Хүргэгдсэн";
     return true;
   });
 
-  const pendingCount = orders.filter(o => o.status === "Хүлээгдэж буй" || o.status === "Төлбөр төлөгдсөн").length;
+  const pendingCount = orders.filter(o => 
+    o.status === "Хүлээгдэж буй" || 
+    o.status === "Төлбөр төлөгдсөн" || 
+    o.status === "Шинэ" || 
+    o.status === "Шинэ захиалга" ||
+    !o.status
+  ).length;
   const deliveringCount = orders.filter(o => o.status === "Хүргэлтэнд гарсан").length;
   const deliveredCount = orders.filter(o => o.status === "Хүргэгдсэн").length;
 

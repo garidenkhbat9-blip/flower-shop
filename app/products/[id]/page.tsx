@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, collection, query, where, limit, getDocs } from "firebase/firestore";
-import { ShoppingCart, CreditCard, MapPin, Eye, ArrowRight, ChevronLeft } from "lucide-react";
+import { ShoppingCart, CreditCard, MapPin, Eye, ArrowRight, ChevronLeft, Check, Leaf } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -108,7 +108,7 @@ export default function ProductDetailPage() {
     );
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FAFAFA] pb-28 font-montserrat text-[#1A1A1A]">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FAFAFA] pb-32 md:pb-28 font-montserrat text-[#1A1A1A]">
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6">
 
         {/* Буцах товч + Breadcrumbs */}
@@ -145,8 +145,8 @@ export default function ProductDetailPage() {
                   key={index}
                   onClick={() => setSelectedImg(index)}
                   className={`w-16 h-16 md:w-20 md:h-20 rounded-[2px] overflow-hidden border cursor-pointer transition-all flex-shrink-0 ${selectedImg === index
-                      ? "border-[#1A1A1A] opacity-100"
-                      : "border-transparent opacity-50 hover:opacity-100 bg-gray-50"
+                    ? "border-[#1A1A1A] opacity-100"
+                    : "border-transparent opacity-50 hover:opacity-100 bg-gray-50"
                     }`}
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
@@ -154,7 +154,7 @@ export default function ProductDetailPage() {
               ))}
             </div>
             {/* Main Image */}
-            <motion.div 
+            <motion.div
               key={selectedImg}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -218,30 +218,30 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Action Buttons */}
+            {/* Action Buttons — desktop дээр харагдана, mobile-д sticky bar */}
             {product.inStock === false ? (
-              <div className="pt-6 border-t border-gray-100">
-                <div className="bg-gray-100 text-[#1A1A1A]/40 font-medium py-5 rounded-[2px] text-center uppercase text-[10px] tracking-[0.2em]">
+              <div className="hidden md:block pt-6 border-t border-gray-100">
+                <div className="bg-gray-100 text-[#1A1A1A]/40 font-medium py-5 rounded-2xl text-center uppercase text-[10px] tracking-[0.2em]">
                   Уучлаарай, энэ бараа дууссан байна.
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
+              <div className="hidden md:grid grid-cols-2 gap-3 pt-6 border-t border-gray-100">
                 <button
                   onClick={handleAddToCart}
-                  className={`flex items-center justify-center gap-3 border font-medium py-5 rounded-[2px] transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] ${addedToCart
-                      ? "bg-[#87A96B] text-white border-[#87A96B]"
-                      : "border-gray-200 text-[#1A1A1A] hover:border-[#87A96B]"
+                  className={`flex items-center justify-center gap-2.5 border-2 font-bold py-4 rounded-2xl transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] ${addedToCart
+                    ? "bg-[#87A96B] text-white border-[#87A96B] shadow-lg shadow-[#87A96B]/20"
+                    : "border-[#87A96B] text-[#87A96B] hover:bg-[#87A96B] hover:text-white"
                     }`}
                 >
-                  <ShoppingCart size={15} strokeWidth={1.5} />
-                  {addedToCart ? "Нэмэгдлээ ✓" : "Сагсанд хийх"}
+                  {addedToCart ? <Check size={15} strokeWidth={2.5} /> : <ShoppingCart size={15} strokeWidth={1.8} />}
+                  {addedToCart ? "Нэмэгдлээ" : "Сагсанд хийх"}
                 </button>
                 <button
                   onClick={handleCheckoutAction}
-                  className="flex items-center justify-center gap-3 bg-[#1A1A1A] text-white font-medium py-5 rounded-[2px] hover:bg-black transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] shadow-2xl shadow-black/10"
+                  className="flex items-center justify-center gap-2.5 bg-[#87A96B] text-white font-bold py-4 rounded-2xl hover:bg-[#76945d] transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] shadow-lg shadow-[#87A96B]/25"
                 >
-                  <CreditCard size={15} strokeWidth={1.5} /> Худалдан авах
+                  <CreditCard size={15} strokeWidth={1.8} /> Худалдан авах
                 </button>
               </div>
             )}
@@ -258,9 +258,13 @@ export default function ProductDetailPage() {
 
         {/* Specifications */}
         <div className="mt-16 md:mt-24">
-          <h2 className="text-xl md:text-3xl font-playfair font-medium text-[#1A1A1A] mb-8 tracking-tight">
+          <h2 className="text-2xl md:text-4xl font-bold text-[#1A1A1A] mb-8 tracking-tight">
             Үзүүлэлтүүд
           </h2>
+
+
+
+
           <div className="bg-white border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6 md:p-12 rounded-[2px] grid grid-cols-1 md:grid-cols-2 gap-0 divide-y border-gray-100 md:divide-y-0">
             <SpecRow label="Өнгө" value={product.colors?.join(", ") || "—"} />
             <SpecRow label="Тоо ширхэг" value={product.stemCount ? `${product.stemCount} ширхэг` : "—"} />
@@ -313,19 +317,52 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            {/* Bottom CTA — мөн /products руу */}
-            <div className="mt-16 flex justify-center">
+            {/* Bottom CTA */}
+            <div className="mt-12 flex justify-center">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-3 bg-[#111] text-white font-bold px-10 py-5 rounded-full hover:bg-black transition-all duration-300 text-[11px] uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:scale-105"
+                className="inline-flex items-center gap-3 bg-[#87A96B] text-white font-bold px-10 py-4 rounded-full hover:bg-[#76945d] transition-all duration-300 text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-[#87A96B]/25 hover:scale-105"
               >
-                <ChevronLeft size={16} />
-                Бүх бараа руу буцах
+                <Leaf size={15} />
+                Бүх бараа харах
               </Link>
             </div>
           </div>
         )}
 
+      </div>
+
+      {/* ── MOBILE STICKY ACTION BAR ── */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] px-4 py-3 safe-area-pb">
+        {product.inStock === false ? (
+          <div className="bg-gray-100 text-gray-400 font-bold py-4 rounded-2xl text-center uppercase text-[10px] tracking-[0.2em]">
+            Дууссан байна
+          </div>
+        ) : (
+          <div className="flex gap-3">
+            {/* Сагсанд */}
+            <button
+              onClick={handleAddToCart}
+              className={`flex-1 flex items-center justify-center gap-2 border-2 font-bold py-4 rounded-2xl transition-all active:scale-95 text-[10px] uppercase tracking-[0.15em] ${addedToCart
+                ? "bg-[#87A96B] border-[#87A96B] text-white shadow-lg shadow-[#87A96B]/20"
+                : "border-[#87A96B] text-[#87A96B]"
+                }`}
+            >
+              {addedToCart ? (
+                <><Check size={15} strokeWidth={2.5} /> Нэмэгдлээ</>
+              ) : (
+                <><ShoppingCart size={15} strokeWidth={1.8} /> Сагсанд</>
+              )}
+            </button>
+            {/* Худалдан авах */}
+            <button
+              onClick={handleCheckoutAction}
+              className="flex-[1.4] flex items-center justify-center gap-2 bg-[#87A96B] text-white font-bold py-4 rounded-2xl hover:bg-[#76945d] transition-all active:scale-95 text-[10px] uppercase tracking-[0.15em] shadow-lg shadow-[#87A96B]/30"
+            >
+              <CreditCard size={15} strokeWidth={1.8} /> Худалдан авах
+            </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -335,11 +372,11 @@ export default function ProductDetailPage() {
 
 function SpecRow({ label, value }: { label: string; value: any }) {
   return (
-    <div className="flex items-center justify-between py-5 px-4 border-b border-gray-100 last:border-0 md:border-b-0 md:even:border-l md:even:pl-8">
-      <span className="text-[10px] font-black text-[#999] uppercase tracking-[0.2em] shrink-0">
+    <div className="flex items-center justify-between py-4 px-5 border-b border-gray-100 last:border-0 md:border-b-0 md:even:border-l md:even:pl-8 group hover:bg-[#87A96B]/[0.03] transition-colors rounded-xl">
+      <span className="text-[10px] font-bold text-[#1A1A1A]/40 uppercase tracking-[0.25em] shrink-0">
         {label}
       </span>
-      <span className="text-[13px] text-[#111] font-bold text-right ml-4">{value}</span>
+      <span className="text-[13px] text-[#1A1A1A] font-bold text-right ml-4">{value}</span>
     </div>
   );
 }
@@ -417,7 +454,7 @@ function RecommendedCard({
             {(hasDiscount ? item.discountedPrice! : item.price).toLocaleString()} ₮
           </p>
           {hasDiscount && (
-             <p className="text-[10px] text-[#999] line-through font-medium">
+            <p className="text-[10px] text-[#999] line-through font-medium">
               {item.price.toLocaleString()} ₮
             </p>
           )}

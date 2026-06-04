@@ -160,8 +160,8 @@ function AllProductsContent() {
         <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar scroll-smooth">
           <button
             onClick={() => setFilters(prev => ({ ...prev, purposes: [] }))}
-            className={`flex-shrink-0 px-8 py-3.5 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.2em] border transition-all duration-500 ${!hasActivePurpose 
-              ? "bg-[#F1F5F0] text-[#1A1A1A] border-[#87A96B]/30 shadow-sm" 
+            className={`flex-shrink-0 px-8 py-3.5 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.2em] border transition-all duration-500 ${!hasActivePurpose
+              ? "bg-[#F1F5F0] text-[#1A1A1A] border-[#87A96B]/30 shadow-sm"
               : "bg-white text-[#666] border-black/[0.08] hover:border-[#87A96B] hover:text-[#1A1A1A]"}`}
           >
             Бүгд
@@ -172,8 +172,8 @@ function AllProductsContent() {
               <button
                 key={label}
                 onClick={() => toggleFilter("purposes", label)}
-                className={`flex-shrink-0 px-8 py-3.5 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.2em] border transition-all duration-500 ${isActive 
-                  ? "bg-[#F1F5F0] text-[#1A1A1A] border-[#87A96B]/30 shadow-sm" 
+                className={`flex-shrink-0 px-8 py-3.5 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.2em] border transition-all duration-500 ${isActive
+                  ? "bg-[#F1F5F0] text-[#1A1A1A] border-[#87A96B]/30 shadow-sm"
                   : "bg-white text-[#666] border-black/[0.08] hover:border-[#87A96B] hover:text-[#1A1A1A]"}`}
               >
                 {label}
@@ -317,8 +317,7 @@ function AllProductsContent() {
                       <button
                         key={color.name}
                         onClick={() => toggleFilter("colors", color.name)}
-                        className={`w-10 h-10 rounded-full border-2 transition-all ${isSelected ? "border-[#1A1A1A] scale-110 shadow-lg" : "border-transparent hover:scale-110"}`}
-                        style={{ background: color.hex }}
+                        className={`w-10 h-10 rounded-full border-2 transition-all ${isSelected ? "border-[#1A1A1A] scale-110 shadow-lg" : "border-black/[0.08] hover:border-[#1A1A1A] hover:scale-110"}`} style={{ background: color.hex }}
                         title={color.name}
                       />
                     );
@@ -513,12 +512,11 @@ function CheckboxItem({ label, count, checked, onChange }: any) {
   return (
     <label className="flex items-center justify-between cursor-pointer group py-1.5">
       <div className="flex items-center gap-4">
-        <div className={`w-5 h-5 rounded-[2px] border transition-all flex items-center justify-center ${checked ? "bg-[#1A1A1A] border-[#1A1A1A]" : "border-black/[0.05] bg-white group-hover:border-[#1A1A1A]"}`}>
-          {checked && <Check size={12} className="text-white" strokeWidth={3} />}
+        <div className={`w-5 h-5 rounded-[2px] border transition-all flex items-center justify-center ${checked ? "bg-[#1A1A1A] border-[#1A1A1A]" : "border-black/[0.15] bg-white group-hover:border-[#1A1A1A]"}`}>          {checked && <Check size={12} className="text-white" strokeWidth={3} />}
         </div>
-        <span className={`text-[12px] font-medium uppercase tracking-wider transition-colors ${checked ? "text-[#1A1A1A]" : "text-[#1A1A1A]/40 group-hover:text-[#1A1A1A]"}`}>{label}</span>
+        <span className={`text-[12px] font-medium uppercase tracking-wider transition-colors ${checked ? "text-[#1A1A1A]" : "text-[#1A1A1A]/75 group-hover:text-[#1A1A1A]"}`}>{label}</span>
       </div>
-      {count !== undefined && <span className="text-[10px] text-[#1A1A1A]/20 font-medium tabular-nums">{count}</span>}
+      {count !== undefined && <span className="text-[10px] text-[#1A1A1A]/50 font-medium tabular-nums">{count}</span>}
       <input type="checkbox" checked={checked} onChange={onChange} className="hidden" />
     </label>
   );
@@ -578,8 +576,8 @@ function ProductCard({ product }: { product: any }) {
 
         {/* Desktop Quick Buy */}
         <div className="absolute inset-x-4 bottom-4 translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hidden md:block z-20">
-          <button 
-            onClick={(e) => { e.preventDefault(); if(product.inStock !== false) addToCart(product); }}
+          <button
+            onClick={(e) => { e.preventDefault(); if (product.inStock !== false) addToCart(product); }}
             disabled={product.inStock === false}
             className={`w-full text-white text-[10px] font-medium py-5 rounded-[2px] flex items-center justify-center gap-3 transition-all shadow-2xl uppercase tracking-[0.2em] ${product.inStock !== false ? 'bg-[#87A96B] hover:bg-[#76945d]' : 'bg-gray-400 cursor-not-allowed'}`}
           >
@@ -599,8 +597,8 @@ function ProductCard({ product }: { product: any }) {
 
         {/* Mobile Buy Button */}
         <div className="mt-auto flex gap-3 md:hidden relative z-20">
-          <button 
-            onClick={(e) => { e.preventDefault(); if(product.inStock !== false) addToCart(product); }}
+          <button
+            onClick={(e) => { e.preventDefault(); if (product.inStock !== false) addToCart(product); }}
             disabled={product.inStock === false}
             className={`flex-1 text-white py-4 rounded-[2px] flex items-center justify-center transition-all shadow-lg ${product.inStock !== false ? 'bg-[#87A96B] active:scale-95' : 'bg-gray-400 cursor-not-allowed'}`}
           >
