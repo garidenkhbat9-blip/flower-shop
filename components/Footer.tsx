@@ -16,7 +16,7 @@ export default function Footer() {
             <div>
               <h4 className="font-bold text-[10px] mb-2 uppercase tracking-[0.3em] text-[#1A1A1A]">Хүргэлтийн нөхцөл</h4>
               <p className="text-[11px] text-[#1A1A1A]/50 leading-relaxed font-medium">
-                Бэлэн бүтээгдэхүүн захиалга баталгаажсанаас 24-48 цагийн дотор хүргэгдэнэ.
+                Бэлэн бүтээгдэхүүн захиалга баталгаажсанаас 24 цагийн дотор хүргэгдэнэ.
               </p>
             </div>
           </div>

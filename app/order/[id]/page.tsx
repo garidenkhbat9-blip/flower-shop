@@ -318,21 +318,21 @@ export default function OrderPage() {
         </div>
 
         {/* Timeline */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-8 mb-6 shadow-sm">
-          <div className="relative flex justify-between">
-            <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-gray-100 -z-10"></div>
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 md:p-8 mb-6 shadow-sm overflow-x-auto no-scrollbar">
+          <div className="relative flex justify-between min-w-[300px] sm:min-w-0 mx-auto max-w-full">
+            <div className="absolute top-4 md:top-5 left-[10%] right-[10%] h-0.5 bg-gray-100 -z-10"></div>
             {[
-              { label: "Захиалсан", icon: <CheckCircle2 size={18} />, step: 1 },
-              { label: "Төлсөн", icon: <CheckCircle2 size={18} />, step: 2 },
-              { label: "Хүргэлтэнд", icon: <Truck size={18} />, step: 3 },
-              { label: isPickup ? "Олгосон" : "Хүргэгдсэн", icon: <Package size={18} />, step: 4 },
+              { label: "Захиалсан", icon: <CheckCircle2 className="w-4 h-4 md:w-[18px] md:h-[18px]" />, step: 1 },
+              { label: "Төлсөн", icon: <CheckCircle2 className="w-4 h-4 md:w-[18px] md:h-[18px]" />, step: 2 },
+              { label: "Хүргэлтэнд", icon: <Truck className="w-4 h-4 md:w-[18px] md:h-[18px]" />, step: 3 },
+              { label: isPickup ? "Олгосон" : "Хүргэгдсэн", icon: <Package className="w-4 h-4 md:w-[18px] md:h-[18px]" />, step: 4 },
             ].map((s) => (
-              <div key={s.step} className="flex flex-col items-center gap-2 bg-white px-2">
-                <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${stepDone(s.step) ? "border-[#e62060] bg-pink-50 text-[#e62060]" : "border-gray-100 bg-white text-gray-300"
+              <div key={s.step} className="flex flex-col items-center gap-1.5 md:gap-2 px-1 z-10 w-[70px] sm:w-[90px] bg-white">
+                <div className={`w-8 h-8 md:w-10 md:h-10 shrink-0 rounded-full border-2 flex items-center justify-center ${stepDone(s.step) ? "border-[#e62060] bg-pink-50 text-[#e62060]" : "border-gray-100 bg-white text-gray-300"
                   }`}>
                   {s.icon}
                 </div>
-                <p className={`text-[12px] font-bold ${stepDone(s.step) ? "text-[#111]" : "text-gray-400"}`}>{s.label}</p>
+                <p className={`text-[10px] md:text-[12px] font-bold text-center leading-tight ${stepDone(s.step) ? "text-[#111]" : "text-gray-400"}`}>{s.label}</p>
               </div>
             ))}
           </div>
