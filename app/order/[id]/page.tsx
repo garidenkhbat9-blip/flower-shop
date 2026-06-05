@@ -180,6 +180,16 @@ export default function OrderPage() {
     : "Огноо тодорхойгүй";
   const shortId = order.id.substring(0, 8).toUpperCase();
 
+  const isEmailLikelyValid = (email: string) => {
+    if (!email) return false;
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!re.test(email)) return false;
+    
+    const lower = email.toLowerCase();
+    if (lower.includes('@gmial.') || lower.includes('@gamil.') || lower.includes('@gmail.con') || lower.includes('@yaho.')) return false;
+    return true;
+  };
+
   const fullAddress = isPickup
     ? "Төв дэлгүүр, Улаанбаатар галерей 2 давхар"
     : `${shipping?.city || ""}, ${shipping?.district || ""}, ${shipping?.khoroo || ""}, ${shipping?.building || ""} ${shipping?.apartmentNumber ? `Тоот: ${shipping.apartmentNumber}` : ""} ${shipping?.additionalInfo || ""}`;
@@ -360,10 +370,17 @@ export default function OrderPage() {
 
             {/* Зочин хэрэглэгч: Имэйл рүү линк илгээсэн мэдэгдэл */}
             {order.userId === "guest" && order.shippingInfo?.senderEmail && (
-              <div className="flex items-center gap-2 bg-green-100 text-green-800 text-[13px] font-medium px-4 py-2.5 rounded-xl mb-4">
-                <Mail size={16} />
-                <span>{order.shippingInfo.senderEmail} хаяг руу хянах линк илгээлээ</span>
-              </div>
+              isEmailLikelyValid(order.shippingInfo.senderEmail) ? (
+                <div className="flex items-center gap-2 bg-green-100 text-green-800 text-[13px] font-medium px-4 py-2.5 rounded-xl mb-4">
+                  <Mail size={16} />
+                  <span>{order.shippingInfo.senderEmail} хаяг руу хянах линк илгээлээ</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 bg-orange-100 text-orange-800 text-[13px] font-medium px-4 py-2.5 rounded-xl mb-4 text-left max-w-sm">
+                  <HelpCircle size={18} className="shrink-0" />
+                  <span>Имэйл хаяг ({order.shippingInfo.senderEmail}) буруу байх магадлалтай тул хянах линк илгээгдсэнгүй.</span>
+                </div>
+              )
             )}
 
             {/* Бүртгэлтэй хэрэглэгч: Profile-ээсээ хянах мэдэгдэл */}

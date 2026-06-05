@@ -108,7 +108,7 @@ export default function ProductDetailPage() {
     );
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FAFAFA] pb-32 md:pb-28 font-montserrat text-[#1A1A1A]">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FAFAFA] pb-40 md:pb-28 font-montserrat text-[#1A1A1A]">
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6">
 
         {/* Буцах товч + Breadcrumbs */}
@@ -289,14 +289,14 @@ export default function ProductDetailPage() {
                   Танд санал болгох
                 </h2>
               </div>
-              {/* ✅ Бүх бараа харах — /products руу буцаана */}
-              <Link
+              {/*  Бүх бараа харах — /products руу буцаана */}
+              {/* <Link
                 href="/products"
                 className="flex items-center gap-2 text-[10px] font-bold text-[#111] hover:opacity-70 transition-opacity uppercase tracking-widest border-b-2 border-[#111] pb-1 w-fit"
               >
                 Бүгдийг харах
                 <ArrowRight size={14} />
-              </Link>
+              </Link> */}
             </div>
 
             {/* Grid — 2 col mobile, 4 col desktop, max 8 items */}
@@ -333,7 +333,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* ── MOBILE STICKY ACTION BAR ── */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] px-4 py-3 safe-area-pb">
+      <div className="md:hidden fixed bottom-[60px] left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] px-4 py-3 safe-area-pb">
         {product.inStock === false ? (
           <div className="bg-gray-100 text-gray-400 font-bold py-4 rounded-2xl text-center uppercase text-[10px] tracking-[0.2em]">
             Дууссан байна

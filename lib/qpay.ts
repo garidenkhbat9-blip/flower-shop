@@ -165,7 +165,16 @@ export async function sendPaymentEmails({
     }
 
     // 2. ЗӨВХӨН БҮРТГЭЛГҮЙ ЗОЧИНД ХЯНАХ ЛИНК ИЛГЭЭХ
-    if (isGuest && customerEmail) {
+    const isEmailLikelyValid = (email: string) => {
+        if (!email) return false;
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!re.test(email)) return false;
+        const lower = email.toLowerCase();
+        if (lower.includes('@gmial.') || lower.includes('@gamil.') || lower.includes('@gmail.con') || lower.includes('@yaho.')) return false;
+        return true;
+    };
+
+    if (isGuest && customerEmail && isEmailLikelyValid(customerEmail)) {
         try {
             const trackingLink = `${process.env.NEXT_PUBLIC_SITE_URL || "https://growroom.mn"}/order/${orderId}`;
             const customerMailOptions = {

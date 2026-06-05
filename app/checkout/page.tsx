@@ -118,7 +118,7 @@ export default function CheckoutPage() {
 
   // Minimalist label & input classes
   const labelClass = "block text-[11px] font-bold text-gray-800 mb-1.5 uppercase tracking-wide";
-  const inputClass = "w-full border-b border-gray-300 bg-transparent px-0 py-2 outline-none focus:border-black transition-colors text-[13px] text-[#111] placeholder-gray-300 rounded-none";
+  const inputClass = "w-full border-b border-gray-300 bg-transparent px-0 py-2 outline-none focus:border-black transition-colors text-base md:text-[13px] text-[#111] placeholder-gray-300 rounded-none";
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#111] pb-24 pt-8 font-sans">
