@@ -8,7 +8,15 @@ runConfig:
   # memoryMiB: 512
 
 # Environment variables and secrets.
-# env:
+  env:
+  - variable: QPAY_USERNAME
+    value: "GROW_ROOM"
+  - variable: QPAY_PASSWORD
+    value: "gp9coo9T"
+  - variable: GMAIL_USER
+    value: "growroom.flower@gmail.com"
+  - variable: GMAIL_APP_PASSWORD
+    value: "uodhvpofksfdbsdq"
   # Configure environment variables.
   # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
   # - variable: MESSAGE
