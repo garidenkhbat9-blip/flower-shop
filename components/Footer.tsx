@@ -80,7 +80,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest leading-relaxed">Ulaanbaatar Galleria, 2-р давхар, Ulaanbaatar 14200</li>
               <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">9993 2671, 9993 3526</li>
-              <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">growroom@gmail.com</li>
+              <li className="text-[11px] font-bold text-[#1A1A1A]/40 uppercase tracking-widest">growroom.flower@gmail.com</li>
             </ul>
           </div>
 
