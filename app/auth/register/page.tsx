@@ -207,7 +207,7 @@ function RegisterContent() {
 
         <div className="mt-6 text-center text-sm text-gray-600">
           Бүртгэлтэй юу?{" "}
-          <Link href={nextPath ? `/auth/login?next=${encodeURIComponent(nextPath)}` : "/auth/login"} className="text-black font-bold hover:underline">
+          <Link href={nextPath ? `/auth/login?next=${encodeURIComponent(nextPath)}` : "/auth/login"} className="text-[#87A96B] font-bold hover:underline">
             Энд дарж нэвтэрнэ үү
           </Link>
         </div>

@@ -134,7 +134,7 @@ function LoginContent() {
                 className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-black outline-none transition text-gray-900"
               />
             </div>
-            <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition">
+            <button type="submit" className="w-full bg-[#87A96B] text-white py-3 rounded-xl font-bold hover:bg-[#76945d] transition">
               Холбоос илгээх
             </button>
           </form>
@@ -195,7 +195,7 @@ function LoginContent() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-gray-300 accent-[#87A96B]"
               />
               Намайг сана
             </label>
@@ -207,7 +207,7 @@ function LoginContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white py-3.5 rounded-xl font-bold hover:bg-gray-800 transition mt-4 disabled:bg-gray-400"
+            className="w-full bg-[#87A96B] text-white py-3.5 rounded-xl font-bold hover:bg-[#76945d] transition mt-4 disabled:bg-gray-400"
           >
             {loading ? "Түр хүлээнэ үү..." : "Нэвтрэх"}
           </button>
@@ -239,7 +239,7 @@ function LoginContent() {
 
         <div className="mt-6 text-center text-sm text-gray-600">
           Бүртгэлгүй юу?{" "}
-          <Link href={nextPath ? `/auth/register?next=${encodeURIComponent(nextPath)}` : "/auth/register"} className="text-black font-bold hover:underline">
+          <Link href={nextPath ? `/auth/register?next=${encodeURIComponent(nextPath)}` : "/auth/register"} className="text-[#87A96B] font-bold hover:underline">
             Энд дарж бүртгүүлнэ үү
           </Link>
         </div>

@@ -512,7 +512,7 @@ function CheckboxItem({ label, count, checked, onChange }: any) {
   return (
     <label className="flex items-center justify-between cursor-pointer group py-1.5">
       <div className="flex items-center gap-4">
-        <div className={`w-5 h-5 rounded-[2px] border transition-all flex items-center justify-center ${checked ? "bg-[#1A1A1A] border-[#1A1A1A]" : "border-black/[0.15] bg-white group-hover:border-[#1A1A1A]"}`}>          {checked && <Check size={12} className="text-white" strokeWidth={3} />}
+        <div className={`w-5 h-5 rounded-[2px] border transition-all flex items-center justify-center ${checked ? "bg-[#87A96B] border-[#87A96B]" : "border-black/[0.15] bg-white group-hover:border-[#87A96B]"}`}>          {checked && <Check size={12} className="text-white" strokeWidth={3} />}
         </div>
         <span className={`text-[12px] font-medium uppercase tracking-wider transition-colors ${checked ? "text-[#1A1A1A]" : "text-[#1A1A1A]/75 group-hover:text-[#1A1A1A]"}`}>{label}</span>
       </div>
