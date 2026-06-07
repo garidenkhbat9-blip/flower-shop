@@ -3,7 +3,7 @@ import { Suspense, useEffect } from "react";
 
 import { useState } from "react";
 import { auth, db } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, FacebookAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, /* FacebookAuthProvider, signInWithPopup, */ updateProfile } from "firebase/auth";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -32,7 +32,7 @@ function RegisterContent() {
   const [adminCode, setAdminCode] = useState(""); 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [facebookLoading, setFacebookLoading] = useState(false);
+  // const [facebookLoading, setFacebookLoading] = useState(false);
 
   // Google popup ашиглах тул getRedirectResult устгав
 
@@ -78,38 +78,38 @@ function RegisterContent() {
     }
   };
 
-  // 2. FACEBOOK-ЭЭР БҮРТГҮҮЛЭХ/НЭВТРЭХ
-  const handleFacebookSignIn = async () => {
-    setError("");
-    const provider = new FacebookAuthProvider();
-    provider.addScope('email');
-    try {
-      setFacebookLoading(true);
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (!userDocSnap.exists()) {
-        await setDoc(userDocRef, {
-          email: user.email || "",
-          displayName: user.displayName || "Facebook User",
-          isAdmin: false,
-          createdAt: serverTimestamp(),
-        });
-        router.push(nextPath.startsWith("/") ? nextPath : "/profile");
-      } else {
-        if (userDocSnap.data().isAdmin) router.push("/admin");
-        else router.push(nextPath.startsWith("/") ? nextPath : "/profile");
-      }
-    } catch (err: any) {
-      if (err.code !== "auth/popup-closed-by-user") {
-        setError("Facebook-ээр нэвтрэхэд алдаа гарлаа: " + err.message);
-      }
-    } finally {
-      setFacebookLoading(false);
-    }
-  };
+  // 2. FACEBOOK-ЭЭР БҮРТГҮҮЛЭХ/НЭВТРЭХ (ТҮҮР COMMENT БОЛГОСОН)
+  // const handleFacebookSignIn = async () => {
+  //   setError("");
+  //   const provider = new FacebookAuthProvider();
+  //   provider.addScope('email');
+  //   try {
+  //     setFacebookLoading(true);
+  //     const result = await signInWithPopup(auth, provider);
+  //     const user = result.user;
+  //     const userDocRef = doc(db, "users", user.uid);
+  //     const userDocSnap = await getDoc(userDocRef);
+  //
+  //     if (!userDocSnap.exists()) {
+  //       await setDoc(userDocRef, {
+  //         email: user.email || "",
+  //         displayName: user.displayName || "Facebook User",
+  //         isAdmin: false,
+  //         createdAt: serverTimestamp(),
+  //       });
+  //       router.push(nextPath.startsWith("/") ? nextPath : "/profile");
+  //     } else {
+  //       if (userDocSnap.data().isAdmin) router.push("/admin");
+  //       else router.push(nextPath.startsWith("/") ? nextPath : "/profile");
+  //     }
+  //   } catch (err: any) {
+  //     if (err.code !== "auth/popup-closed-by-user") {
+  //       setError("Facebook-ээр нэвтрэхэд алдаа гарлаа: " + err.message);
+  //     }
+  //   } finally {
+  //     setFacebookLoading(false);
+  //   }
+  // };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 bg-gradient-to-b from-rose-50 via-white to-white">
@@ -186,13 +186,13 @@ function RegisterContent() {
           </button>
         </form>
 
+        {/* FACEBOOK ХЭСЭГ - ТҮҮР COMMENT БОЛГОСОН
         <div className="my-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-gray-200" />
           <div className="text-xs text-gray-500">эсвэл</div>
           <div className="h-px flex-1 bg-gray-200" />
         </div>
 
-        {/* FACEBOOK ТОВЧ */}
         <button type="button" onClick={handleFacebookSignIn} disabled={facebookLoading} className="w-full flex items-center justify-center gap-2 bg-[#1877F2] text-white py-3 rounded-xl font-bold hover:bg-[#166FE5] transition disabled:opacity-50">
           {facebookLoading ? (
             <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-25"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75"/></svg>
@@ -203,6 +203,7 @@ function RegisterContent() {
           )}
           {facebookLoading ? "Шалгаж байна..." : "Facebook-ээр үргэлжлүүлэх"}
         </button>
+        */}
 
         <div className="mt-6 text-center text-sm text-gray-600">
           Бүртгэлтэй юу?{" "}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { auth, db } from "@/lib/firebase";
-import { signInWithEmailAndPassword, FacebookAuthProvider, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, /* FacebookAuthProvider, signInWithPopup, */ sendPasswordResetEmail } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -19,7 +19,7 @@ function LoginContent() {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
-  const [facebookLoading, setFacebookLoading] = useState(false);
+  // const [facebookLoading, setFacebookLoading] = useState(false);
 
   const nextPath = searchParams.get("next") || "";
 
@@ -58,35 +58,35 @@ function LoginContent() {
     }
   };
 
-  // 2. FACEBOOK-ЭЭР НЭВТРЭХ
-  const handleFacebookSignIn = async () => {
-    setError("");
-    const provider = new FacebookAuthProvider();
-    provider.addScope('email');
-    try {
-      setFacebookLoading(true);
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (!userDocSnap.exists()) {
-        await setDoc(userDocRef, { email: user.email || "", displayName: user.displayName || "Facebook User", isAdmin: false, createdAt: serverTimestamp() });
-        router.push(nextPath.startsWith("/") ? nextPath : "/profile");
-      } else {
-        const data = userDocSnap.data();
-        if (data.isAdmin || data.role === "admin") router.push("/admin");
-        else if (data.role === "delivery") router.push("/delivery");
-        else router.push(nextPath.startsWith("/") ? nextPath : "/profile");
-      }
-    } catch (err: any) {
-      if (err.code !== "auth/popup-closed-by-user") {
-        setError("Facebook-ээр нэвтрэхэд алдаа гарлаа: " + err.message);
-      }
-    } finally {
-      setFacebookLoading(false);
-    }
-  };
+  // 2. FACEBOOK-ЭЭР НЭВТРЭХ (ТҮҮР COMMENT БОЛГОСОН)
+  // const handleFacebookSignIn = async () => {
+  //   setError("");
+  //   const provider = new FacebookAuthProvider();
+  //   provider.addScope('email');
+  //   try {
+  //     setFacebookLoading(true);
+  //     const result = await signInWithPopup(auth, provider);
+  //     const user = result.user;
+  //     const userDocRef = doc(db, "users", user.uid);
+  //     const userDocSnap = await getDoc(userDocRef);
+  //
+  //     if (!userDocSnap.exists()) {
+  //       await setDoc(userDocRef, { email: user.email || "", displayName: user.displayName || "Facebook User", isAdmin: false, createdAt: serverTimestamp() });
+  //       router.push(nextPath.startsWith("/") ? nextPath : "/profile");
+  //     } else {
+  //       const data = userDocSnap.data();
+  //       if (data.isAdmin || data.role === "admin") router.push("/admin");
+  //       else if (data.role === "delivery") router.push("/delivery");
+  //       else router.push(nextPath.startsWith("/") ? nextPath : "/profile");
+  //     }
+  //   } catch (err: any) {
+  //     if (err.code !== "auth/popup-closed-by-user") {
+  //       setError("Facebook-ээр нэвтрэхэд алдаа гарлаа: " + err.message);
+  //     }
+  //   } finally {
+  //     setFacebookLoading(false);
+  //   }
+  // };
 
   // 3. НУУЦ ҮГ СЭРГЭЭХ
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -213,6 +213,7 @@ function LoginContent() {
           </button>
         </form>
 
+        {/* FACEBOOK ХЭСЭГ - ТҮҮР COMMENT БОЛГОСОН
         <div className="my-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-gray-200" />
           <div className="text-xs text-gray-500">эсвэл</div>
@@ -234,6 +235,7 @@ function LoginContent() {
           )}
           {facebookLoading ? "Шалгаж байна..." : "Facebook-ээр үргэлжлүүлэх"}
         </button>
+        */}
 
         <div className="mt-6 text-center text-sm text-gray-600">
           Бүртгэлгүй юу?{" "}
