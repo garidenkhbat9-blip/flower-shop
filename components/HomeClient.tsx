@@ -311,7 +311,7 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
                     </div>
 
                     <div className="mt-2 flex items-center justify-between">
-                      <span className="font-medium text-[#111] tracking-tight">
+                      <span className="text-[15px] md:text-[17px] font-semibold text-[#111] tracking-tight">
                         {(product.discountedPrice ?? product.price).toLocaleString()}₮
                       </span>
                     </div>
