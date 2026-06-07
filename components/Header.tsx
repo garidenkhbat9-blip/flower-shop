@@ -219,7 +219,7 @@ export default function Header() {
         </div>
 
         {/* ДООД КАТЕГОРИ ХЭСЭГ */}
-        <div className={`hidden md:flex items-center justify-between transition-all duration-300 ${isScrolled ? "h-0 opacity-0 mt-0 pointer-events-none" : "h-auto opacity-100 mt-8"}`}>
+        <div className={`hidden md:flex items-center justify-between transition-all duration-300 overflow-hidden ${isScrolled ? "max-h-0 opacity-0 mt-0 pointer-events-none" : "max-h-20 opacity-100 mt-8"}`}>
 
           {/* Категори nav — overflow:visible тул dropdown харагдана */}
           <div ref={navContainerRef} className="flex-1 min-w-0 flex items-center gap-3 text-[#1A1A1A]/50 font-bold relative">

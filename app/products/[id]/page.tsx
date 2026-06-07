@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, collection, query, where, limit, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, limit, getDocs, orderBy } from "firebase/firestore";
 import { ShoppingCart, CreditCard, MapPin, Eye, ArrowRight, ChevronLeft, Check, Leaf } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types";
@@ -21,6 +21,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [activeCategories, setActiveCategories] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -73,6 +74,20 @@ export default function ProductDetailPage() {
 
     fetchProductData();
   }, [id]);
+
+  // Идэвхтэй категориудыг Firestore-оос татах
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const catSnap = await getDocs(collection(db, "categories"));
+        const catNames = catSnap.docs.map(d => d.data().name as string).filter(Boolean);
+        setActiveCategories(catNames);
+      } catch (err) {
+        console.error("Категори татахад алдаа:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -172,16 +187,20 @@ export default function ProductDetailPage() {
           {/* Details */}
           <div className="lg:col-span-5 flex flex-col justify-center space-y-8">
             <div>
-              {/* Категори badge */}
-              {(product as any).categories?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {(product as any).categories.map((cat: string) => (
-                    <span key={cat} className="text-[10px] font-black uppercase tracking-[0.2em] bg-gray-100 text-[#111] px-3 py-1.5 rounded-full">
-                      {cat}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {/* Категори badge — зөвхөн идэвхтэй категориудыг харуулна */}
+              {(() => {
+                const productCats = (product as any).categories || [];
+                const filteredCats = productCats.filter((cat: string) => activeCategories.includes(cat));
+                return filteredCats.length > 0 ? (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {filteredCats.map((cat: string) => (
+                      <span key={cat} className="text-[10px] font-black uppercase tracking-[0.2em] bg-gray-100 text-[#111] px-3 py-1.5 rounded-full">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
 
               <h1 className="text-3xl md:text-5xl font-playfair font-medium text-[#1A1A1A] leading-[1.1] tracking-tight mb-4">{product.name}</h1>
             </div>

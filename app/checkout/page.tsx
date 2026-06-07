@@ -74,7 +74,7 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
-      const deliveryFee = formData.deliveryType === 'delivery' ? 1 : 0;
+      const deliveryFee = formData.deliveryType === 'delivery' ? 10000 : 0;
 
       const orderData = {
         userId: user?.uid || "guest",
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
 
 
 
-  const deliveryFee = formData.deliveryType === 'delivery' ? 1 : 0;
+  const deliveryFee = formData.deliveryType === 'delivery' ? 10000 : 0;
 
   // Minimalist label & input classes
   const labelClass = "block text-[11px] font-bold text-gray-800 mb-1.5 uppercase tracking-wide";
@@ -200,7 +200,7 @@ export default function CheckoutPage() {
                       <span className={`text-[13px] ${formData.deliveryType === 'delivery' ? 'font-medium text-black' : 'text-gray-500'}`}>Хүргэлтээр авах</span>
                     </div>
                     <p className="text-[11px] text-gray-600 font-medium">Улаанбаатар хот дотор</p>
-                    <p className="text-[11px] text-black font-medium mt-1">8,000₮</p>
+                    <p className="text-[11px] text-black font-medium mt-1">10,000₮</p>
                   </div>
                   {formData.deliveryType === 'delivery' && <CheckCircle2 size={16} strokeWidth={1.5} className="text-black" />}
                 </div>
