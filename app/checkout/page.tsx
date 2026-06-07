@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                       type="checkbox"
                       checked={agreedTerms}
                       onChange={(e) => setAgreedTerms(e.target.checked)}
-                      className="peer appearance-none w-3.5 h-3.5 border border-gray-300 checked:border-black checked:bg-black transition-colors cursor-pointer rounded-sm"
+                      className="peer appearance-none w-3.5 h-3.5 border border-gray-300 checked:border-[#87A96B] checked:bg-[#87A96B] transition-colors cursor-pointer rounded-sm"
                     />
                     <CheckCircle2 size={10} strokeWidth={2} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
                   </div>
