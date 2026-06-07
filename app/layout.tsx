@@ -94,8 +94,10 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="mn">
+    <html lang="mn" data-theme="light" style={{ colorScheme: 'light' }}>
       <head>
+        <meta name="color-scheme" content="light only" />
+        <meta name="supported-color-schemes" content="light only" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

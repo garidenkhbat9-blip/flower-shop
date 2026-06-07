@@ -1,12 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
+  color-scheme: light only;
   --background: #FFFDF9; /* Cream/Off-white */
   --foreground: #333333; /* Charcoal */
   --primary: #E2A9BE; /* Dusty Rose */
   --secondary: #87A96B; /* Sage Green */
   --border: #e7d6da;
+}
+
+/* Force light mode - iPhone dark mode-г үл тоох */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light only;
+    --background: #FFFDF9;
+    --foreground: #333333;
+    --primary: #E2A9BE;
+    --secondary: #87A96B;
+    --border: #e7d6da;
+  }
+}
+
+/* Windows High Contrast / Forced Colors горимоос хамгаалах */
+@media (forced-colors: active) {
+  :root {
+    forced-color-adjust: none;
+  }
+  body, * {
+    forced-color-adjust: none;
+  }
+}
+
+/* High Contrast горимоос хамгаалах */
+@media (prefers-contrast: more) {
+  :root {
+    --background: #FFFDF9;
+    --foreground: #333333;
+    --primary: #E2A9BE;
+    --secondary: #87A96B;
+    --border: #e7d6da;
+  }
+}
+
+/* iOS Smart Invert-ээс хамгаалах */
+html, body, img, video {
+  -webkit-filter: none !important;
+  filter: none !important;
 }
 
 @theme inline {
