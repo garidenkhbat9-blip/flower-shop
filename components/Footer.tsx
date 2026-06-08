@@ -86,7 +86,7 @@ export default function Footer() {
 
           <div className="col-span-1 md:col-span-3 flex md:justify-end items-start gap-6">
             <Link href="https://www.facebook.com/profile.php?id=61559804052197" className="text-[#1A1A1A]/30 hover:text-[#1A1A1A] transition-colors"><Facebook size={20} strokeWidth={1.5} /></Link>
-            <Link href="https://www.instagram.com/grow_room" className="text-[#1A1A1A]/30 hover:text-[#1A1A1A] transition-colors"><Instagram size={20} strokeWidth={1.5} /></Link>
+            <Link href="https://www.instagram.com/_grow_room_/" className="text-[#1A1A1A]/30 hover:text-[#1A1A1A] transition-colors"><Instagram size={20} strokeWidth={1.5} /></Link>
           </div>
         </div>
       </div>

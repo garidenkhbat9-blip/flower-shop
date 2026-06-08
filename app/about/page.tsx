@@ -122,7 +122,7 @@ export default function AboutPage() {
 
               <div className="flex gap-4 pt-4">
                 <SocialLink icon={<Facebook size={18} />} href="https://www.facebook.com/profile.php?id=61559804052197" />
-                <SocialLink icon={<Instagram size={18} />} href="https://www.instagram.com/grow_room" />
+                <SocialLink icon={<Instagram size={18} />} href="https://www.instagram.com/_grow_room_/" />
               </div>
             </div>
 
