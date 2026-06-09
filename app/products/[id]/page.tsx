@@ -170,7 +170,7 @@ export default function ProductDetailPage() {
                     alt="" 
                     fill
                     sizes="80px"
-                    className="w-full h-full object-cover" 
+                    className="object-contain p-1" 
                   />
                 </div>
               ))}
@@ -178,10 +178,10 @@ export default function ProductDetailPage() {
             {/* Main Image */}
             <motion.div
               key={selectedImg}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
-              className="order-1 md:order-2 flex-1 aspect-square rounded-[2px] overflow-hidden bg-gray-50 border border-gray-100"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="order-1 md:order-2 flex-1 aspect-square rounded-2xl overflow-hidden bg-gray-50/50 border border-gray-100 relative"
             >
               <Image
                 src={product.imageUrls[selectedImg]}
@@ -189,7 +189,7 @@ export default function ProductDetailPage() {
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
+                className="object-contain p-2 transition-all duration-500"
               />
             </motion.div>
           </div>
@@ -451,7 +451,7 @@ function RecommendedCard({
           alt={item.name}
           fill
           sizes="(max-width: 768px) 50vw, 25vw"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          className="object-contain p-4 group-hover:scale-105 transition-transform duration-700"
         />
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
