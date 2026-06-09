@@ -94,8 +94,9 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="mn" data-theme="light" style={{ colorScheme: 'light' }}>
+    <html lang="mn" className="notranslate" data-theme="light" style={{ colorScheme: 'light' }}>
       <head>
+        <meta name="google" content="notranslate" />
         <meta name="color-scheme" content="light only" />
         <meta name="supported-color-schemes" content="light only" />
         <script
