@@ -125,32 +125,27 @@ export default function ProductDetailPage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FAFAFA] pb-40 md:pb-28 font-montserrat text-[#1A1A1A]">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6">
-
-        {/* Буцах товч + Breadcrumbs */}
-        <div className="flex flex-col gap-4 mb-10">
-          {/* Mobile буцах товч */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-16 md:pt-24">
+        {/* Back Button & Breadcrumbs */}
+        <div className="flex flex-col gap-4 mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-3 text-xs font-bold text-[#111] hover:opacity-70 transition-opacity w-fit group uppercase tracking-widest"
+            className="w-fit flex items-center gap-3 bg-white border border-gray-100 px-6 py-3 rounded-full text-[11px] font-bold text-gray-900 uppercase tracking-[0.2em] shadow-sm hover:shadow-md transition-all active:scale-95"
           >
-            <span className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center group-hover:border-[#111] transition-colors shadow-sm">
-              <ChevronLeft size={16} />
-            </span>
-            Буцах
+            <ChevronLeft size={16} /> БУЦАХ
           </button>
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-[9px] font-light uppercase tracking-[0.4em] text-[#999]">
-            <Link href="/" className="hover:text-[#1A1A1A] transition-colors">Нүүр</Link>
+          
+          <nav className="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] overflow-x-auto no-scrollbar">
+            <Link href="/" className="hover:text-black">НҮҮР</Link>
             <span>/</span>
-            <Link href="/products" className="hover:text-[#1A1A1A] transition-colors">Бүх бараа</Link>
+            <Link href="/products" className="hover:text-black">БҮХ БАРАА</Link>
             <span>/</span>
-            <span className="text-[#1A1A1A] truncate max-w-[160px] md:max-w-[300px]">{product.name}</span>
-          </div>
+            <span className="text-black line-clamp-1">{product.name}</span>
+          </nav>
         </div>
 
         {/* Product Main Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white p-6 md:p-12 rounded-[32px] shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-black/[0.03]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white p-6 md:p-12 rounded-3xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-black/[0.03]">
 
           {/* Images */}
           <div className="lg:col-span-7 flex flex-col md:flex-row gap-5">
