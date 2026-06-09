@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, onSnapshot, query, orderBy } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { compressImage } from "@/lib/imageUtils";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAdminDialog } from "@/context/AdminDialogContext";
 import { ImagePlus, Trash2, X, Edit2, Check, RotateCcw } from "lucide-react";
@@ -70,8 +72,9 @@ export default function CategoriesPage() {
 
       // 1. Хэрэв шинэ зураг сонгосон бол Upload хийнэ
       if (imageFile) {
-        const storageRef = ref(storage, `categories/${Date.now()}_${imageFile.name}`);
-        await uploadBytes(storageRef, imageFile);
+        const compressedFile = await compressImage(imageFile);
+        const storageRef = ref(storage, `categories/${Date.now()}_${compressedFile.name}`);
+        await uploadBytes(storageRef, compressedFile);
         finalImageUrl = await getDownloadURL(storageRef);
       }
 
@@ -128,7 +131,13 @@ export default function CategoriesPage() {
         >
           {imagePreview ? (
             <div className="relative w-full h-40">
-              <img src={imagePreview} alt="Preview" className="w-full h-full object-contain rounded-lg" />
+              <Image 
+                src={imagePreview} 
+                alt="Preview" 
+                fill
+                unoptimized
+                className="w-full h-full object-contain rounded-lg" 
+              />
               {!loading && (
                 <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 hover:opacity-100 transition rounded-lg text-white font-bold">
                   Солих
@@ -175,7 +184,15 @@ export default function CategoriesPage() {
           <div key={cat.id} className="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100 group">
             <div className="flex items-center gap-4">
               {cat.imageUrl ? (
-                <img src={cat.imageUrl} alt={cat.name} className="w-12 h-12 rounded-lg object-cover border border-gray-200" />
+                <div className="relative w-12 h-12 overflow-hidden rounded-lg border border-gray-200">
+                  <Image 
+                    src={cat.imageUrl} 
+                    alt={cat.name} 
+                    fill
+                    sizes="48px"
+                    className="object-cover" 
+                  />
+                </div>
               ) : (
                 <div className="w-12 h-12 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xl">🌸</div>
               )}

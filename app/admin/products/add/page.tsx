@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { compressImage } from "@/lib/imageUtils";
 import { useRouter } from "next/navigation";
 import { useAdminDialog } from "@/context/AdminDialogContext";
 import { ChevronLeft, ImagePlus, X, Check, Flower2, Gift, Heart, Info, Target } from "lucide-react";
@@ -69,8 +70,10 @@ export default function AddProductPage() {
     setLoading(true);
     try {
       const uploadPromises = imageFiles.map(async (file) => {
-        const imageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-        const snap = await uploadBytes(imageRef, file);
+        // Зургийг байршуулахаас өмнө шахах
+        const compressedFile = await compressImage(file);
+        const imageRef = ref(storage, `products/${Date.now()}_${compressedFile.name}`);
+        const snap = await uploadBytes(imageRef, compressedFile);
         return getDownloadURL(snap.ref);
       });
       const imageUrls = await Promise.all(uploadPromises);

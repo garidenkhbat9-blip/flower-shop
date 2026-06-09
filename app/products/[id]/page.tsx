@@ -10,6 +10,7 @@ import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -164,7 +165,13 @@ export default function ProductDetailPage() {
                     : "border-transparent opacity-50 hover:opacity-100 bg-gray-50"
                     }`}
                 >
-                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <Image 
+                    src={url} 
+                    alt="" 
+                    fill
+                    sizes="80px"
+                    className="w-full h-full object-cover" 
+                  />
                 </div>
               ))}
             </div>
@@ -176,9 +183,12 @@ export default function ProductDetailPage() {
               transition={{ duration: 0.4 }}
               className="order-1 md:order-2 flex-1 aspect-square rounded-[2px] overflow-hidden bg-gray-50 border border-gray-100"
             >
-              <img
+              <Image
                 src={product.imageUrls[selectedImg]}
                 alt={product.name}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
               />
             </motion.div>
@@ -436,9 +446,11 @@ function RecommendedCard({
     <div className="group bg-white rounded-[2px] border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_10px_40px_rgba(0,0,0,0.06)] transition-all duration-500 flex flex-col h-full">
       {/* Image */}
       <Link href={`/products/${item.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-50">
-        <img
+        <Image
           src={item.imageUrls?.[0] || "/placeholder.jpg"}
           alt={item.name}
+          fill
+          sizes="(max-width: 768px) 50vw, 25vw"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
         {/* Hover overlay */}

@@ -6,6 +6,7 @@ import { collection, getDocs, orderBy, query, doc, deleteDoc, updateDoc } from "
 import Link from "next/link";
 import { Product } from "@/types";
 import { ChevronLeft, ChevronRight, X, Search, Package, AlertCircle, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 export default function ProductsListPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -101,7 +102,14 @@ export default function ProductsListPage() {
               <button onClick={(e) => { e.stopPropagation(); setLightbox(prev => ({ ...prev, index: (prev.index + 1) % prev.images.length })) }} className="bg-white border border-black/[0.05] p-5 rounded-full text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white transition-all shadow-xl"><ChevronRight size={32} strokeWidth={1.5} /></button>
             </div>
           )}
-          <img src={lightbox.images[lightbox.index]} className="max-w-full max-h-[80vh] object-contain rounded-[2px] shadow-2xl animate-in zoom-in-95" alt="Preview" />
+          <div className="relative w-full h-[80vh]">
+            <Image
+              src={lightbox.images[lightbox.index]}
+              alt="Preview"
+              fill
+              className="object-contain rounded-[2px] shadow-2xl animate-in zoom-in-95"
+            />
+          </div>
         </div>
       )}
 
@@ -178,7 +186,13 @@ export default function ProductsListPage() {
                     onClick={() => setLightbox({ isOpen: true, images: product.imageUrls || [], index: 0 })}
                   >
                     {product.imageUrls?.[0] ? (
-                      <img src={product.imageUrls[0]} className="w-16 h-16 object-cover rounded-[2px] border border-black/[0.03]" alt={product.name} />
+                      <Image 
+                        src={product.imageUrls[0]} 
+                        alt={product.name}
+                        fill
+                        sizes="64px"
+                        className="object-cover rounded-[2px] border border-black/[0.03]" 
+                      />
                     ) : (
                       <div className="w-16 h-16 bg-[#FCFBF9] rounded-[2px] border border-black/[0.03]" />
                     )}
@@ -238,11 +252,17 @@ export default function ProductsListPage() {
                       <td className="p-8">
                         <div className="flex items-center gap-6">
                           <div
-                            className="relative cursor-zoom-in shrink-0"
+                            className="relative cursor-zoom-in shrink-0 w-20 h-20"
                             onClick={() => setLightbox({ isOpen: true, images: product.imageUrls || [], index: 0 })}
                           >
                             {product.imageUrls?.[0] ? (
-                              <img src={product.imageUrls[0]} className="w-20 h-20 object-cover rounded-[2px] border border-black/[0.03] shadow-sm" alt={product.name} />
+                              <Image 
+                                src={product.imageUrls[0]} 
+                                alt={product.name}
+                                fill
+                                sizes="80px"
+                                className="object-cover rounded-[2px] border border-black/[0.03] shadow-sm" 
+                              />
                             ) : (
                               <div className="w-20 h-20 bg-[#FCFBF9] rounded-[2px] border border-black/[0.03]" />
                             )}

@@ -9,6 +9,7 @@ import { SlidersHorizontal, X, ChevronDown, Check, Heart, Flower2, ShoppingBag }
 import Link from "next/link";
 import { Product, Category } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const PACKAGING_OPTIONS = ["Баглаа", "Хайрцагтай", "Сагстай", "Хөрстэй"];
 const SIZE_OPTIONS = ["Жижиг", "Дунд", "Том"];
@@ -550,7 +551,13 @@ function ProductCard({ product }: { product: any }) {
     <div className="group bg-white rounded-[2px] overflow-hidden border border-black/[0.03] hover:shadow-2xl hover:shadow-black/5 transition-all duration-700 flex flex-col h-full">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#FCFBF9]">
         <Link href={`/products/${product.id}`} className="block w-full h-full">
-          <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+          <Image 
+            src={product.imageUrls?.[0] || "/placeholder.jpg"} 
+            alt={product.name} 
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-1000" 
+          />
         </Link>
         <div className="absolute top-4 left-4 z-20">
           {product.discountedPrice && (

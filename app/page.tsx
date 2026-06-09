@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { Product, Category } from "@/types";
 import HomeClient from "@/components/HomeClient";
 import { Metadata } from "next";
@@ -27,7 +27,9 @@ export const metadata: Metadata = {
 
 async function getProducts(): Promise<Product[]> {
   try {
-    const prodSnap = await getDocs(collection(db, "products"));
+    const productsRef = collection(db, "products");
+    const q = query(productsRef, orderBy("createdAt", "desc"), limit(15));
+    const prodSnap = await getDocs(q);
     return prodSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Product[];
   } catch (error) {
     console.error("Error fetching products:", error);
