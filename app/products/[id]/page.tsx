@@ -3,31 +3,28 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, collection, query, where, limit, getDocs, orderBy } from "firebase/firestore";
-import { ShoppingCart, CreditCard, MapPin, Eye, ArrowRight, ChevronLeft, Check, Leaf } from "lucide-react";
+import { doc, getDoc, collection, query, where, limit, getDocs } from "firebase/firestore";
+import { ShoppingCart, CreditCard, ChevronLeft, Check, ArrowRight, Eye, MapPin, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { addToCart } = useCart();
-  const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
-  const [recommended, setRecommended] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [activeCategories, setActiveCategories] = useState<string[]>([]);
+  const [recommended, setRecommended] = useState<Product[]>([]);
+  const { addToCart } = useCart();
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchProductData = async () => {
-      if (!id) return;
-      setLoading(true);
       try {
         const docRef = doc(db, "products", id as string);
         const docSnap = await getDoc(docRef);
@@ -36,38 +33,24 @@ export default function ProductDetailPage() {
           const productData = { id: docSnap.id, ...docSnap.data() } as Product;
           setProduct(productData);
 
-          const cats = (productData as any).categories as string[] | undefined;
-          const catsSingle = (productData as any).category as string[] | undefined;
-          const allCats = cats || catsSingle || [];
-          if (allCats.length > 0) {
+          // Get recommended
+          const cats = productData.category || [];
+          if (cats.length > 0) {
             const q = query(
               collection(db, "products"),
-              where("categories", "array-contains-any", allCats),
-              limit(9)
+              where("category", "array-contains-any", cats),
+              limit(5)
             );
             const recSnap = await getDocs(q);
-            let recList = recSnap.docs
+            setRecommended(recSnap.docs
               .map(d => ({ id: d.id, ...d.data() } as Product))
               .filter(p => p.id !== id)
-              .slice(0, 8);
-
-            if (recList.length === 0 && allCats.length > 0) {
-              const q2 = query(
-                collection(db, "products"),
-                where("category", "array-contains-any", allCats),
-                limit(9)
-              );
-              const recSnap2 = await getDocs(q2);
-              recList = recSnap2.docs
-                .map(d => ({ id: d.id, ...d.data() } as Product))
-                .filter(p => p.id !== id)
-                .slice(0, 8);
-            }
-            setRecommended(recList);
+              .slice(0, 4)
+            );
           }
         }
       } catch (error) {
-        console.error("Дата татахад алдаа гарлаа:", error);
+        console.error("Error fetching product:", error);
       } finally {
         setLoading(false);
       }
@@ -76,424 +59,216 @@ export default function ProductDetailPage() {
     fetchProductData();
   }, [id]);
 
-  // Идэвхтэй категориудыг Firestore-оос татах
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const catSnap = await getDocs(collection(db, "categories"));
-        const catNames = catSnap.docs.map(d => d.data().name as string).filter(Boolean);
-        setActiveCategories(catNames);
-      } catch (err) {
-        console.error("Категори татахад алдаа:", err);
-      }
-    };
-    fetchCategories();
-  }, []);
-
   const handleAddToCart = () => {
-    if (!product) return;
-    addToCart(product, 1);
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (product) {
+      addToCart(product, 1);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }
   };
 
   const handleCheckoutAction = () => {
-    if (!product) return;
-    addToCart(product, 1, true);
-    router.push("/checkout");
+    if (product) {
+      addToCart(product, 1);
+      router.push("/checkout");
+    }
   };
 
   if (loading)
     return (
-      <div className="h-screen flex items-center justify-center bg-[#FAFAFA]">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-[3px] border-gray-100 border-t-[#111] rounded-full animate-spin" />
-          <span className="text-[10px] font-bold tracking-[0.3em] text-[#111] uppercase">Уншиж байна...</span>
-        </motion.div>
+      <div className="h-screen flex items-center justify-center bg-white">
+        <div className="w-12 h-12 border-[3px] border-gray-100 border-t-[#111] rounded-full animate-spin" />
       </div>
     );
 
   if (!product)
     return (
-      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-[#FAFAFA]">
-        <p className="font-bold text-[#999] tracking-widest uppercase text-[10px]">Бүтээгдэхүүн олдсонгүй.</p>
-        <Link href="/products" className="text-sm font-bold text-[#111] border-b-2 border-[#111] pb-1 hover:opacity-70 transition-opacity">
-          Бүх бараа руу буцах
-        </Link>
+      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-white">
+        <p className="text-xs font-bold uppercase tracking-widest">Бүтээгдэхүүн олдсонгүй.</p>
+        <Link href="/products" className="text-xs font-bold border-b border-[#111] pb-1">Бүх бараа руу буцах</Link>
       </div>
     );
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FAFAFA] pb-40 md:pb-28 font-montserrat text-[#1A1A1A]">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-16 md:pt-24">
-        {/* Back Button & Breadcrumbs */}
-        <div className="flex flex-col gap-4 mb-8">
+    <div className="min-h-screen bg-[#FAFAFA] font-montserrat text-[#111] pb-32">
+      {/* HEADER SPACE */}
+      <div className="h-16 md:h-20" />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* TOP BAR: BACK & BREADCRUMBS */}
+        <div className="py-6 flex flex-col gap-4">
           <button
             onClick={() => router.back()}
-            className="w-fit flex items-center gap-3 bg-white border border-gray-100 px-6 py-3 rounded-full text-[11px] font-bold text-gray-900 uppercase tracking-[0.2em] shadow-sm hover:shadow-md transition-all active:scale-95"
+            className="w-fit flex items-center gap-2 bg-white border border-gray-100 px-6 py-2.5 rounded-full text-[10px] font-bold text-[#111] uppercase tracking-widest shadow-sm hover:shadow-md transition-all active:scale-95"
           >
             <ChevronLeft size={16} /> БУЦАХ
           </button>
           
-          <nav className="flex items-center gap-2 text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] overflow-x-auto no-scrollbar">
+          <nav className="flex items-center gap-2 text-[9px] font-bold text-[#999] uppercase tracking-[0.2em] overflow-hidden whitespace-nowrap">
             <Link href="/" className="hover:text-black">НҮҮР</Link>
             <span>/</span>
             <Link href="/products" className="hover:text-black">БҮХ БАРАА</Link>
             <span>/</span>
-            <span className="text-black line-clamp-1">{product.name}</span>
+            <span className="text-black truncate">{product.name}</span>
           </nav>
         </div>
 
-        {/* Product Main Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white p-6 md:p-12 rounded-3xl shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-black/[0.03]">
-
-          {/* Images */}
-          <div className="lg:col-span-7 flex flex-col md:flex-row gap-5">
-            {/* Thumbnails */}
-            <div className="order-2 md:order-1 flex md:flex-col gap-3 shrink-0 overflow-x-auto no-scrollbar pb-2 md:pb-0">
+        {/* PRODUCT GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+          
+          {/* IMAGE SECTIONS */}
+          <div className="lg:col-span-7 flex flex-col md:flex-row gap-4">
+            {/* Thumbnails (Left on Desktop, Bottom on Mobile) */}
+            <div className="order-2 md:order-1 flex md:flex-col gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0">
               {product.imageUrls.map((url, index) => (
-                <div
+                <button
                   key={index}
                   onClick={() => setSelectedImg(index)}
-                  className={`w-16 h-16 md:w-20 md:h-20 rounded-[2px] overflow-hidden border cursor-pointer transition-all flex-shrink-0 ${selectedImg === index
-                    ? "border-[#1A1A1A] opacity-100"
-                    : "border-transparent opacity-50 hover:opacity-100 bg-gray-50"
-                    }`}
+                  className={`relative w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
+                    selectedImg === index ? "border-[#111]" : "border-transparent bg-white shadow-sm"
+                  }`}
                 >
-                  <Image 
-                    src={url} 
-                    alt="" 
-                    fill
-                    sizes="80px"
-                    className="object-contain p-1" 
-                  />
-                </div>
+                  <Image src={url} alt="" fill className="object-contain p-1" sizes="100px" />
+                </button>
               ))}
             </div>
-            {/* Main Image */}
-            <motion.div
-              key={selectedImg}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="order-1 md:order-2 flex-1 aspect-square rounded-2xl overflow-hidden bg-gray-50/50 border border-gray-100 relative"
-            >
-              <Image
-                src={product.imageUrls[selectedImg]}
-                alt={product.name}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-contain p-2 transition-all duration-500"
-              />
-            </motion.div>
+
+            {/* Main Display */}
+            <div className="order-1 md:order-2 flex-grow aspect-square relative bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedImg}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="w-full h-full"
+                >
+                  <Image
+                    src={product.imageUrls[selectedImg]}
+                    alt={product.name}
+                    fill
+                    priority
+                    className="object-contain p-6"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
 
-          {/* Details */}
-          <div className="lg:col-span-5 flex flex-col justify-center space-y-8">
+          {/* CONTENT SECTION */}
+          <div className="lg:col-span-5 space-y-8">
             <div>
-              {/* Категори badge — зөвхөн идэвхтэй категориудыг харуулна */}
-              {(() => {
-                const productCats = (product as any).categories || [];
-                const filteredCats = productCats.filter((cat: string) => activeCategories.includes(cat));
-                return filteredCats.length > 0 ? (
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {filteredCats.map((cat: string) => (
-                      <span key={cat} className="text-[10px] font-black uppercase tracking-[0.2em] bg-gray-100 text-[#111] px-3 py-1.5 rounded-full">
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-                ) : null;
-              })()}
-
-              <h1 className="text-3xl md:text-5xl font-playfair font-medium text-[#1A1A1A] leading-[1.1] tracking-tight mb-4">{product.name}</h1>
-            </div>
-
-            {/* Price */}
-            <div className="space-y-2">
-              <p className="text-[9px] font-light text-[#999] uppercase tracking-[0.5em]">Үнэ</p>
+              <h1 className="text-3xl md:text-5xl font-playfair italic font-medium leading-tight mb-4">{product.name}</h1>
               <div className="flex items-baseline gap-4">
                 {product.discountedPrice ? (
                   <>
-                    <p className="text-3xl md:text-4xl font-montserrat font-medium text-[#1A1A1A] tracking-tight">
-                      {product.discountedPrice.toLocaleString()} ₮
-                    </p>
-                    <p className="text-lg md:text-xl font-montserrat font-medium text-[#999] line-through">
-                      {product.price.toLocaleString()} ₮
-                    </p>
+                    <span className="text-3xl font-bold font-montserrat">{product.discountedPrice.toLocaleString()} ₮</span>
+                    <span className="text-lg text-gray-400 line-through">{product.price.toLocaleString()} ₮</span>
                   </>
                 ) : (
-                  <p className="text-3xl md:text-4xl font-montserrat font-medium text-[#1A1A1A] tracking-tight">
-                    {product.price.toLocaleString()} ₮
-                  </p>
+                  <span className="text-3xl font-bold font-montserrat">{product.price.toLocaleString()} ₮</span>
                 )}
               </div>
             </div>
 
-            {/* Purposes */}
-            {(product as any).purposes?.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {(product as any).purposes.map((p: string) => (
-                  <span key={p} className="text-[10px] font-bold uppercase tracking-[0.1em] border border-gray-200 text-[#666] px-3.5 py-1.5 rounded-full">
-                    {p}
-                  </span>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
+              
+              <div className="flex flex-wrap gap-2">
+                {product.category?.map(cat => (
+                   <span key={cat} className="text-[9px] font-bold uppercase tracking-widest bg-gray-100 px-3 py-1.5 rounded-full">{cat}</span>
                 ))}
               </div>
-            )}
+            </div>
 
-            {/* Action Buttons — desktop дээр харагдана, mobile-д sticky bar */}
-            {product.inStock === false ? (
-              <div className="hidden md:block pt-6 border-t border-gray-100">
-                <div className="bg-gray-100 text-[#1A1A1A]/40 font-medium py-5 rounded-2xl text-center uppercase text-[10px] tracking-[0.2em]">
-                  Уучлаарай, энэ бараа дууссан байна.
+            {/* ACTIONS */}
+            <div className="space-y-3 pt-6 border-t border-gray-100 hidden md:block">
+              {product.inStock === false ? (
+                <div className="bg-gray-100 text-gray-400 text-center py-5 rounded-2xl font-bold uppercase text-[10px] tracking-widest">
+                  Дууссан байна
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <button
+                    onClick={handleAddToCart}
+                    className={`flex items-center justify-center gap-2 font-bold py-4 rounded-2xl transition-all uppercase text-[10px] tracking-widest border-2 ${
+                      addedToCart ? "bg-green-600 border-green-600 text-white" : "border-[#87A96B] text-[#87A96B] hover:bg-[#87A96B] hover:text-white"
+                    }`}
+                  >
+                    {addedToCart ? <Check size={16} /> : <ShoppingBag size={16} />}
+                    {addedToCart ? "Нэмэгдлээ" : "Сагслах"}
+                  </button>
+                  <button
+                    onClick={handleCheckoutAction}
+                    className="flex items-center justify-center gap-2 bg-[#87A96B] text-white font-bold py-4 rounded-2xl hover:bg-[#76945d] transition-all uppercase text-[10px] tracking-widest shadow-lg shadow-[#87A96B]/20"
+                  >
+                    <CreditCard size={16} /> Худалдан авах
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* SPECS TABLE */}
+            <div className="pt-8">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4">Үзүүлэлтүүд</h3>
+              <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden divide-y divide-gray-50 shadow-sm">
+                <div className="grid grid-cols-2">
+                  <div className="p-4 border-r border-gray-50 flex flex-col gap-1">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Өнгө</span>
+                    <span className="text-sm font-semibold">{product.colors?.join(", ") || "—"}</span>
+                  </div>
+                  <div className="p-4 flex flex-col gap-1">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Хэмжээ</span>
+                    <span className="text-sm font-semibold">{product.size || "—"}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 border-r border-gray-50 flex flex-col gap-1">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Баглаа</span>
+                    <span className="text-sm font-semibold">{product.packaging || "—"}</span>
+                  </div>
+                  <div className="p-4 flex flex-col gap-1">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Тоо ширхэг</span>
+                    <span className="text-sm font-semibold">{product.stemCount ? `${product.stemCount} ширхэг` : "—"}</span>
+                  </div>
                 </div>
               </div>
-            ) : (
-              <div className="hidden md:grid grid-cols-2 gap-3 pt-6 border-t border-gray-100">
-                <button
-                  onClick={handleAddToCart}
-                  className={`flex items-center justify-center gap-2.5 border-2 font-bold py-4 rounded-2xl transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] ${addedToCart
-                    ? "bg-[#87A96B] text-white border-[#87A96B] shadow-lg shadow-[#87A96B]/20"
-                    : "border-[#87A96B] text-[#87A96B] hover:bg-[#87A96B] hover:text-white"
-                    }`}
-                >
-                  {addedToCart ? <Check size={15} strokeWidth={2.5} /> : <ShoppingCart size={15} strokeWidth={1.8} />}
-                  {addedToCart ? "Нэмэгдлээ" : "Сагсанд хийх"}
-                </button>
-                <button
-                  onClick={handleCheckoutAction}
-                  className="flex items-center justify-center gap-2.5 bg-[#87A96B] text-white font-bold py-4 rounded-2xl hover:bg-[#76945d] transition-all active:scale-95 uppercase text-[10px] tracking-[0.2em] shadow-lg shadow-[#87A96B]/25"
-                >
-                  <CreditCard size={15} strokeWidth={1.8} /> Худалдан авах
-                </button>
-              </div>
-            )}
-
-            {/* Stores */}
-            <div className="pt-6 space-y-4">
-              <p className="text-[10px] font-black text-[#999] uppercase tracking-[0.2em]">
-                Худалдаалж буй салбарууд
-              </p>
-              <StoreItem name="Төв салбар" address="Ulaanbaatar Galleria, 2-р давхар" />
             </div>
           </div>
         </div>
 
-        {/* Specifications */}
-        <div className="mt-16 md:mt-24">
-          <h2 className="text-2xl md:text-4xl font-bold text-[#1A1A1A] mb-8 tracking-tight">
-            Үзүүлэлтүүд
-          </h2>
-
-
-
-
-          <div className="bg-white border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6 md:p-12 rounded-[2px] grid grid-cols-1 md:grid-cols-2 gap-0 divide-y border-gray-100 md:divide-y-0">
-            <SpecRow label="Өнгө" value={product.colors?.join(", ") || "—"} />
-            <SpecRow label="Тоо ширхэг" value={product.stemCount ? `${product.stemCount} ширхэг` : "—"} />
-            <SpecRow label="Савалгаа" value={product.packaging || "—"} />
-            <SpecRow label="Хэмжээ" value={product.size || "—"} />
-            {product.description && (
-              <div className="md:col-span-2 pt-8 mt-6 border-t border-gray-100">
-                <p className="text-sm md:text-base text-[#666] leading-relaxed max-w-4xl">{product.description}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ✅ Санал болгох бараа — 8 хүртэл, "Бүх бараа харах" товчтой */}
+        {/* RECOMMENDED SECTION */}
         {recommended.length > 0 && (
-          <div className="mt-24 md:mt-32">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-              <div>
-                <p className="text-[9px] font-light tracking-[0.5em] text-[#999] uppercase mb-3 font-montserrat">Explore</p>
-                <h2 className="text-3xl md:text-5xl font-playfair font-medium text-[#1A1A1A] tracking-tight">
-                  Танд санал болгох
-                </h2>
-              </div>
-              {/*  Бүх бараа харах — /products руу буцаана */}
-              {/* <Link
-                href="/products"
-                className="flex items-center gap-2 text-[10px] font-bold text-[#111] hover:opacity-70 transition-opacity uppercase tracking-widest border-b-2 border-[#111] pb-1 w-fit"
-              >
-                Бүгдийг харах
-                <ArrowRight size={14} />
-              </Link> */}
-            </div>
-
-            {/* Grid — 2 col mobile, 4 col desktop, max 8 items */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {recommended.map((item, index) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <RecommendedCard
-                    item={item}
-                    onAddToCart={() => addToCart(item, 1)}
-                  />
-                </motion.div>
+          <div className="mt-32">
+            <h2 className="text-2xl font-playfair italic mb-10">Танд санал болгох</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {recommended.map(item => (
+                <Link key={item.id} href={`/products/${item.id}`} className="group flex flex-col gap-3">
+                  <div className="aspect-[4/5] relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    <Image src={item.imageUrls[0]} alt={item.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-500" sizes="300px" />
+                  </div>
+                  <div>
+                    <h3 className="text-[11px] font-bold uppercase tracking-tight line-clamp-1">{item.name}</h3>
+                    <p className="text-xs font-black mt-1">{item.price.toLocaleString()} ₮</p>
+                  </div>
+                </Link>
               ))}
             </div>
-
-            {/* Bottom CTA */}
-            <div className="mt-12 flex justify-center">
-              <Link
-                href="/products"
-                className="inline-flex items-center gap-3 bg-[#87A96B] text-white font-bold px-10 py-4 rounded-full hover:bg-[#76945d] transition-all duration-300 text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-[#87A96B]/25 hover:scale-105"
-              >
-                <Leaf size={15} />
-                Бүх бараа харах
-              </Link>
-            </div>
-          </div>
-        )}
-
-      </div>
-
-      {/* ── MOBILE STICKY ACTION BAR ── */}
-      <div className="md:hidden fixed bottom-[60px] left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] px-4 py-3 safe-area-pb">
-        {product.inStock === false ? (
-          <div className="bg-gray-100 text-gray-400 font-bold py-4 rounded-2xl text-center uppercase text-[10px] tracking-[0.2em]">
-            Дууссан байна
-          </div>
-        ) : (
-          <div className="flex gap-3">
-            {/* Сагсанд */}
-            <button
-              onClick={handleAddToCart}
-              className={`flex-1 flex items-center justify-center gap-2 border-2 font-bold py-4 rounded-2xl transition-all active:scale-95 text-[10px] uppercase tracking-[0.15em] ${addedToCart
-                ? "bg-[#87A96B] border-[#87A96B] text-white shadow-lg shadow-[#87A96B]/20"
-                : "border-[#87A96B] text-[#87A96B]"
-                }`}
-            >
-              {addedToCart ? (
-                <><Check size={15} strokeWidth={2.5} /> Нэмэгдлээ</>
-              ) : (
-                <><ShoppingCart size={15} strokeWidth={1.8} /> Сагсанд</>
-              )}
-            </button>
-            {/* Худалдан авах */}
-            <button
-              onClick={handleCheckoutAction}
-              className="flex-[1.4] flex items-center justify-center gap-2 bg-[#87A96B] text-white font-bold py-4 rounded-2xl hover:bg-[#76945d] transition-all active:scale-95 text-[10px] uppercase tracking-[0.15em] shadow-lg shadow-[#87A96B]/30"
-            >
-              <CreditCard size={15} strokeWidth={1.8} /> Худалдан авах
-            </button>
           </div>
         )}
       </div>
-    </motion.div>
-  );
-}
 
-// ─── Туслах Компонентууд ───────────────────────────────────────────────────
-
-function SpecRow({ label, value }: { label: string; value: any }) {
-  return (
-    <div className="flex items-center justify-between py-4 px-5 border-b border-gray-100 last:border-0 md:border-b-0 md:even:border-l md:even:pl-8 group hover:bg-[#87A96B]/[0.03] transition-colors rounded-xl">
-      <span className="text-[10px] font-bold text-[#1A1A1A]/40 uppercase tracking-[0.25em] shrink-0">
-        {label}
-      </span>
-      <span className="text-[13px] text-[#1A1A1A] font-bold text-right ml-4">{value}</span>
-    </div>
-  );
-}
-
-function StoreItem({ name, address }: { name: string; address: string }) {
-  return (
-    <div className="flex items-center gap-4 p-4 rounded-[16px] border border-gray-100 bg-gray-50 hover:bg-white hover:border-[#111] hover:shadow-md transition-all duration-300 cursor-default">
-      <div className="p-3 bg-white rounded-[12px] border border-gray-200 text-[#111] flex-shrink-0 shadow-sm">
-        <MapPin size={16} />
-      </div>
-      <div>
-        <p className="text-[13px] font-bold text-[#111]">{name}</p>
-        <p className="text-[11px] text-[#666] mt-1 font-medium">{address}</p>
-      </div>
-    </div>
-  );
-}
-
-function RecommendedCard({
-  item,
-  onAddToCart,
-}: {
-  item: Product;
-  onAddToCart: () => void;
-}) {
-  const [added, setAdded] = useState(false);
-
-  const handleAdd = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onAddToCart();
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
-  };
-
-  const hasDiscount = item.discountedPrice && item.discountedPrice < item.price;
-
-  return (
-    <div className="group bg-white rounded-[2px] border border-black/[0.03] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_10px_40px_rgba(0,0,0,0.06)] transition-all duration-500 flex flex-col h-full">
-      {/* Image */}
-      <Link href={`/products/${item.id}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-50">
-        <Image
-          src={item.imageUrls?.[0] || "/placeholder.jpg"}
-          alt={item.name}
-          fill
-          sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-contain p-4 group-hover:scale-105 transition-transform duration-700"
-        />
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
-          <div className="bg-white/90 backdrop-blur-md p-3 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)]">
-            <Eye size={16} className="text-[#111]" />
-          </div>
-        </div>
-        {item.inStock === false && (
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-20 backdrop-blur-[1px]">
-            <span className="bg-black text-white px-4 py-2 text-[10px] font-bold tracking-[0.3em] uppercase rounded-[2px] shadow-xl">Дууссан</span>
-          </div>
-        )}
-        {/* Discount badge */}
-        {hasDiscount && (
-          <div className="absolute top-3 left-3 bg-[#87A96B] text-white text-[9px] font-black px-3 py-1 rounded-full shadow-md uppercase tracking-widest">
-            -{Math.round(((item.price - item.discountedPrice!) / item.price) * 100)}%
-          </div>
-        )}
-      </Link>
-
-      {/* Info */}
-      <div className="p-4 flex flex-col flex-grow gap-2">
-        <Link href={`/products/${item.id}`}>
-          <h3 className="text-[12px] sm:text-[13px] font-bold text-[#111] line-clamp-2 leading-snug hover:text-gray-500 transition-colors uppercase tracking-tight">
-            {item.name}
-          </h3>
-        </Link>
-
-        <div className="flex items-baseline gap-2 mt-auto mb-4">
-          <p className={`font-black text-[14px] md:text-[15px] ${hasDiscount ? "text-[#111]" : "text-[#111]"}`}>
-            {(hasDiscount ? item.discountedPrice! : item.price).toLocaleString()} ₮
-          </p>
-          {hasDiscount && (
-            <p className="text-[10px] text-[#999] line-through font-medium">
-              {item.price.toLocaleString()} ₮
-            </p>
-          )}
-        </div>
-
-        <button
-          onClick={(e) => { e.preventDefault(); if (item.inStock !== false) handleAdd(e); }}
-          disabled={item.inStock === false}
-          className={`w-full flex items-center justify-center gap-2 py-4 rounded-[2px] text-[10px] uppercase tracking-[0.2em] font-medium transition-all duration-300 ${item.inStock === false ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : added ? "bg-[#87A96B] text-white shadow-md active:scale-95" : "bg-gray-50 hover:bg-[#87A96B] hover:text-white text-[#1A1A1A] border border-gray-100 active:scale-95"}`}
-        >
-          <ShoppingCart size={14} />
-          {item.inStock === false ? "Дууссан" : added ? "Нэмэгдлээ ✓" : "Сагсанд нэмэх"}
-        </button>
+      {/* MOBILE STICKY */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-gray-100 p-4 safe-area-pb">
+         <div className="flex gap-3">
+           <button onClick={handleAddToCart} className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border-2 ${addedToCart ? "bg-green-600 border-green-600 text-white" : "border-[#87A96B] text-[#87A96B]"}`}>
+             {addedToCart ? "✓" : <ShoppingBag size={16} />} 
+           </button>
+           <button onClick={handleCheckoutAction} className="flex-[3] bg-[#87A96B] text-white font-bold py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-[#87A96B]/20">
+             Худалдан авах
+           </button>
+         </div>
       </div>
     </div>
   );
