@@ -206,20 +206,36 @@ function AllProductsContent() {
       {/* Toolbar */}
       <div className="max-w-7xl mx-auto px-6 mb-12">
         <div className="bg-white rounded-[2px] p-4 lg:px-8 lg:py-6 flex flex-col md:flex-row justify-between gap-6 shadow-sm border border-black/[0.03]">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setIsFilterOpen(true)}
-              className="lg:hidden flex items-center gap-3 text-[10px] font-medium text-[#1A1A1A] bg-[#FCFBF9] border border-black/[0.05] px-6 py-3 rounded-[2px] hover:border-[#1A1A1A] transition-all uppercase tracking-[0.2em]"
-            >
-              <SlidersHorizontal size={14} />
-              Шүүлтүүр
-            </button>
-            <span className="text-[10px] text-[#1A1A1A]/30 font-medium uppercase tracking-[0.3em] lg:block">
-              Нийт <span className="text-[#1A1A1A] font-bold">{filteredProducts.length}</span> бүтээгдэхүүн
-            </span>
+          <div className="flex flex-col items-center gap-8 w-full md:w-auto">
+            <div className="flex items-center gap-6 md:gap-10">
+              <button
+                onClick={() => setIsFilterOpen(true)}
+                className="lg:hidden flex items-center gap-2.5 text-[10px] font-bold text-[#1A1A1A] bg-[#FCFBF9] border border-black/[0.08] px-6 py-3.5 rounded-[2px] hover:border-[#1A1A1A] transition-all uppercase tracking-[0.2em] shadow-sm active:scale-95"
+              >
+                <SlidersHorizontal size={14} />
+                Шүүлтүүр
+              </button>
+              <div className="h-4 w-[1px] bg-black/10 lg:hidden" />
+              <span className="text-[10px] text-[#1A1A1A]/60 font-bold uppercase tracking-[0.2em]">
+                Нийт <span className="text-[#1A1A1A] text-xs font-black">{filteredProducts.length}</span> бараа
+              </span>
+            </div>
+
+            <div className="relative group w-full max-w-[280px] md:hidden">
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+                className="w-full text-[10px] font-bold uppercase tracking-[0.2em] border border-black/[0.08] rounded-[2px] text-[#1A1A1A] px-6 py-4 outline-none bg-[#FCFBF9] focus:border-[#1A1A1A] transition-all cursor-pointer appearance-none pr-12 text-center"
+              >
+                <option value="newest">Шинэ нь эхэндээ</option>
+                <option value="price-asc">Үнэ: Багаас их</option>
+                <option value="price-desc">Үнэ: Ихээс бага</option>
+              </select>
+              <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 text-[#1A1A1A]/40 pointer-events-none" />
+            </div>
           </div>
 
-          <div className="relative group">
+          <div className="relative group hidden md:block">
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}

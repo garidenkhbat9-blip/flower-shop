@@ -221,7 +221,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <button 
                       type="button" 
                       onClick={() => removeExistingImage(index)} 
-                      className="absolute top-2 right-2 bg-white text-[#1A1A1A] rounded-full p-2 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-[#1A1A1A] hover:text-white cursor-pointer"
+                      className="absolute top-2 right-2 bg-white text-[#1A1A1A] rounded-full p-2 shadow-xl transition-all hover:bg-[#1A1A1A] hover:text-white cursor-pointer z-10"
                     >
                       <X size={12} strokeWidth={2}/>
                     </button>
@@ -239,7 +239,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     <button 
                       type="button" 
                       onClick={() => removeNewImage(index)} 
-                      className="absolute top-2 right-2 bg-white text-[#1A1A1A] rounded-full p-2 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-[#1A1A1A] hover:text-white cursor-pointer"
+                      className="absolute top-2 right-2 bg-white text-[#1A1A1A] rounded-full p-2 shadow-xl transition-all hover:bg-[#1A1A1A] hover:text-white cursor-pointer z-10"
                     >
                       <X size={12} strokeWidth={2}/>
                     </button>

@@ -192,7 +192,7 @@ export default function AddProductPage() {
                     {i === 0 && (
                       <span className="absolute top-2 left-2 bg-black/70 backdrop-blur-md text-white text-[10px] font-medium px-2 py-1 rounded-md shadow-sm">Нүүр зураг</span>
                     )}
-                    <button type="button" onClick={() => setImageFiles(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 bg-white/90 text-red-500 rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 hover:scale-110 cursor-pointer">
+                    <button type="button" onClick={() => setImageFiles(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-2 right-2 bg-white/90 text-red-500 rounded-full p-2 shadow-md transition-all hover:bg-red-50 hover:scale-110 cursor-pointer z-10">
                       <X size={14} strokeWidth={2.5} />
                     </button>
                   </div>
