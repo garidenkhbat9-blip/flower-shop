@@ -5,7 +5,7 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import Link from "next/link";
 import { Product } from "@/types";
-import { ChevronLeft, ChevronRight, X, Search, Package, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Search, Package, AlertCircle, CheckCircle2, Pencil } from "lucide-react";
 import Image from "next/image";
 
 export default function ProductsListPage() {
@@ -223,7 +223,7 @@ export default function ProductsListPage() {
                   </button>
                   <div className="flex gap-2">
                     <Link href={`/admin/products/edit/${product.id}`} className="p-3 bg-[#FCFBF9] text-[#1A1A1A]/40 rounded-[2px] border border-black/[0.03] transition">
-                      <Search size={16} strokeWidth={1.5} />
+                      <Pencil size={16} strokeWidth={1.5} />
                     </Link>
                     <button onClick={() => setDeleteModal({ isOpen: true, id: product.id!, name: product.name })} className="p-3 bg-red-50 text-red-500 rounded-[2px] border border-red-100 transition">
                       <X size={16} strokeWidth={1.5} />
@@ -285,9 +285,9 @@ export default function ProductsListPage() {
 
                       <td className="p-8">
                         <div className="flex flex-wrap gap-2">
-                          {Array.isArray(product.category) ? product.category.map((cat) => (
+                          {Array.isArray(product.categories) ? product.categories.map((cat: string) => (
                             <span key={cat} className="text-[9px] font-medium text-[#1A1A1A]/40 border border-black/[0.05] px-2.5 py-1.5 rounded-[2px] uppercase tracking-wider">{cat}</span>
-                          )) : <span className="text-[9px] font-medium text-[#1A1A1A]/40 border border-black/[0.05] px-2.5 py-1.5 rounded-[2px] uppercase tracking-wider">{product.category}</span>}
+                          )) : <span className="text-[9px] font-medium text-[#1A1A1A]/40 border border-black/[0.05] px-2.5 py-1.5 rounded-[2px] uppercase tracking-wider">{product.categories}</span>}
                         </div>
                       </td>
 
@@ -306,7 +306,7 @@ export default function ProductsListPage() {
                       <td className="p-8 text-right">
                         <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link href={`/admin/products/edit/${product.id}`} className="p-4 bg-[#FCFBF9] text-[#1A1A1A]/40 hover:bg-[#1A1A1A] hover:text-white rounded-[2px] border border-black/[0.03] transition-all">
-                            <Search size={18} strokeWidth={1.5} />
+                            <Pencil size={18} strokeWidth={1.5} />
                           </Link>
                           <button onClick={() => setDeleteModal({ isOpen: true, id: product.id!, name: product.name })} className="p-4 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-[2px] border border-red-100 transition-all">
                             <X size={18} strokeWidth={1.5} />

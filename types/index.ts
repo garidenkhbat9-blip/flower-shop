@@ -23,7 +23,9 @@ export interface Product {
   tags: string[];           // ["Ээждээ", "Хайртайдаа", "Баяр хүргэх"]
   stemCount?: number;
 
-  category: string[];
+  categories: string[];
+  flowerType?: string;
+  purposes?: string[];
   inStock: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;

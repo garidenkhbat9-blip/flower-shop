@@ -110,14 +110,14 @@ function AllProductsContent() {
   const counts = useMemo(() => {
     const c: any = { packaging: {}, stems: {}, purposes: {}, categories: {}, sizes: {}, flowerTypes: {} };
     products.forEach(p => {
-      (p as any).categories?.forEach((cat: string) => {
+      p.categories?.forEach((cat: string) => {
         c.categories[cat] = (c.categories[cat] || 0) + 1;
       });
       if (p.packaging) c.packaging[p.packaging] = (c.packaging[p.packaging] || 0) + 1;
       if (p.size) c.sizes[p.size] = (c.sizes[p.size] || 0) + 1;
       if (p.stemCount) c.stems[p.stemCount] = (c.stems[p.stemCount] || 0) + 1;
-      if ((p as any).flowerType) c.flowerTypes[(p as any).flowerType] = (c.flowerTypes[(p as any).flowerType] || 0) + 1;
-      (p as any).purposes?.forEach((purp: string) => {
+      if (p.flowerType) c.flowerTypes[p.flowerType] = (c.flowerTypes[p.flowerType] || 0) + 1;
+      p.purposes?.forEach((purp: string) => {
         c.purposes[purp] = (c.purposes[purp] || 0) + 1;
       });
     });
@@ -127,13 +127,13 @@ function AllProductsContent() {
   const filteredProducts = useMemo(() => {
     return products
       .filter(p => {
-        const matchCat = filters.categories.length === 0 || (p as any).categories?.some((c: string) => filters.categories.includes(c));
+        const matchCat = filters.categories.length === 0 || p.categories?.some((c: string) => filters.categories.includes(c));
         const matchPack = filters.packaging.length === 0 || filters.packaging.includes(p.packaging);
         const matchColor = filters.colors.length === 0 || p.colors?.some((c: string) => filters.colors.includes(c));
         const matchSize = filters.sizes.length === 0 || filters.sizes.includes(p.size);
-        const matchPurpose = filters.purposes.length === 0 || (p as any).purposes?.some((t: string) => filters.purposes.includes(t));
+        const matchPurpose = filters.purposes.length === 0 || p.purposes?.some((t: string) => filters.purposes.includes(t));
         const matchStems = filters.stems.length === 0 || (p.stemCount && filters.stems.includes(p.stemCount.toString()));
-        const matchFlowerType = filters.flowerTypes.length === 0 || ((p as any).flowerType && filters.flowerTypes.includes((p as any).flowerType));
+        const matchFlowerType = filters.flowerTypes.length === 0 || (p.flowerType && filters.flowerTypes.includes(p.flowerType));
         const matchSearch = searchQuery === "" || p.name.toLowerCase().includes(searchQuery.toLowerCase());
         return matchCat && matchPack && matchColor && matchSize && matchPurpose && matchStems && matchFlowerType && matchSearch;
       })

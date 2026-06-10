@@ -34,11 +34,11 @@ export default function ProductDetailPage() {
           setProduct(productData);
 
           // Get recommended
-          const cats = productData.category || [];
+          const cats = productData.categories || [];
           if (cats.length > 0) {
             const q = query(
               collection(db, "products"),
-              where("category", "array-contains-any", cats),
+              where("categories", "array-contains-any", cats),
               limit(5)
             );
             const recSnap = await getDocs(q);
@@ -176,7 +176,7 @@ export default function ProductDetailPage() {
               <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
               
               <div className="flex flex-wrap gap-2">
-                {product.category?.map(cat => (
+                {product.categories?.map(cat => (
                    <span key={cat} className="text-[9px] font-bold uppercase tracking-widest bg-gray-100 px-3 py-1.5 rounded-full">{cat}</span>
                 ))}
               </div>
@@ -241,12 +241,12 @@ export default function ProductDetailPage() {
         {/* RECOMMENDED SECTION */}
         {recommended.length > 0 && (
           <div className="mt-32">
-            <h2 className="text-2xl font-playfair italic mb-10">Танд санал болгох</h2>
+            <h2 className="text-2xl md:text-4xl font-playfair font-medium italic mb-12">Танд санал болгох</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {recommended.map(item => (
                 <Link key={item.id} href={`/products/${item.id}`} className="group flex flex-col gap-3">
                   <div className="aspect-[4/5] relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                    <Image src={item.imageUrls[0]} alt={item.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-500" sizes="300px" />
+                    <Image src={item.imageUrls[0]} alt={item.name} fill className="object-cover p-0 group-hover:scale-105 transition-transform duration-500" sizes="300px" />
                   </div>
                   <div>
                     <h3 className="text-[11px] font-bold uppercase tracking-tight line-clamp-1">{item.name}</h3>
@@ -254,6 +254,17 @@ export default function ProductDetailPage() {
                   </div>
                 </Link>
               ))}
+            </div>
+
+            <div className="flex justify-center mt-20">
+              <Link 
+                href={product.categories?.[0] ? `/products?category=${encodeURIComponent(product.categories[0])}` : "/products"} 
+                className="group flex items-center gap-4 bg-[#87A96B] text-white px-14 py-6 rounded-[50px_4px_50px_4px] text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-[#739458] transition-all duration-700 shadow-2xl shadow-[#87A96B]/20 hover:scale-[1.02] active:scale-95"
+              >
+                <span>Бүх барааг үзэх</span>
+                <div className="w-8 h-[1px] bg-white/30 group-hover:w-12 transition-all duration-700" />
+                <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-700" />
+              </Link>
             </div>
           </div>
         )}
