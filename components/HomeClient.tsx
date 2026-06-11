@@ -39,7 +39,7 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
   const { toggleWishlist, isWishlisted } = useWishlist();
 
   return (
-    <div className="bg-[#FAFAFA] min-h-screen font-montserrat text-[#111] overflow-hidden selection:bg-[#111] selection:text-white">
+    <div className="bg-[#FAFAFA] min-h-screen font-montserrat text-[#111] overflow-x-hidden selection:bg-[#111] selection:text-white">
 
       <section className="relative min-h-[60svh] lg:min-h-[90svh] w-full bg-[#FFF0F5] overflow-hidden flex flex-col lg:flex-row items-center pt-20 lg:pt-0">
         {/* Elegant Layered Flower Background Pattern */}
@@ -165,8 +165,8 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
         <section className="pt-24 pb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px" }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
             className="flex items-end justify-between mb-10"
           >
             <div>
@@ -180,8 +180,8 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
 
           <motion.div
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "100px" }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
             className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar -mx-5 px-5 pb-5 md:mx-0 md:px-0"
           >
             {categories.map((cat, index) => (
@@ -220,8 +220,8 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
         <section className="pb-32 md:pb-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px" }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
             className="flex items-end justify-between mb-10"
           >
             <div>
@@ -235,8 +235,8 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
 
           <motion.div
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "100px" }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
             className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"
           >
             {products.map((product, i) => {
@@ -312,8 +312,8 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
             className="mt-16 text-center"
           >
             <Link
