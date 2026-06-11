@@ -44,8 +44,8 @@ const fadeUpVariant = {
 };
 
 interface ProductsPageClientProps {
-  initialProducts: Product[];
-  initialCategories: Category[];
+  initialProducts?: Product[];
+  initialCategories?: Category[];
 }
 
 export default function ProductsPageClient({ initialProducts, initialCategories }: ProductsPageClientProps) {
@@ -63,15 +63,37 @@ export default function ProductsPageClient({ initialProducts, initialCategories 
   );
 }
 
-function AllProductsContent({ initialProducts, initialCategories }: ProductsPageClientProps) {
+function AllProductsContent({ initialProducts = [], initialCategories = [] }: ProductsPageClientProps) {
   const searchParams = useSearchParams();
   const urlCategory = searchParams.get("category") || "";
   const searchQuery = searchParams.get("search") || "";
 
-  const [products] = useState<Product[]>(initialProducts);
-  const [dbCategories] = useState<Category[]>(initialCategories);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [dbCategories, setDbCategories] = useState<Category[]>(initialCategories);
+  const [loading, setLoading] = useState(initialProducts.length === 0);
   const [sortBy, setSortBy] = useState("newest");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (initialProducts.length > 0) return;
+      try {
+        const { collection, getDocs, orderBy, query } = await import("firebase/firestore");
+        const { db } = await import("@/lib/firebase");
+        const [prodSnap, catSnap] = await Promise.all([
+          getDocs(query(collection(db, "products"), orderBy("createdAt", "desc"))),
+          getDocs(collection(db, "categories"))
+        ]);
+        setProducts(prodSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Product[]);
+        setDbCategories(catSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Category[]);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitialData();
+  }, [initialProducts]);
 
   const [filters, setFilters] = useState({
     categories: [] as string[],
@@ -169,6 +191,17 @@ function AllProductsContent({ initialProducts, initialCategories }: ProductsPage
       </div>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-[#FAFAFA]">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-[3px] border-gray-100 border-t-[#111] rounded-full animate-spin" />
+          <span className="text-[10px] font-bold tracking-[0.3em] text-[#111] uppercase">Уншиж байна...</span>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#FCFBF9] pb-32 font-montserrat text-[#1A1A1A]">

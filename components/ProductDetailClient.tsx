@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, CreditCard, ChevronLeft, Check, ArrowRight, Eye, MapPin, ShoppingBag } from "lucide-react";
 import Link from "next/link";
@@ -10,15 +10,53 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 interface ProductDetailClientProps {
-  product: Product;
-  recommended: Product[];
+  productId: string;
 }
 
-export default function ProductDetailClient({ product, recommended }: ProductDetailClientProps) {
+export default function ProductDetailClient({ productId }: ProductDetailClientProps) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [recommended, setRecommended] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [selectedImg, setSelectedImg] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { doc, getDoc, collection, query, where, limit, getDocs } = await import("firebase/firestore");
+        const { db } = await import("@/lib/firebase");
+        
+        const docRef = doc(db, "products", productId);
+        const docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists()) {
+          setLoading(false);
+          return;
+        }
+        
+        const prodData = { id: docSnap.id, ...docSnap.data() } as Product;
+        setProduct(prodData);
+
+        const cats = prodData.categories || [];
+        if (cats.length > 0) {
+          const q = query(collection(db, "products"), where("categories", "array-contains-any", cats), limit(5));
+          const recSnap = await getDocs(q);
+          const recData = recSnap.docs
+            .map(d => ({ id: d.id, ...d.data() } as Product))
+            .filter(p => p.id !== productId)
+            .slice(0, 4);
+          setRecommended(recData);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [productId]);
 
   const handleAddToCart = () => {
     if (product) {
@@ -34,6 +72,26 @@ export default function ProductDetailClient({ product, recommended }: ProductDet
       router.push("/checkout");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-12 h-12 border-2 border-gray-100 border-t-[#87A96B] rounded-full animate-spin"></div>
+          <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#111]/40">Уншиж байна...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#FAFAFA]">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-black/50">Бүтээгдэхүүн олдсонгүй.</p>
+        <Link href="/products" className="text-[10px] font-bold border-b border-[#111] pb-1 uppercase tracking-widest text-[#111]">Бүх бараа руу буцах</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-montserrat text-[#111] pb-32">

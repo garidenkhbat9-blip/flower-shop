@@ -21,38 +21,11 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 600; // Revalidate every 10 minutes
-
-async function getProducts(): Promise<Product[]> {
-  try {
-    const prodSnap = await getDocs(collection(db, "products"));
-    return prodSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Product[];
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return [];
-  }
-}
-
-async function getCategories(): Promise<Category[]> {
-  try {
-    const catSnap = await getDocs(collection(db, "categories"));
-    return catSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Category[];
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    return [];
-  }
-}
-
-export default async function AllProductsPage() {
-  const [products, categories] = await Promise.all([
-    getProducts(),
-    getCategories(),
-  ]);
-
+export default function AllProductsPage() {
   return (
     <ProductsPageClient
-      initialProducts={JSON.parse(JSON.stringify(products))}
-      initialCategories={JSON.parse(JSON.stringify(categories))}
+      initialProducts={undefined}
+      initialCategories={undefined}
     />
   );
 }

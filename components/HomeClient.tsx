@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { ShoppingBag, ArrowRight, Heart, Truck } from "lucide-react";
 import Link from "next/link";
 import { Product, Category } from "@/types";
@@ -27,16 +27,47 @@ const fadeUpVariant: Variants = {
 };
 
 interface HomeClientProps {
-  initialProducts: Product[];
-  initialCategories: Category[];
+  initialProducts?: Product[];
+  initialCategories?: Category[];
 }
 
-export default function HomeClient({ initialProducts, initialCategories }: HomeClientProps) {
+export default function HomeClient({ initialProducts = [], initialCategories = [] }: HomeClientProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [loading, setLoading] = useState(initialProducts.length === 0);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (initialProducts.length > 0) return;
+      try {
+        const [prodSnap, catSnap] = await Promise.all([
+          getDocs(query(collection(db, "products"), orderBy("createdAt", "desc"), limit(15))),
+          getDocs(collection(db, "categories"))
+        ]);
+        setProducts(prodSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Product[]);
+        setCategories(catSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Category[]);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitialData();
+  }, [initialProducts]);
 
   const { addToCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-12 h-12 border-2 border-gray-100 border-t-[#87A96B] rounded-full animate-spin"></div>
+          <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#111]/40">Уншиж байна...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen font-montserrat text-[#111] overflow-x-hidden selection:bg-[#111] selection:text-white">

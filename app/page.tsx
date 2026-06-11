@@ -25,36 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-async function getProducts(): Promise<Product[]> {
-  try {
-    const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy("createdAt", "desc"), limit(15));
-    const prodSnap = await getDocs(q);
-    return prodSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Product[];
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return [];
-  }
-}
-
-async function getCategories(): Promise<Category[]> {
-  try {
-    const catSnap = await getDocs(collection(db, "categories"));
-    return catSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Category[];
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    return [];
-  }
-}
-
-export const revalidate = 3600; // Revalidate every hour
-
-export default async function HomePage() {
-  const [products, categories] = await Promise.all([
-    getProducts(),
-    getCategories(),
-  ]);
-
+export default function HomePage() {
   return (
     <>
       {/* SEO: Server-rendered content for Google crawlers */}
@@ -67,29 +38,22 @@ export default async function HomePage() {
         </p>
         <h2>Бидний бүтээгдэхүүнүүд</h2>
         <ul>
-          {products.map((product) => (
-            <li key={product.id}>
-              <a href={`/products/${product.id}`}>
-                {product.name} - {(product.discountedPrice ?? product.price).toLocaleString()}₮
+            <li>
+              <a href={`/products`}>
+                Онлайн хүргэлт
               </a>
             </li>
-          ))}
         </ul>
         <h2>Ангилалууд</h2>
         <ul>
-          {categories.map((cat) => (
-            <li key={cat.id}>
-              <a href={`/products?category=${encodeURIComponent(cat.name)}`}>{cat.name}</a>
+            <li>
+              <a href={`/products`}>Бүх ангилал</a>
             </li>
-          ))}
         </ul>
       </div>
 
-      {/* Client-side interactive UI */}
-      <HomeClient
-        initialProducts={JSON.parse(JSON.stringify(products))}
-        initialCategories={JSON.parse(JSON.stringify(categories))}
-      />
+      {/* Client-side interactive UI fetches data incredibly fast */}
+      <HomeClient initialProducts={undefined} initialCategories={undefined} />
     </>
   );
 }
