@@ -8,7 +8,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { ShoppingBag, ArrowRight, Heart, Truck } from "lucide-react";
 import Link from "next/link";
 import { Product, Category } from "@/types";
-import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import Image from "next/image";
 
 const staggerContainer: Variants = {
@@ -37,20 +37,15 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
 
   const { addToCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
-  const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.5]);
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen font-montserrat text-[#111] overflow-hidden selection:bg-[#111] selection:text-white">
 
       <section className="relative min-h-[60svh] lg:min-h-[90svh] w-full bg-[#FFF0F5] overflow-hidden flex flex-col lg:flex-row items-center pt-20 lg:pt-0">
         {/* Elegant Layered Flower Background Pattern */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.13] z-0 flex items-center justify-center text-[#E2A9BE]">
-          <motion.svg
-            animate={{ rotate: 360 }}
-            transition={{ duration: 160, repeat: Infinity, ease: "linear" }}
-            width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg" className="scale-[1.5] lg:scale-125"
+        <div className="absolute inset-0 pointer-events-none opacity-[0.13] z-0 flex items-center justify-center text-[#E2A9BE] overflow-hidden">
+          <svg
+            width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg" className="scale-[1.5] lg:scale-125 animate-[spin_160s_linear_infinite]"
           >
             {/* Outer Large Petals */}
             {[...Array(8)].map((_, i) => (
@@ -75,7 +70,7 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
             {/* Center Core */}
             <circle cx="400" cy="400" r="40" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="1.5" />
             <circle cx="400" cy="400" r="20" fill="#FFF0F5" stroke="currentColor" strokeWidth="1" />
-          </motion.svg>
+          </svg>
         </div>
 
         {/* Left Side: Bold Editorial Typography */}
@@ -171,7 +166,7 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "100px" }}
             className="flex items-end justify-between mb-10"
           >
             <div>
@@ -186,16 +181,12 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "100px" }}
             className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar -mx-5 px-5 pb-5 md:mx-0 md:px-0"
           >
             {categories.map((cat, index) => (
-              <motion.div
+              <div
                 key={cat.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ type: "spring", stiffness: 50, damping: 15, delay: index * 0.1 }}
                 className="shrink-0"
               >
                 <Link
@@ -220,7 +211,7 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
                     <span className="text-white font-playfair italic font-normal text-xl md:text-2xl tracking-tight block group-hover:translate-y-[-4px] transition-transform duration-500">{cat.name}</span>
                   </div>
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </motion.div>
         </section>
@@ -230,7 +221,7 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "100px" }}
             className="flex items-end justify-between mb-10"
           >
             <div>
@@ -245,19 +236,15 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true, margin: "100px" }}
             className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"
           >
             {products.map((product, i) => {
               const isWished = product.id ? isWishlisted(product.id) : false;
 
               return (
-                <motion.div
+                <div
                   key={product.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ type: "spring", stiffness: 50, damping: 15, delay: i * 0.1 }}
                   className="group flex flex-col"
                 >
                   <div className="relative aspect-[3/4] bg-white rounded-[2px] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-black/[0.03] mb-4">
@@ -318,7 +305,7 @@ export default function HomeClient({ initialProducts, initialCategories }: HomeC
 
                     <Link href={`/products/${product.id}`} className="inline-block mt-3 text-[10px] text-[#999] hover:text-[#111] font-bold uppercase tracking-[0.1em] transition-colors">Дэлгэрэнгүй</Link>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </motion.div>
