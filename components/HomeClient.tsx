@@ -287,6 +287,7 @@ export default function HomeClient({ initialProducts = [], initialCategories = [
                         alt={product.name}
                         fill
                         unoptimized
+                        loading="eager"
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 20vw"
                         className="object-cover hover:scale-105 transition-transform duration-500"
                       />
