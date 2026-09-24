@@ -10,6 +10,8 @@ import Link from "next/link";
 import { Product, Category } from "@/types";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/getImageUrl";
+
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
@@ -281,9 +283,10 @@ export default function HomeClient({ initialProducts = [], initialCategories = [
                   <div className="relative aspect-[3/4] bg-white rounded-[2px] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-black/[0.03] mb-4">
                     <Link href={`/products/${product.id}`} className="block w-full h-full bg-gray-50 relative">
                       <Image
-                        src={product.imageUrls?.[0] || "/logo.jpg"}
+                        src={getImageUrl(product.imageUrls?.[0])}
                         alt={product.name}
                         fill
+                        unoptimized
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 20vw"
                         className="object-cover hover:scale-105 transition-transform duration-500"
                       />

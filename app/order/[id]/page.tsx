@@ -9,6 +9,7 @@ import {
   Clock, CheckCircle2, Package, Printer, HelpCircle, Truck, Mail
 } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 export default function OrderPage() {
   const { id } = useParams() as { id: string };
@@ -482,7 +483,7 @@ export default function OrderPage() {
             {order.items?.map((item: any, idx: number) => (
               <div key={idx} className="flex justify-between items-center border-b border-gray-50 pb-4 last:border-0 last:pb-0">
                 <div className="flex gap-4 items-center">
-                  <img src={item.imageUrl} alt="" className="w-16 h-16 object-cover rounded-xl bg-gray-50" />
+                  <img src={getImageUrl(item.imageUrl)} alt="" className="w-16 h-16 object-cover rounded-xl bg-gray-50" />
                   <div>
                     <p className="text-[13px] font-bold">{item.name}</p>
                     <p className="text-[11px] text-gray-400 mt-1">x {item.quantity} ш.</p>

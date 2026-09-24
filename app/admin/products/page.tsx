@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Product } from "@/types";
 import { ChevronLeft, ChevronRight, X, Search, Package, AlertCircle, CheckCircle2, Pencil } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/getImageUrl";
+
 
 export default function ProductsListPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -104,9 +106,10 @@ export default function ProductsListPage() {
           )}
           <div className="relative w-full h-[80vh]">
             <Image
-              src={lightbox.images[lightbox.index]}
+              src={getImageUrl(lightbox.images[lightbox.index])}
               alt="Preview"
               fill
+              unoptimized
               className="object-contain rounded-[2px] shadow-2xl animate-in zoom-in-95"
             />
           </div>
@@ -187,9 +190,10 @@ export default function ProductsListPage() {
                   >
                     {product.imageUrls?.[0] ? (
                       <Image 
-                        src={product.imageUrls[0]} 
+                        src={getImageUrl(product.imageUrls[0])} 
                         alt={product.name}
                         fill
+                        unoptimized
                         sizes="64px"
                         className="object-cover rounded-[2px] border border-black/[0.03]" 
                       />
@@ -257,9 +261,10 @@ export default function ProductsListPage() {
                           >
                             {product.imageUrls?.[0] ? (
                               <Image 
-                                src={product.imageUrls[0]} 
+                                src={getImageUrl(product.imageUrls[0])} 
                                 alt={product.name}
                                 fill
+                                unoptimized
                                 sizes="80px"
                                 className="object-cover rounded-[2px] border border-black/[0.03] shadow-sm" 
                               />

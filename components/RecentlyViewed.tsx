@@ -5,6 +5,8 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Link from "next/link";
 import { Product } from "@/types";
+import { getImageUrl } from "@/lib/getImageUrl";
+
 
 export default function RecentlyViewed({ currentProductId }: { currentProductId: string }) {
   const [recentProducts, setRecentProducts] = useState<Product[]>([]);
@@ -47,7 +49,7 @@ export default function RecentlyViewed({ currentProductId }: { currentProductId:
           <Link href={`/products/${product.id}`} key={product.id} className="group border border-gray-100 bg-white p-2 hover:shadow-sm transition-all">
             <div className="aspect-square overflow-hidden bg-gray-50 mb-3">
               <img 
-                src={product.imageUrls[0]} 
+                src={getImageUrl(product.imageUrls[0])} 
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 alt="" 
               />

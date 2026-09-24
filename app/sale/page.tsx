@@ -9,6 +9,7 @@ import { Product } from "@/types";
 import { ShoppingBag, Heart } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 export default function SalePage() {
   const [saleProducts, setSaleProducts] = useState<Product[]>([]);
@@ -121,7 +122,7 @@ function SaleProductCard({ product, index }: { product: any, index: number }) {
           <motion.img 
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            src={product.imageUrls?.[0] || "/placeholder.jpg"} 
+            src={getImageUrl(product.imageUrls?.[0])} 
             alt={product.name} 
             className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" 
           />

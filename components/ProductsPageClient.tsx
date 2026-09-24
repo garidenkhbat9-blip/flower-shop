@@ -1,13 +1,16 @@
 "use client";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { SlidersHorizontal, X, ChevronDown, Check, Heart, Flower2, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { Product, Category } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/getImageUrl";
+
+
 
 const PACKAGING_OPTIONS = ["Баглаа", "Хайрцагтай", "Сагстай", "Хөрстэй"];
 const SIZE_OPTIONS = ["Жижиг", "Дунд", "Том"];
@@ -150,15 +153,29 @@ function AllProductsContent({ initialProducts = [], initialCategories = [] }: Pr
       });
   }, [products, filters, sortBy, searchQuery]);
 
+  const productsGridRef = useRef<HTMLDivElement>(null);
+
+  const scrollToGridTop = () => {
+    if (productsGridRef.current) {
+      const yOffset = -120;
+      const y = productsGridRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    }
+  };
+
   const toggleFilter = (type: keyof typeof filters, value: string) => {
     setFilters(prev => ({
       ...prev,
       [type]: prev[type].includes(value) ? prev[type].filter(item => item !== value) : [...prev[type], value],
     }));
+    scrollToGridTop();
   };
 
   const activeFilterCount = Object.values(filters).flat().length;
-  const clearFilters = () => setFilters({ categories: [], packaging: [], colors: [], sizes: [], purposes: [], stems: [], flowerTypes: [] });
+  const clearFilters = () => {
+    setFilters({ categories: [], packaging: [], colors: [], sizes: [], purposes: [], stems: [], flowerTypes: [] });
+    scrollToGridTop();
+  };
 
   const PurposeTags = () => {
     const hasActivePurpose = filters.purposes.length > 0;
@@ -166,7 +183,10 @@ function AllProductsContent({ initialProducts = [], initialCategories = [] }: Pr
       <div className="max-w-7xl mx-auto px-6 mb-16">
         <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar scroll-smooth">
           <button
-            onClick={() => setFilters(prev => ({ ...prev, purposes: [] }))}
+            onClick={() => {
+              setFilters(prev => ({ ...prev, purposes: [] }));
+              scrollToGridTop();
+            }}
             className={`flex-shrink-0 px-8 py-3.5 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.2em] border transition-all duration-500 ${!hasActivePurpose
               ? "bg-[#F1F5F0] text-[#1A1A1A] border-[#87A96B]/30 shadow-sm"
               : "bg-white text-[#666] border-black/[0.08] hover:border-[#87A96B] hover:text-[#1A1A1A]"}`}
@@ -267,7 +287,7 @@ function AllProductsContent({ initialProducts = [], initialCategories = [] }: Pr
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6" ref={productsGridRef}>
         <div className="flex gap-16">
 
           {/* Desktop Sidebar Filter */}
@@ -585,9 +605,10 @@ function ProductCard({ product }: { product: any }) {
       <div className="relative aspect-[4/5] overflow-hidden bg-[#FCFBF9]">
         <Link href={`/products/${product.id}`} className="block w-full h-full">
           <Image 
-            src={product.imageUrls?.[0] || "/placeholder.jpg"} 
+            src={getImageUrl(product.imageUrls?.[0])} 
             alt={product.name} 
             fill
+            unoptimized
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover group-hover:scale-105 transition-transform duration-1000" 
           />

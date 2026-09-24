@@ -8,6 +8,7 @@ import { collection, getDocs, query, where, documentId } from "firebase/firestor
 import { Product } from "@/types";
 import Link from "next/link";
 import { Heart, ShoppingBag, Trash2 } from "lucide-react";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 export default function WishlistSection() {
   const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
@@ -92,7 +93,7 @@ export default function WishlistSection() {
           <div key={product.id} className="group bg-white rounded-[2px] overflow-hidden border border-black/[0.03] hover:shadow-2xl hover:shadow-black/[0.03] transition-all duration-700 flex flex-col h-full">
             <div className="relative aspect-[4/5] overflow-hidden bg-[#FCFBF9]">
               <Link href={`/products/${product.id}`} className="block w-full h-full">
-                <img src={product.imageUrls?.[0] || "/placeholder.jpg"} alt={product.name} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                <img src={getImageUrl(product.imageUrls?.[0])} alt={product.name} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
               </Link>
               <div className="absolute top-4 left-4">
                 {product.discountedPrice && (

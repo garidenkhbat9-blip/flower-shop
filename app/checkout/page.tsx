@@ -10,6 +10,7 @@ import {
   ChevronLeft, ChevronDown, CheckCircle2, Plus, Minus, Trash2, Truck, Store
 } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
@@ -378,7 +379,7 @@ export default function CheckoutPage() {
                 {cart.map((item) => (
                   <div key={item.id} className="flex gap-4 items-start relative group">
                     <div className="relative shrink-0">
-                      <img src={item.imageUrl} className="w-14 h-16 object-cover bg-gray-50" alt="" />
+                      <img src={getImageUrl(item.imageUrl)} className="w-14 h-16 object-cover bg-gray-50" alt="" />
                       <button type="button" onClick={() => removeFromCart(item.id)} className="absolute -top-1.5 -left-1.5 bg-white text-gray-400 p-0.5 rounded-full shadow-sm border border-gray-100 hover:text-red-500 transition scale-0 group-hover:scale-100">
                         <Trash2 size={10} />
                       </button>

@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { Trash2, Plus, Minus, UserCircle2, LogIn, ShoppingBag } from "lucide-react";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, cartTotal } = useCart();
@@ -47,7 +48,7 @@ export default function CartPage() {
           <div className="lg:col-span-8 space-y-6">
             {cart.map((item) => (
               <div key={item.id} className="bg-white p-6 flex gap-6 rounded-[32px] border border-gray-100 items-center">
-                <img src={item.imageUrl} className="w-24 h-28 object-cover rounded-2xl" alt="" />
+                <img src={getImageUrl(item.imageUrl)} className="w-24 h-28 object-cover rounded-2xl" alt="" />
                 <div className="flex-1">
                   <h3 className="font-black text-sm uppercase">{item.name}</h3>
                   <p className="font-black text-lg mt-1">{item.price.toLocaleString()} ₮</p>

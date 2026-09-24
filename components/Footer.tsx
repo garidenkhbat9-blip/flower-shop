@@ -51,7 +51,7 @@ export default function Footer() {
           {/* ФҮТЕР ЛОГО */}
           <div className="col-span-1 md:col-span-4">
             <Image
-              src="/logo1.png"
+              src="/logo.jpg"
               alt="Footer Logo"
               width={250}
               height={80}

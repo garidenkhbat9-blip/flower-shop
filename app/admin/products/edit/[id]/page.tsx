@@ -7,6 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
 import { useAdminDialog } from "@/context/AdminDialogContext";
 import { Check, Tag, Flower2, Gift, ChevronLeft, X, ImagePlus } from "lucide-react";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 const PACKAGING_OPTIONS = ["Баглаа", "Хайрцагтай", "Сагстай", "Хөрстэй"];
 const SIZE_OPTIONS = ["Жижиг", "Дунд", "Том"];
@@ -213,7 +214,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 {/* Existing Images */}
                 {formData.imageUrls.map((url, index) => (
                    <div key={`exist-${index}`} className="relative group aspect-[4/5] rounded-[2px] overflow-hidden border border-black/10 shadow-sm">
-                    <img src={url} className="w-full h-full object-cover" alt="" />
+                    <img src={getImageUrl(url)} className="w-full h-full object-cover" alt="" />
                     {index === 0 && (
                       <span className="absolute top-2 left-2 bg-[#1A1A1A]/80 text-white text-[7px] font-bold px-2 py-1 rounded-sm uppercase tracking-widest">Нүүр зураг</span>
                     )}

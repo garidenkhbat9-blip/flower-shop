@@ -122,7 +122,7 @@ export default function Header() {
           {/* ЛОГО */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo1.png"
+              src="/logo.jpg"
               alt="Logo"
               width={300}
               height={90}
@@ -237,9 +237,8 @@ export default function Header() {
                   key={cat.id}
                   ref={el => { itemRefs.current[i] = el; }}
                   href={`/products?category=${cat.name}`}
-                  className={`hover:text-[#1A1A1A] whitespace-nowrap text-[10px] tracking-[0.4em] uppercase transition-colors shrink-0 ${
-                    visibleCount !== null && i >= visibleCount ? "hidden" : ""
-                  }`}
+                  className={`hover:text-[#1A1A1A] whitespace-nowrap text-[10px] tracking-[0.4em] uppercase transition-colors shrink-0 ${visibleCount !== null && i >= visibleCount ? "hidden" : ""
+                    }`}
                 >
                   {cat.name}
                 </Link>
@@ -251,11 +250,10 @@ export default function Header() {
               <div className="relative shrink-0" data-more-menu>
                 <button
                   onClick={() => setShowMoreMenu(prev => !prev)}
-                  className={`flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] transition-all px-3.5 py-1.5 rounded-full ${
-                    showMoreMenu
+                  className={`flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] transition-all px-3.5 py-1.5 rounded-full ${showMoreMenu
                       ? "bg-[#87A96B] text-white shadow-md"
                       : "text-[#87A96B] bg-[#87A96B]/10 hover:bg-[#87A96B]/20"
-                  }`}
+                    }`}
                 >
                   +{hiddenCategories.length} дэлгэрэнгүй
                 </button>

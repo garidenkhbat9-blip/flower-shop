@@ -8,6 +8,9 @@ import { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/getImageUrl";
+
+
 
 interface ProductDetailClientProps {
   productId: string;
@@ -132,7 +135,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                     selectedImg === index ? "border-[#111]" : "border-transparent bg-white shadow-sm"
                   }`}
                 >
-                  <Image src={url} alt="" fill className="object-contain p-1" sizes="100px" />
+                  <Image src={getImageUrl(url)} alt="" fill unoptimized className="object-contain p-1" sizes="100px" />
                 </button>
               ))}
             </div>
@@ -148,9 +151,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   className="w-full h-full"
                 >
                   <Image
-                    src={product.imageUrls[selectedImg]}
+                    src={getImageUrl(product.imageUrls[selectedImg])}
                     alt={product.name}
                     fill
+                    unoptimized
                     priority
                     className="object-contain p-6"
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -250,7 +254,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               {recommended.map(item => (
                 <Link key={item.id} href={`/products/${item.id}`} className="group flex flex-col gap-3">
                   <div className="aspect-[4/5] relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                    <Image src={item.imageUrls[0]} alt={item.name} fill className="object-cover p-0 group-hover:scale-105 transition-transform duration-500" sizes="300px" />
+                    <Image src={getImageUrl(item.imageUrls[0])} alt={item.name} fill unoptimized className="object-cover p-0 group-hover:scale-105 transition-transform duration-500" sizes="300px" />
                   </div>
                   <div>
                     <h3 className="text-[11px] font-bold uppercase tracking-tight line-clamp-1">{item.name}</h3>

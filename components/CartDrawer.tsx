@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { X, ShoppingBag, LogIn, ChevronRight, Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 export default function CartDrawer() {
   const { cart, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal } = useCart();
@@ -71,7 +72,7 @@ export default function CartDrawer() {
                 <div key={item.id} className="flex gap-6 relative group">
                   {/* Барааны зураг */}
                   <div className="w-24 h-32 bg-[#FAFAFA] rounded-[2px] overflow-hidden shrink-0 border border-black/[0.03] relative">
-                    <img src={item.imageUrl} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" alt="" />
+                    <img src={getImageUrl(item.imageUrl)} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" alt="" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
                   </div>
 

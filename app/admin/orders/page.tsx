@@ -8,6 +8,7 @@ import {
   Package, Truck, XCircle, Clock, ChevronDown, Phone, MapPin,
   MessageSquare, Trash2, CheckCircle2, Image as ImageIcon, Camera
 } from "lucide-react";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 interface Order {
   id: string;
@@ -270,7 +271,7 @@ export default function OrdersPage() {
                         <div className="space-y-4">
                           {order.items.map((item, idx) => (
                             <div key={idx} className="flex items-center gap-4 border-b border-gray-100 pb-4 last:border-0">
-                              <img src={item.imageUrl} className="w-14 h-16 object-cover rounded-[2px] shadow-sm" alt="" />
+                              <img src={getImageUrl(item.imageUrl)} className="w-14 h-16 object-cover rounded-[2px] shadow-sm" alt="" />
                               <div className="flex-1 min-w-0">
                                 <p className="text-[11px] font-bold text-black uppercase tracking-wider line-clamp-1">{item.name}</p>
                                 <p className="text-[10px] text-black font-medium mt-1">{item.quantity} ш · {item.price?.toLocaleString()}₮</p>
